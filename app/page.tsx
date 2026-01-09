@@ -31,8 +31,8 @@ export default function Home() {
   const [gridPreview, setGridPreview] = useState<boolean[]>(Array(100).fill(false));
   const [loading, setLoading] = useState(true);
 
-  // Super Bowl LIX - February 9, 2025
-  const GAME_DATE = new Date('2025-02-09T18:30:00-05:00');
+  // Super Bowl LX - February 8, 2026
+  const GAME_DATE = new Date('2026-02-08T18:30:00-05:00');
 
   useEffect(() => {
     loadData();
@@ -134,8 +134,41 @@ export default function Home() {
       {/* ===== NAVIGATION ===== */}
       <Header />
 
+      {/* ===== COUNTDOWN BAR ===== */}
+      {!isLive && !isFinal && (
+        <div className="bg-[#232842] border-b border-[#1a1f33] py-3">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center justify-center gap-6">
+              <span className="text-sm font-semibold text-gray-400 hidden sm:inline">Super Bowl LX Kickoff:</span>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1">
+                  <span className="text-xl font-black text-white tabular-nums">{countdown.days}</span>
+                  <span className="text-xs text-gray-500 uppercase">d</span>
+                </div>
+                <span className="text-gray-600">:</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xl font-black text-white tabular-nums">{String(countdown.hours).padStart(2, '0')}</span>
+                  <span className="text-xs text-gray-500 uppercase">h</span>
+                </div>
+                <span className="text-gray-600">:</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xl font-black text-white tabular-nums">{String(countdown.mins).padStart(2, '0')}</span>
+                  <span className="text-xs text-gray-500 uppercase">m</span>
+                </div>
+                <span className="text-gray-600">:</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xl font-black text-[#d4af37] tabular-nums">{String(countdown.secs).padStart(2, '0')}</span>
+                  <span className="text-xs text-gray-500 uppercase">s</span>
+                </div>
+              </div>
+              <span className="text-sm text-gray-500 hidden md:inline">Feb 8, 2026</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== HERO ===== */}
-      <section className="relative pt-28 pb-16">
+      <section className="relative pt-12 pb-16">
         {/* Decorative circular elements inspired by logo */}
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full border-2 border-[#d4af37]/10 opacity-50" />
         <div className="absolute top-28 right-18 w-48 h-48 rounded-full border border-[#d4af37]/5" />
@@ -167,7 +200,7 @@ export default function Home() {
               ) : (
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-full text-base mb-6">
                   <span className="w-2.5 h-2.5 bg-[#30d158] rounded-full animate-pulse" />
-                  <span className="text-white font-medium">Super Bowl LIX • Feb 9, 2025</span>
+                  <span className="text-white font-medium">Super Bowl LX • Feb 8, 2026</span>
                 </div>
               )}
 
@@ -415,54 +448,6 @@ export default function Home() {
             />
           </div>
         </motion.div>
-      </section>
-
-      {/* ===== COUNTDOWN ===== */}
-      <section className="py-24 relative overflow-hidden bg-gray-50">
-        {/* Decorative circles */}
-        <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-[#d4af37]/20" />
-        <div className="absolute -right-20 top-1/2 -translate-y-1/2 w-80 h-80 rounded-full border border-[#d4af37]/20" />
-
-        <div className="relative max-w-6xl mx-auto px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            {/* Badge-style header */}
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-[#d4af37] bg-[#d4af37]/10 mb-8">
-              <span className="w-3 h-3 rounded-full bg-[#d4af37] animate-pulse" />
-              <span className="text-base font-bold tracking-[0.1em] text-[#232842] uppercase">
-                Countdown to Kickoff
-              </span>
-            </div>
-
-            <div className="flex items-center justify-center gap-4 sm:gap-8">
-              {[
-                { value: countdown.days, label: 'Days' },
-                { value: countdown.hours, label: 'Hours' },
-                { value: countdown.mins, label: 'Mins' },
-                { value: countdown.secs, label: 'Secs' },
-              ].map((item, idx) => (
-                <div key={idx} className="text-center">
-                  {/* Badge-style countdown box */}
-                  <div className="w-20 sm:w-28 h-24 sm:h-32 bg-white border-2 border-gray-200 rounded-2xl flex items-center justify-center mb-2 relative shadow-lg">
-                    <div className="absolute inset-1 rounded-xl border border-[#d4af37]/20" />
-                    <span className="text-4xl sm:text-6xl font-black tabular-nums text-[#232842]">
-                      {String(item.value).padStart(2, '0')}
-                    </span>
-                  </div>
-                  <span className="text-sm sm:text-base text-gray-600 uppercase tracking-wider font-semibold">{item.label}</span>
-                </div>
-              ))}
-            </div>
-
-            <p className="mt-10 text-gray-600 text-base font-medium">
-              Numbers will be randomly assigned once the grid is full
-            </p>
-          </motion.div>
-        </div>
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
