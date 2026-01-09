@@ -30,7 +30,6 @@ export default function PoolGrid({
   const [squares, setSquares] = useState<GridSquare[]>([]);
   const [loading, setLoading] = useState(true);
   const [tournamentLaunched, setTournamentLaunched] = useState(false);
-  const [hoveredSquare, setHoveredSquare] = useState<{ square: GridSquare; boxNum: number } | null>(null);
 
   useEffect(() => {
     loadGrid();
@@ -143,32 +142,32 @@ export default function PoolGrid({
   };
 
   return (
-    <div className="w-full relative">
-      {/* NFC Label - Top */}
-      <div className="flex justify-center mb-4">
-        <div className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
-          <span className="text-sm font-bold tracking-wide">{nfcTeam}</span>
+    <div className="w-full">
+      {/* NFC Label - Top Center */}
+      <div className="flex justify-center mb-2 ml-10">
+        <div className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">
+          {nfcTeam}
         </div>
       </div>
 
       <div className="flex">
-        {/* AFC Label - Left */}
-        <div className="flex items-center justify-center w-12 mr-2">
+        {/* AFC Label - Left Side */}
+        <div className="flex items-center justify-center w-10 mr-1">
           <div
-            className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
+            className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
-            <span className="text-sm font-bold tracking-wide">{afcTeam}</span>
+            {afcTeam}
           </div>
         </div>
 
-        {/* Grid */}
+        {/* Grid Container */}
         <div className="flex-1">
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-1 mb-1 ml-8">
+          <div className="grid grid-cols-10 gap-0.5 mb-0.5 ml-6">
             {numbers.map((col) => (
               <div key={`col-${col}`} className="aspect-square flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-500">
+                <span className="text-sm font-bold text-gray-400">
                   {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                 </span>
               </div>
@@ -177,16 +176,16 @@ export default function PoolGrid({
 
           {/* Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex gap-1 mb-1">
+            <div key={`row-${row}`} className="flex gap-0.5 mb-0.5">
               {/* Row Header */}
-              <div className="w-8 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-500">
+              <div className="w-6 flex items-center justify-center">
+                <span className="text-sm font-bold text-gray-400">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </div>
 
               {/* Cells */}
-              <div className="flex-1 grid grid-cols-10 gap-1">
+              <div className="flex-1 grid grid-cols-10 gap-0.5">
                 {numbers.map((col) => {
                   const square = gridMap.get(`${row}-${col}`);
                   if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square" />;
@@ -197,22 +196,25 @@ export default function PoolGrid({
                   const isWinner = currentWinner?.id === square.id;
                   const boxNum = row * 10 + col + 1;
 
+                  const tooltipText = isClaimed
+                    ? `#${boxNum} · ${square.user_name || 'Claimed'}`
+                    : `#${boxNum} · Available`;
+
                   return (
                     <motion.button
                       key={`cell-${row}-${col}`}
                       onClick={() => handleSquareClick(square)}
                       disabled={!isAvailable || tournamentLaunched || disabled}
-                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.08 } : {}}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
                       whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
-                      onMouseEnter={() => setHoveredSquare({ square, boxNum })}
-                      onMouseLeave={() => setHoveredSquare(null)}
+                      title={tooltipText}
                       className={`
-                        aspect-square rounded-lg flex items-center justify-center text-xs font-semibold transition-all relative
-                        ${isAvailable && !disabled && 'bg-emerald-50 border border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer'}
-                        ${isAvailable && disabled && 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'}
+                        aspect-square rounded flex items-center justify-center text-xs font-semibold transition-all
+                        ${isAvailable && !disabled && 'bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer'}
+                        ${isAvailable && disabled && 'bg-gray-50 border border-gray-200 text-gray-400 cursor-not-allowed'}
                         ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500'}
-                        ${isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg'}
-                        ${isWinner && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg shadow-[#d4af37]/50 animate-pulse'}
+                        ${isSelected && 'bg-[#d4af37] border-2 border-[#b8962f] text-white shadow-md'}
+                        ${isWinner && 'bg-[#d4af37] border-2 border-[#b8962f] text-white shadow-md animate-pulse'}
                       `}
                     >
                       {isWinner && '★'}
@@ -228,32 +230,12 @@ export default function PoolGrid({
         </div>
       </div>
 
-      {/* Custom Tooltip */}
-      {hoveredSquare && (
-        <div className="fixed z-50 pointer-events-none" style={{
-          left: '50%',
-          bottom: '120px',
-          transform: 'translateX(-50%)'
-        }}>
-          <div className="bg-[#232842] text-white px-4 py-3 rounded-xl shadow-xl">
-            <div className="text-center">
-              <div className="text-lg font-bold text-[#d4af37]">Box #{hoveredSquare.boxNum}</div>
-              <div className="text-sm text-gray-300">
-                {hoveredSquare.square.status === 'available'
-                  ? 'Available — Click to select'
-                  : hoveredSquare.square.user_name || 'Claimed'}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Winner Banner */}
       {currentWinner && currentWinner.user_name && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-xl text-center"
+          className="mt-4 p-3 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-lg text-center"
         >
           <span className="text-[#232842] font-semibold">
             ★ {currentWinner.user_name} is winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})
