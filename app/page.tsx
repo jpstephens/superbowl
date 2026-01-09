@@ -159,62 +159,62 @@ export default function GridPage() {
     <div className="min-h-screen bg-white text-[#232842]">
 
       {/* ===== HEADER ===== */}
-      <header className="sticky top-0 z-50 bg-[#232842] border-b border-[#1a1f33] shadow-lg">
+      <header className="sticky top-0 z-50 bg-[#232842]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="h-24 flex items-center justify-between">
-            {/* Left: Logo + Back */}
-            <Link href="/" className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white p-1.5 shadow-md">
-                <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={72} height={72} className="rounded-full" />
+          <div className="h-16 flex items-center justify-between">
+            {/* Left: Logo + Title */}
+            <Link href="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white p-0.5 shadow-sm flex-shrink-0">
+                <Image src="/logo.png" alt="MWMS" width={36} height={36} className="rounded-full" />
               </div>
-              <div className="hidden sm:block">
-                <div className="text-lg font-bold text-white">Michael Williams</div>
-                <div className="text-base text-[#d4af37] font-semibold">Memorial Scholarship</div>
+              <div>
+                <h1 className="text-lg font-bold text-white leading-tight">Super Bowl Pool</h1>
+                <p className="text-xs text-[#d4af37]">Michael Williams Memorial</p>
               </div>
             </Link>
 
-            {/* Center: Title + Nav + Countdown */}
-            <div className="flex items-center gap-6">
-              <h1 className="font-bold text-2xl text-white hidden sm:block">Super Bowl Pool</h1>
-              <Link
-                href="/props"
-                className="text-gray-300 hover:text-[#d4af37] font-semibold transition-colors"
-              >
-                Prop Bets
-              </Link>
-              {countdown && (
-                <div className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white/10 border border-white/20 rounded-full text-base">
-                  <span className="text-[#d4af37] font-bold">
-                    {countdown.days}d {countdown.hours}h {countdown.mins}m
-                  </span>
-                  <span className="text-gray-300 font-medium">to kickoff</span>
+            {/* Center: Countdown */}
+            {countdown && (
+              <div className="hidden md:flex items-center gap-3 text-center">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black text-white">{countdown.days}</span>
+                  <span className="text-xs text-gray-400 uppercase">days</span>
                 </div>
-              )}
-            </div>
-
-            {/* Right: Stats + PDF */}
-            <div className="flex items-center gap-4 sm:gap-6">
-              {tournamentLaunched && (
-                <a
-                  href="/api/grid/pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
-                  title="Download Grid PDF"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  <span className="hidden sm:inline text-sm font-medium">PDF</span>
-                </a>
-              )}
-              <div className="text-right">
-                <div className="text-2xl font-bold text-[#30d158]">{stats.available}</div>
-                <div className="text-sm text-gray-400 font-medium">available</div>
+                <span className="text-gray-500">:</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black text-white">{countdown.hours}</span>
+                  <span className="text-xs text-gray-400 uppercase">hrs</span>
+                </div>
+                <span className="text-gray-500">:</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-black text-white">{countdown.mins}</span>
+                  <span className="text-xs text-gray-400 uppercase">min</span>
+                </div>
               </div>
-              <div className="text-right hidden sm:block">
-                <div className="text-2xl font-bold text-[#d4af37]">${squarePrice}</div>
-                <div className="text-sm text-gray-400 font-medium">per square</div>
+            )}
+
+            {/* Right: Nav + Stats */}
+            <div className="flex items-center gap-6">
+              <nav className="hidden sm:flex items-center gap-4">
+                <Link href="/props" className="text-sm text-gray-300 hover:text-white transition-colors">
+                  Prop Bets
+                </Link>
+                {tournamentLaunched && (
+                  <a
+                    href="/api/grid/pdf"
+                    target="_blank"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    Download PDF
+                  </a>
+                )}
+              </nav>
+              <div className="flex items-center gap-1 bg-white/10 rounded-lg px-3 py-1.5">
+                <span className="text-xl font-bold text-[#30d158]">{stats.available}</span>
+                <span className="text-xs text-gray-400">left</span>
+                <span className="text-gray-500 mx-2">·</span>
+                <span className="text-xl font-bold text-white">${squarePrice}</span>
+                <span className="text-xs text-gray-400">each</span>
               </div>
             </div>
           </div>
