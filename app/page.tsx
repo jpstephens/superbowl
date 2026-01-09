@@ -274,36 +274,66 @@ export default function Home() {
                 )}
               </div>
 
-              {/* Quick stats - State aware */}
-              <div className="mt-12 flex gap-8">
+              {/* Prize highlights - visible above the fold */}
+              <div className="mt-10 p-4 bg-[#232842] rounded-2xl">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-bold text-[#d4af37] uppercase tracking-wide">Win Every Quarter</span>
+                  <Link href="/#prizes" className="text-sm text-gray-400 hover:text-white">Details →</Link>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="text-center p-2 bg-white/5 rounded-lg">
+                    <div className="text-xs text-gray-400 mb-1">Q1</div>
+                    <div className="text-lg font-bold text-white">$1,000</div>
+                  </div>
+                  <div className="text-center p-2 bg-white/5 rounded-lg">
+                    <div className="text-xs text-gray-400 mb-1">Q2</div>
+                    <div className="text-lg font-bold text-white">$1,000</div>
+                  </div>
+                  <div className="text-center p-2 bg-white/5 rounded-lg">
+                    <div className="text-xs text-gray-400 mb-1">Q3</div>
+                    <div className="text-lg font-bold text-white">$1,000</div>
+                  </div>
+                  <div className="text-center p-2 bg-[#d4af37]/20 rounded-lg border border-[#d4af37]/30">
+                    <div className="text-xs text-[#d4af37] mb-1">Q4</div>
+                    <div className="text-lg font-bold text-[#d4af37]">$2,000</div>
+                  </div>
+                </div>
+                <div className="mt-3 text-center">
+                  <span className="text-2xl font-black text-white">$5,000</span>
+                  <span className="text-sm text-gray-400 ml-2">Total Prizes</span>
+                </div>
+              </div>
+
+              {/* Quick stats */}
+              <div className="mt-6 flex gap-6">
                 {isLive && gameState ? (
                   <>
                     <div>
-                      <div className="text-4xl font-black text-[#232842]">{gameState.afc_score || 0}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">{gameState.afc_team || 'AFC'}</div>
+                      <div className="text-3xl font-black text-[#232842]">{gameState.afc_score || 0}</div>
+                      <div className="text-sm text-gray-600 font-medium">{gameState.afc_team || 'AFC'}</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-black text-[#232842]">{gameState.nfc_score || 0}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">{gameState.nfc_team || 'NFC'}</div>
+                      <div className="text-3xl font-black text-[#232842]">{gameState.nfc_score || 0}</div>
+                      <div className="text-sm text-gray-600 font-medium">{gameState.nfc_team || 'NFC'}</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-black text-red-600">Q{gameState.quarter || 1}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">Quarter</div>
+                      <div className="text-3xl font-black text-red-600">Q{gameState.quarter || 1}</div>
+                      <div className="text-sm text-gray-600 font-medium">Quarter</div>
                     </div>
                   </>
                 ) : (
                   <>
                     <div>
-                      <div className="text-4xl font-black text-[#d4af37]">{stats.sold}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">Squares Sold</div>
+                      <div className="text-3xl font-black text-[#d4af37]">{stats.sold}</div>
+                      <div className="text-sm text-gray-600 font-medium">Sold</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-black text-[#232842]">{stats.available}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">{tournamentLaunched ? 'Total Squares' : 'Still Available'}</div>
+                      <div className="text-3xl font-black text-[#232842]">{stats.available}</div>
+                      <div className="text-sm text-gray-600 font-medium">Available</div>
                     </div>
                     <div>
-                      <div className="text-4xl font-black text-[#30d158]">${stats.raised.toLocaleString()}</div>
-                      <div className="text-base text-gray-600 mt-1 font-medium">Raised</div>
+                      <div className="text-3xl font-black text-[#30d158]">${stats.price}</div>
+                      <div className="text-sm text-gray-600 font-medium">Per Square</div>
                     </div>
                   </>
                 )}
