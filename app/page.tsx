@@ -128,54 +128,65 @@ export default function GridPage() {
   const isLive = gameState?.is_live || false;
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* Minimal Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="h-14 flex items-center justify-between">
+    <div className="min-h-screen bg-gray-50">
+      {/* Header - Navy with Gold accents */}
+      <header className="sticky top-0 z-50 bg-[#232842] shadow-lg">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="h-16 flex items-center justify-between">
+            {/* Logo + Title */}
             <Link href="/" className="flex items-center gap-3">
-              <Image src="/logo.png" alt="MWMS" width={32} height={32} className="rounded-full" />
-              <span className="font-semibold text-[#1d1d1f]">Super Bowl Pool</span>
+              <div className="w-10 h-10 rounded-full bg-white p-0.5 shadow flex-shrink-0">
+                <Image src="/logo.png" alt="MWMS" width={36} height={36} className="rounded-full" />
+              </div>
+              <div className="hidden sm:block">
+                <h1 className="text-lg font-bold text-white leading-tight">Super Bowl Pool</h1>
+                <p className="text-xs text-[#d4af37]">Michael Williams Memorial Scholarship</p>
+              </div>
             </Link>
 
-            <div className="flex items-center gap-6">
-              {countdown && (
-                <div className="hidden sm:flex items-center gap-1 text-sm text-[#86868b]">
-                  <span className="font-medium text-[#1d1d1f]">{countdown.days}d</span>
-                  <span className="font-medium text-[#1d1d1f]">{countdown.hours}h</span>
-                  <span className="font-medium text-[#1d1d1f]">{countdown.mins}m</span>
-                  <span className="ml-1">until kickoff</span>
-                </div>
-              )}
+            {/* Countdown */}
+            {countdown && (
+              <div className="hidden md:flex items-center gap-1 text-white">
+                <span className="text-2xl font-bold">{countdown.days}</span>
+                <span className="text-xs text-gray-400 mr-2">d</span>
+                <span className="text-2xl font-bold">{countdown.hours}</span>
+                <span className="text-xs text-gray-400 mr-2">h</span>
+                <span className="text-2xl font-bold">{countdown.mins}</span>
+                <span className="text-xs text-gray-400 mr-3">m</span>
+                <span className="text-sm text-gray-400">to kickoff</span>
+              </div>
+            )}
 
-              <nav className="flex items-center gap-4">
-                <Link href="/props" className="text-sm text-[#86868b] hover:text-[#1d1d1f] transition-colors">
-                  Props
+            {/* Right side */}
+            <div className="flex items-center gap-4">
+              <nav className="hidden sm:flex items-center gap-4">
+                <Link href="/props" className="text-sm text-gray-300 hover:text-white transition-colors">
+                  Prop Bets
                 </Link>
                 {tournamentLaunched && (
-                  <a href="/api/grid/pdf" target="_blank" className="text-sm text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                  <a href="/api/grid/pdf" target="_blank" className="text-sm text-gray-300 hover:text-white transition-colors">
                     PDF
                   </a>
                 )}
               </nav>
 
-              <div className="flex items-center gap-2 text-sm">
-                <span className="font-semibold text-[#1d1d1f]">{stats.available}</span>
-                <span className="text-[#86868b]">left</span>
-                <span className="text-[#d1d1d6]">·</span>
-                <span className="font-semibold text-[#1d1d1f]">${squarePrice}</span>
-                <span className="text-[#86868b]">each</span>
+              <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+                <span className="text-xl font-bold text-[#30d158]">{stats.available}</span>
+                <span className="text-xs text-gray-400">left</span>
+                <span className="text-gray-500 mx-1">·</span>
+                <span className="text-xl font-bold text-[#d4af37]">${squarePrice}</span>
+                <span className="text-xs text-gray-400">each</span>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Pool Closed */}
         {!poolActive && (
-          <div className="mb-6 px-4 py-3 bg-red-50 rounded-xl text-center">
-            <span className="text-red-600 font-medium">Pool closed — not accepting purchases</span>
+          <div className="mb-6 px-4 py-3 bg-red-100 border border-red-300 rounded-xl text-center">
+            <span className="text-red-700 font-semibold">Pool Closed — Not accepting purchases</span>
           </div>
         )}
 
@@ -186,39 +197,43 @@ export default function GridPage() {
           </div>
         )}
 
-        {/* Hero Section */}
+        {/* Hero + Prize Section */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold text-[#1d1d1f] tracking-tight mb-2">
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#232842] tracking-tight mb-3">
             Pick Your Squares
           </h1>
-          <p className="text-[#86868b] text-lg">
-            Win up to <span className="font-semibold text-[#1d1d1f]">${totalPrizePool.toLocaleString()}</span> in prizes
+          <p className="text-gray-500 text-lg mb-6">
+            Match the last digit of each team's score to win
           </p>
-        </div>
 
-        {/* Prize Pills */}
-        <div className="flex justify-center gap-3 mb-8">
-          {[
-            { label: 'Q1', amount: prizes.q1 },
-            { label: 'Q2', amount: prizes.q2 },
-            { label: 'Q3', amount: prizes.q3 },
-            { label: 'Q4', amount: prizes.q4, highlight: true },
-          ].map(({ label, amount, highlight }) => (
-            <div
-              key={label}
-              className={`px-4 py-2 rounded-full text-sm font-medium ${
-                highlight
-                  ? 'bg-[#1d1d1f] text-white'
-                  : 'bg-white text-[#1d1d1f] border border-black/10'
-              }`}
-            >
-              {label} <span className={highlight ? 'text-white/80' : 'text-[#86868b]'}>${amount}</span>
+          {/* Prize Breakdown */}
+          <div className="inline-flex items-center gap-2 bg-[#232842] rounded-2xl p-2">
+            {[
+              { label: 'Q1', amount: prizes.q1 },
+              { label: 'Q2', amount: prizes.q2 },
+              { label: 'Q3', amount: prizes.q3 },
+              { label: 'Q4', amount: prizes.q4, highlight: true },
+            ].map(({ label, amount, highlight }) => (
+              <div
+                key={label}
+                className={`px-4 py-2 rounded-xl text-sm font-semibold ${
+                  highlight
+                    ? 'bg-[#d4af37] text-[#232842]'
+                    : 'text-white'
+                }`}
+              >
+                {label} <span className={highlight ? 'text-[#232842]/70' : 'text-[#d4af37]'}>${amount}</span>
+              </div>
+            ))}
+            <div className="px-4 py-2 border-l border-white/20">
+              <span className="text-[#d4af37] font-bold text-lg">${totalPrizePool.toLocaleString()}</span>
+              <span className="text-gray-400 text-xs ml-1">total</span>
             </div>
-          ))}
+          </div>
         </div>
 
         {/* The Grid */}
-        <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6">
           <PoolGrid
             onSquareSelect={handleSquareSelect}
             selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
@@ -235,25 +250,25 @@ export default function GridPage() {
           />
         </div>
 
-        {/* How it works - Minimal */}
-        <div className="flex justify-center gap-8 text-sm text-[#86868b] mb-8">
+        {/* Legend */}
+        <div className="flex justify-center gap-8 text-sm text-gray-500 mb-8">
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-[#34c759]/20 border border-[#34c759]/30" />
+            <span className="w-5 h-5 rounded bg-emerald-100 border border-emerald-300" />
             <span>Available</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-[#ff9500]" />
+            <span className="w-5 h-5 rounded bg-[#d4af37]" />
             <span>Selected</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-[#e5e5ea]" />
+            <span className="w-5 h-5 rounded bg-gray-200 border border-gray-300" />
             <span>Taken</span>
           </div>
         </div>
 
         {/* Charity Note */}
-        <p className="text-center text-sm text-[#86868b]">
-          100% of proceeds benefit the <span className="text-[#1d1d1f]">Michael Williams Memorial Scholarship</span>
+        <p className="text-center text-sm text-gray-400">
+          100% of proceeds benefit the <span className="text-[#232842] font-medium">Michael Williams Memorial Scholarship</span>
         </p>
       </main>
 
@@ -267,9 +282,9 @@ export default function GridPage() {
             transition={{ type: 'spring', damping: 30, stiffness: 400 }}
             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
           >
-            <div className="bg-[#1d1d1f] text-white rounded-full px-3 py-2 flex items-center gap-3 shadow-2xl shadow-black/20">
+            <div className="bg-[#232842] text-white rounded-2xl px-4 py-3 flex items-center gap-4 shadow-2xl shadow-black/30">
               {/* Selected squares preview */}
-              <div className="flex items-center gap-1.5 pl-2">
+              <div className="flex items-center gap-2">
                 {selectedSquares.slice(0, 5).map((square) => {
                   const boxNum = square.row_number * 10 + square.col_number + 1;
                   return (
@@ -278,14 +293,14 @@ export default function GridPage() {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       onClick={() => handleRemoveSquare(square.id)}
-                      className="w-8 h-8 bg-[#ff9500] rounded-full text-xs font-semibold flex items-center justify-center hover:bg-[#ff9500]/80 transition-colors"
+                      className="w-9 h-9 bg-[#d4af37] rounded-lg text-xs font-bold text-[#232842] flex items-center justify-center hover:bg-[#c49b2f] transition-colors"
                     >
                       {boxNum}
                     </motion.button>
                   );
                 })}
                 {selectedSquares.length > 5 && (
-                  <span className="text-white/60 text-sm pl-1">+{selectedSquares.length - 5}</span>
+                  <span className="text-gray-400 text-sm">+{selectedSquares.length - 5}</span>
                 )}
               </div>
 
@@ -293,8 +308,8 @@ export default function GridPage() {
 
               {/* Total */}
               <div className="text-sm">
-                <span className="text-white/60">{selectedSquares.length} squares</span>
-                <span className="font-semibold ml-2">${selectionTotal}</span>
+                <span className="text-gray-400">{selectedSquares.length} squares</span>
+                <span className="font-bold text-[#d4af37] ml-2 text-lg">${selectionTotal}</span>
               </div>
 
               <div className="h-8 w-px bg-white/20" />
@@ -303,7 +318,7 @@ export default function GridPage() {
               <Link
                 href="/payment"
                 onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)))}
-                className="bg-white text-[#1d1d1f] px-5 py-2 rounded-full font-semibold text-sm hover:bg-white/90 transition-colors"
+                className="bg-[#d4af37] text-[#232842] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#c49b2f] transition-colors"
               >
                 Continue
               </Link>

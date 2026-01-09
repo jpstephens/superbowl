@@ -129,7 +129,7 @@ export default function PoolGrid({
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#1d1d1f] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#232842] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -144,28 +144,30 @@ export default function PoolGrid({
   return (
     <div className="w-full">
       {/* NFC Label */}
-      <div className="flex justify-center mb-3">
-        <span className="text-xs font-medium text-[#86868b] tracking-wider uppercase">{nfcTeam}</span>
+      <div className="flex justify-center mb-2">
+        <div className="px-3 py-1 bg-blue-50 border border-blue-200 rounded-full">
+          <span className="text-xs font-semibold text-blue-600">{nfcTeam}</span>
+        </div>
       </div>
 
       <div className="flex">
         {/* AFC Label */}
-        <div className="flex items-center justify-center w-6 mr-2">
-          <span
-            className="text-xs font-medium text-[#86868b] tracking-wider uppercase"
+        <div className="flex items-center justify-center w-8 mr-1">
+          <div
+            className="px-2 py-1 bg-red-50 border border-red-200 rounded-full"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
-            {afcTeam}
-          </span>
+            <span className="text-xs font-semibold text-red-600">{afcTeam}</span>
+          </div>
         </div>
 
         {/* Grid */}
         <div className="flex-1">
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-1 mb-1">
+          <div className="grid grid-cols-10 gap-1 mb-1 ml-7">
             {numbers.map((col) => (
               <div key={`col-${col}`} className="aspect-square flex items-center justify-center">
-                <span className="text-xs font-medium text-[#86868b]">
+                <span className="text-xs font-semibold text-gray-400">
                   {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                 </span>
               </div>
@@ -176,8 +178,8 @@ export default function PoolGrid({
           {numbers.map((row) => (
             <div key={`row-${row}`} className="flex gap-1 mb-1">
               {/* Row Header */}
-              <div className="w-6 flex items-center justify-center -ml-8 mr-1">
-                <span className="text-xs font-medium text-[#86868b]">
+              <div className="w-7 flex items-center justify-center">
+                <span className="text-xs font-semibold text-gray-400">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </div>
@@ -199,15 +201,15 @@ export default function PoolGrid({
                       key={`cell-${row}-${col}`}
                       onClick={() => handleSquareClick(square)}
                       disabled={!isAvailable || tournamentLaunched || disabled}
-                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.08 } : {}}
                       whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
                       className={`
-                        aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all
-                        ${isAvailable && !disabled && 'bg-[#34c759]/10 border border-[#34c759]/30 text-[#34c759] hover:bg-[#34c759]/20 cursor-pointer'}
-                        ${isAvailable && disabled && 'bg-[#f5f5f7] border border-[#e5e5ea] text-[#86868b] cursor-not-allowed'}
-                        ${isClaimed && !isSelected && !isWinner && 'bg-[#f5f5f7] border border-[#e5e5ea] text-[#86868b]'}
-                        ${isSelected && 'bg-[#ff9500] border-2 border-[#ff9500] text-white shadow-lg shadow-[#ff9500]/30'}
-                        ${isWinner && 'bg-[#ff9500] border-2 border-[#ff9500] text-white shadow-lg shadow-[#ff9500]/50 animate-pulse'}
+                        aspect-square rounded-lg flex items-center justify-center text-xs font-semibold transition-all
+                        ${isAvailable && !disabled && 'bg-emerald-50 border border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer'}
+                        ${isAvailable && disabled && 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'}
+                        ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500'}
+                        ${isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg'}
+                        ${isWinner && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg shadow-[#d4af37]/50 animate-pulse'}
                       `}
                     >
                       {isWinner && '★'}
@@ -228,9 +230,9 @@ export default function PoolGrid({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 bg-[#ff9500]/10 border border-[#ff9500]/30 rounded-xl text-center"
+          className="mt-4 p-3 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-xl text-center"
         >
-          <span className="text-[#1d1d1f] font-medium">
+          <span className="text-[#232842] font-semibold">
             ★ {currentWinner.user_name} is winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})
           </span>
         </motion.div>
