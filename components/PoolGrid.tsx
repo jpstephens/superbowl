@@ -134,40 +134,43 @@ export default function PoolGrid({
     );
   }
 
-  const getInitials = (name: string | null) => {
+  // Get display name: "Mike S." format
+  const getDisplayName = (name: string | null) => {
     if (!name) return '';
     const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    if (parts.length === 1) return parts[0];
+    const firstName = parts[0];
+    const lastInitial = parts[parts.length - 1][0].toUpperCase();
+    return `${firstName} ${lastInitial}.`;
   };
 
   return (
     <div className="w-full">
       {/* NFC Label - Top Center */}
-      <div className="flex justify-center mb-2 ml-10">
-        <div className="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-bold">
+      <div className="text-center mb-3 ml-8">
+        <span className="text-xs font-medium tracking-widest text-[#9c9894] uppercase">
           {nfcTeam}
-        </div>
+        </span>
       </div>
 
       <div className="flex">
         {/* AFC Label - Left Side */}
-        <div className="flex items-center justify-center w-10 mr-1">
-          <div
-            className="bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-bold whitespace-nowrap"
+        <div className="flex items-center justify-center w-8">
+          <span
+            className="text-xs font-medium tracking-widest text-[#9c9894] uppercase whitespace-nowrap"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
-          </div>
+          </span>
         </div>
 
         {/* Grid Container */}
         <div className="flex-1">
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-0.5 mb-0.5 ml-6">
+          <div className="grid grid-cols-10 gap-1 mb-1 ml-7">
             {numbers.map((col) => (
               <div key={`col-${col}`} className="aspect-square flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-400">
+                <span className="text-xs font-mono font-medium text-[#9c9894]">
                   {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                 </span>
               </div>
@@ -176,16 +179,16 @@ export default function PoolGrid({
 
           {/* Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex gap-0.5 mb-0.5">
+            <div key={`row-${row}`} className="flex gap-1 mb-1">
               {/* Row Header */}
-              <div className="w-6 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-400">
+              <div className="w-7 flex items-center justify-center">
+                <span className="text-xs font-mono font-medium text-[#9c9894]">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </div>
 
               {/* Cells */}
-              <div className="flex-1 grid grid-cols-10 gap-0.5">
+              <div className="flex-1 grid grid-cols-10 gap-1">
                 {numbers.map((col) => {
                   const square = gridMap.get(`${row}-${col}`);
                   if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square" />;
@@ -205,22 +208,42 @@ export default function PoolGrid({
                       key={`cell-${row}-${col}`}
                       onClick={() => handleSquareClick(square)}
                       disabled={!isAvailable || tournamentLaunched || disabled}
-                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
-                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.02 } : {}}
+                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.98 } : {}}
                       title={tooltipText}
                       className={`
-                        aspect-square rounded flex items-center justify-center text-xs font-semibold transition-all
-                        ${isAvailable && !disabled && 'bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer'}
-                        ${isAvailable && disabled && 'bg-gray-50 border border-gray-200 text-gray-400 cursor-not-allowed'}
-                        ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500'}
-                        ${isSelected && 'bg-[#d4af37] border-2 border-[#b8962f] text-white shadow-md'}
-                        ${isWinner && 'bg-[#d4af37] border-2 border-[#b8962f] text-white shadow-md animate-pulse'}
+                        aspect-square rounded-lg flex flex-col items-center justify-center
+                        transition-all duration-150 ease-out border
+                        ${isAvailable && !disabled && 'bg-white border-[#e8e5e0] hover:border-[#d4d0c8] hover:shadow-sm cursor-pointer'}
+                        ${isAvailable && disabled && 'bg-[#f5f4f2] border-[#e8e5e0] cursor-not-allowed'}
+                        ${isClaimed && !isSelected && !isWinner && 'bg-[#f5f4f2] border-[#f5f4f2]'}
+                        ${isSelected && 'bg-[#232842] border-[#232842] shadow-md ring-2 ring-[#d4af37]/20'}
+                        ${isWinner && 'bg-[#d4af37] border-[#d4af37] shadow-md ring-2 ring-[#d4af37]/30 animate-pulse'}
                       `}
                     >
-                      {isWinner && '★'}
-                      {isSelected && !isWinner && '✓'}
-                      {isAvailable && !isSelected && boxNum}
-                      {isClaimed && !isSelected && !isWinner && getInitials(square.user_name ?? null)}
+                      {isWinner && (
+                        <>
+                          <span className="text-white text-xs font-bold">★</span>
+                          <span className="text-white text-[8px]">#{boxNum}</span>
+                        </>
+                      )}
+                      {isSelected && !isWinner && (
+                        <>
+                          <span className="text-[#d4af37] text-xs font-bold">✓</span>
+                          <span className="text-[#d4af37] text-[8px]">#{boxNum}</span>
+                        </>
+                      )}
+                      {isAvailable && !isSelected && (
+                        <span className="text-sm font-medium text-[#6b6966]">{boxNum}</span>
+                      )}
+                      {isClaimed && !isSelected && !isWinner && (
+                        <>
+                          <span className="text-[10px] font-medium text-[#232842] leading-tight text-center px-0.5">
+                            {getDisplayName(square.user_name ?? null)}
+                          </span>
+                          <span className="text-[8px] text-[#9c9894]">#{boxNum}</span>
+                        </>
+                      )}
                     </motion.button>
                   );
                 })}
