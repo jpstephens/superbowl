@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
+import { cn } from '@/lib/utils';
 
 /**
  * GRID PAGE - Light Mode
@@ -306,76 +307,132 @@ export default function GridPage() {
             </div>
           </div>
 
-          {/* RIGHT: Selection Panel - Desktop */}
+          {/* RIGHT: Sidebar - Desktop */}
           <div className="hidden lg:block">
             <div className="sticky top-28 space-y-4">
-              {/* Selection Summary */}
-              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
-                <h3 className="font-bold text-xl mb-4 text-[#232842]">Your Selection</h3>
-
-                {selectedSquares.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                      </svg>
-                    </div>
-                    <p className="text-gray-500 text-base mb-1 font-medium">No squares selected</p>
-                    <p className="text-gray-400 text-sm">Tap squares on the grid to select them</p>
+              {/* When game is live: Show Quarter Winners */}
+              {isLive ? (
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+                    <h3 className="font-bold text-xl text-[#232842]">Quarter Winners</h3>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Selected squares grid */}
-                    <div className="flex flex-wrap gap-2">
-                      {selectedSquares.map((square) => {
-                        const boxNumber = square.row_number * 10 + square.col_number + 1;
-                        return (
-                          <motion.button
-                            key={square.id}
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            exit={{ scale: 0 }}
-                            onClick={() => handleRemoveSquare(square.id)}
-                            className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-base hover:bg-[#c49b2f] transition-colors group relative shadow-md"
-                            title="Click to remove"
-                          >
-                            <span className="group-hover:opacity-0 transition-opacity">
-                              #{boxNumber}
-                            </span>
-                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
-                              ×
-                            </span>
-                          </motion.button>
-                        );
-                      })}
-                    </div>
 
-                    {/* Pricing */}
-                    <div className="pt-4 border-t border-gray-200 space-y-2">
-                      <div className="flex justify-between text-base">
-                        <span className="text-gray-500 font-medium">
-                          {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
-                        </span>
-                        <span className="font-bold text-[#232842] text-xl">${selectionTotal}</span>
+                  <div className="space-y-3">
+                    {[
+                      { q: 'Q1', label: 'End of 1st', prize: prizes.q1, completed: (gameState?.quarter || 0) > 1 },
+                      { q: 'Q2', label: 'Halftime', prize: prizes.q2, completed: (gameState?.quarter || 0) > 2 },
+                      { q: 'Q3', label: 'End of 3rd', prize: prizes.q3, completed: (gameState?.quarter || 0) > 3 },
+                      { q: 'Q4', label: 'Final', prize: prizes.q4, completed: gameState?.is_final },
+                    ].map(({ q, label, prize, completed }) => (
+                      <div
+                        key={q}
+                        className={cn(
+                          'p-4 rounded-xl border-2 transition-all',
+                          completed
+                            ? 'bg-[#d4af37]/10 border-[#d4af37]'
+                            : 'bg-gray-50 border-gray-200'
+                        )}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className={cn(
+                              'font-bold',
+                              completed ? 'text-[#d4af37]' : 'text-gray-400'
+                            )}>
+                              {q}
+                            </span>
+                            <span className="text-sm text-gray-500">{label}</span>
+                          </div>
+                          <span className={cn(
+                            'font-bold',
+                            completed ? 'text-[#d4af37]' : 'text-gray-400'
+                          )}>
+                            ${prize}
+                          </span>
+                        </div>
+                        {completed ? (
+                          <div className="text-sm font-semibold text-[#232842]">
+                            Winner announced!
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-400">
+                            Pending...
+                          </div>
+                        )}
                       </div>
-                    </div>
-
-                    {/* CTA */}
-                    <Link
-                      href="/payment"
-                      onClick={() => {
-                        sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
-                      }}
-                      className="w-full flex items-center justify-center gap-2 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
-                    >
-                      Continue to Payment
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
+                    ))}
                   </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                /* Pre-game: Selection Panel */
+                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
+                  <h3 className="font-bold text-xl mb-4 text-[#232842]">Your Selection</h3>
+
+                  {selectedSquares.length === 0 ? (
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-500 text-base mb-1 font-medium">No squares selected</p>
+                      <p className="text-gray-400 text-sm">Tap squares on the grid to select them</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Selected squares grid */}
+                      <div className="flex flex-wrap gap-2">
+                        {selectedSquares.map((square) => {
+                          const boxNumber = square.row_number * 10 + square.col_number + 1;
+                          return (
+                            <motion.button
+                              key={square.id}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                              onClick={() => handleRemoveSquare(square.id)}
+                              className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-base hover:bg-[#c49b2f] transition-colors group relative shadow-md"
+                              title="Click to remove"
+                            >
+                              <span className="group-hover:opacity-0 transition-opacity">
+                                #{boxNumber}
+                              </span>
+                              <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
+                                ×
+                              </span>
+                            </motion.button>
+                          );
+                        })}
+                      </div>
+
+                      {/* Pricing */}
+                      <div className="pt-4 border-t border-gray-200 space-y-2">
+                        <div className="flex justify-between text-base">
+                          <span className="text-gray-500 font-medium">
+                            {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
+                          </span>
+                          <span className="font-bold text-[#232842] text-xl">${selectionTotal}</span>
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <Link
+                        href="/payment"
+                        onClick={() => {
+                          sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
+                        }}
+                        className="w-full flex items-center justify-center gap-2 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
+                      >
+                        Continue to Payment
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Scholarship reminder */}
               <div className="bg-[#d4af37]/10 border-2 border-[#d4af37]/20 rounded-xl p-4">
