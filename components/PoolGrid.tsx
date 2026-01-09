@@ -30,6 +30,7 @@ export default function PoolGrid({
   const [squares, setSquares] = useState<GridSquare[]>([]);
   const [loading, setLoading] = useState(true);
   const [tournamentLaunched, setTournamentLaunched] = useState(false);
+  const [hoveredSquare, setHoveredSquare] = useState<{ square: GridSquare; boxNum: number } | null>(null);
 
   useEffect(() => {
     loadGrid();
@@ -142,30 +143,32 @@ export default function PoolGrid({
   };
 
   return (
-    <div className="w-full">
-      {/* NFC Label */}
-      <div className="flex justify-center mb-1">
-        <span className="text-xs font-medium text-gray-400 tracking-wide">{nfcTeam}</span>
+    <div className="w-full relative">
+      {/* NFC Label - Top */}
+      <div className="flex justify-center mb-4">
+        <div className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
+          <span className="text-sm font-bold tracking-wide">{nfcTeam}</span>
+        </div>
       </div>
 
       <div className="flex">
-        {/* AFC Label */}
-        <div className="flex items-center justify-center w-6">
-          <span
-            className="text-xs font-medium text-gray-400 tracking-wide"
+        {/* AFC Label - Left */}
+        <div className="flex items-center justify-center w-12 mr-2">
+          <div
+            className="bg-red-600 text-white px-4 py-2 rounded-lg shadow-md"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
-            {afcTeam}
-          </span>
+            <span className="text-sm font-bold tracking-wide">{afcTeam}</span>
+          </div>
         </div>
 
         {/* Grid */}
         <div className="flex-1">
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-1 mb-1 ml-6">
+          <div className="grid grid-cols-10 gap-1 mb-1 ml-8">
             {numbers.map((col) => (
               <div key={`col-${col}`} className="aspect-square flex items-center justify-center">
-                <span className="text-xs font-semibold text-gray-400">
+                <span className="text-sm font-bold text-gray-500">
                   {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                 </span>
               </div>
@@ -176,8 +179,8 @@ export default function PoolGrid({
           {numbers.map((row) => (
             <div key={`row-${row}`} className="flex gap-1 mb-1">
               {/* Row Header */}
-              <div className="w-6 flex items-center justify-center">
-                <span className="text-xs font-semibold text-gray-400">
+              <div className="w-8 flex items-center justify-center">
+                <span className="text-sm font-bold text-gray-500">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </div>
@@ -194,11 +197,6 @@ export default function PoolGrid({
                   const isWinner = currentWinner?.id === square.id;
                   const boxNum = row * 10 + col + 1;
 
-                  // Build tooltip text
-                  const tooltipText = isClaimed
-                    ? `Box #${boxNum} — ${square.user_name || 'Unknown'}`
-                    : `Box #${boxNum} — Available ($${50})`;
-
                   return (
                     <motion.button
                       key={`cell-${row}-${col}`}
@@ -206,9 +204,10 @@ export default function PoolGrid({
                       disabled={!isAvailable || tournamentLaunched || disabled}
                       whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.08 } : {}}
                       whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
-                      title={tooltipText}
+                      onMouseEnter={() => setHoveredSquare({ square, boxNum })}
+                      onMouseLeave={() => setHoveredSquare(null)}
                       className={`
-                        aspect-square rounded-lg flex items-center justify-center text-xs font-semibold transition-all
+                        aspect-square rounded-lg flex items-center justify-center text-xs font-semibold transition-all relative
                         ${isAvailable && !disabled && 'bg-emerald-50 border border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer'}
                         ${isAvailable && disabled && 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'}
                         ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500'}
@@ -228,6 +227,26 @@ export default function PoolGrid({
           ))}
         </div>
       </div>
+
+      {/* Custom Tooltip */}
+      {hoveredSquare && (
+        <div className="fixed z-50 pointer-events-none" style={{
+          left: '50%',
+          bottom: '120px',
+          transform: 'translateX(-50%)'
+        }}>
+          <div className="bg-[#232842] text-white px-4 py-3 rounded-xl shadow-xl">
+            <div className="text-center">
+              <div className="text-lg font-bold text-[#d4af37]">Box #{hoveredSquare.boxNum}</div>
+              <div className="text-sm text-gray-300">
+                {hoveredSquare.square.status === 'available'
+                  ? 'Available — Click to select'
+                  : hoveredSquare.square.user_name || 'Claimed'}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Winner Banner */}
       {currentWinner && currentWinner.user_name && (

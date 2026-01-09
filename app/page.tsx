@@ -245,41 +245,72 @@ export default function GridPage() {
           />
         </div>
 
-        {/* Legend + Selection inline */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-6 text-sm text-gray-500">
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-emerald-100 border border-emerald-300" />
-              <span>Available</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-[#d4af37]" />
-              <span>Selected</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-4 h-4 rounded bg-gray-200 border border-gray-300" />
-              <span>Taken</span>
-            </div>
+        {/* Legend */}
+        <div className="flex justify-center gap-6 text-sm text-gray-500 mb-6">
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded bg-emerald-100 border border-emerald-300" />
+            <span>Available</span>
           </div>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded bg-[#d4af37]" />
+            <span>Selected</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-4 rounded bg-gray-200 border border-gray-300" />
+            <span>Taken</span>
+          </div>
+        </div>
 
-          {/* Selection summary - inline */}
-          {selectedSquares.length > 0 && (
+        {/* Cart - Always Visible */}
+        <div className="bg-[#232842] rounded-2xl p-5 mb-6">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500">
-                {selectedSquares.length} selected
-              </span>
-              <span className="text-lg font-bold text-[#232842]">
-                ${selectionTotal}
-              </span>
+              {/* Cart Icon */}
+              <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+
+              {/* Selection Info */}
+              <div>
+                <div className="text-white font-semibold">
+                  {selectedSquares.length === 0 ? (
+                    'No squares selected'
+                  ) : (
+                    `${selectedSquares.length} square${selectedSquares.length !== 1 ? 's' : ''} selected`
+                  )}
+                </div>
+                <div className="text-gray-400 text-sm">
+                  {selectedSquares.length === 0 ? (
+                    'Click on green squares to add them'
+                  ) : (
+                    selectedSquares.map(s => `#${s.row_number * 10 + s.col_number + 1}`).join(', ')
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Price + CTA */}
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <div className="text-2xl font-bold text-[#d4af37]">${selectionTotal}</div>
+                <div className="text-gray-400 text-sm">${squarePrice} each</div>
+              </div>
               <Link
                 href="/payment"
                 onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)))}
-                className="bg-[#d4af37] text-[#232842] px-5 py-2 rounded-lg font-semibold text-sm hover:bg-[#c49b2f] transition-colors"
+                className={`px-6 py-3 rounded-xl font-bold transition-colors ${
+                  selectedSquares.length > 0
+                    ? 'bg-[#d4af37] text-[#232842] hover:bg-[#c49b2f]'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
+                aria-disabled={selectedSquares.length === 0}
               >
-                Continue to Payment
+                Checkout
               </Link>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Prop Bets CTA */}
