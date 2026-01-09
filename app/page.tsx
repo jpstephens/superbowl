@@ -128,42 +128,75 @@ export default function GridPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Compact Header */}
-      <header className="bg-[#232842] py-3">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between">
-          {/* Logo + Title */}
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="MWMS" width={40} height={40} className="rounded-full" />
-            <div className="hidden sm:block">
-              <div className="text-white font-bold">Super Bowl Pool</div>
-              <div className="text-[#d4af37] text-xs">Michael Williams Memorial</div>
-            </div>
-          </Link>
-
-          {/* Center - Countdown + Stats */}
-          <div className="flex items-center gap-4 text-sm">
-            {countdown && (
-              <div className="hidden md:flex items-center gap-1 text-white">
-                <span className="text-gray-400">Kickoff:</span>
-                <span className="font-semibold">{countdown.days}d {countdown.hours}h {countdown.mins}m</span>
+      {/* Header */}
+      <header className="bg-[#232842]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex items-center justify-between">
+            {/* Logo + Title */}
+            <Link href="/" className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-white p-1 shadow-lg flex-shrink-0">
+                <Image src="/logo.png" alt="MWMS" width={72} height={72} className="rounded-full" />
               </div>
-            )}
-            <div className="hidden sm:block h-4 w-px bg-gray-600" />
-            <div className="flex items-center gap-3">
-              <span className="text-[#30d158] font-bold">{stats.available} left</span>
-              <span className="text-[#d4af37] font-bold">${squarePrice}/sq</span>
-            </div>
-          </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">Super Bowl Pool</h1>
+                <p className="text-base text-[#d4af37]">Michael Williams Memorial Scholarship</p>
+              </div>
+            </Link>
 
-          {/* Nav */}
-          <nav className="flex items-center gap-3">
-            <Link href="/props" className="text-sm bg-[#d4af37] text-[#232842] px-3 py-1 rounded-full font-semibold hover:bg-[#e5c04a] transition-colors">Place Prop Bets</Link>
-            {tournamentLaunched && (
-              <a href="/api/grid/pdf" target="_blank" className="text-sm text-gray-300 hover:text-white">PDF</a>
-            )}
-          </nav>
+            {/* Navigation */}
+            <nav className="flex items-center gap-4">
+              <Link href="/props" className="bg-[#d4af37] text-[#232842] px-4 py-2 rounded-full font-semibold hover:bg-[#e5c04a] transition-colors">
+                Place Prop Bets
+              </Link>
+              {tournamentLaunched && (
+                <a href="/api/grid/pdf" target="_blank" className="text-base text-gray-300 hover:text-white transition-colors font-medium">
+                  Download PDF
+                </a>
+              )}
+            </nav>
+          </div>
         </div>
       </header>
+
+      {/* Info Bar */}
+      <div className="bg-gray-100 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            {/* Countdown */}
+            {countdown && (
+              <div className="flex items-center gap-3">
+                <span className="text-gray-500 font-medium">Kickoff in</span>
+                <div className="flex items-center gap-2">
+                  <div className="bg-[#232842] text-white px-3 py-1.5 rounded-lg">
+                    <span className="text-xl font-bold">{countdown.days}</span>
+                    <span className="text-xs ml-1">days</span>
+                  </div>
+                  <div className="bg-[#232842] text-white px-3 py-1.5 rounded-lg">
+                    <span className="text-xl font-bold">{countdown.hours}</span>
+                    <span className="text-xs ml-1">hrs</span>
+                  </div>
+                  <div className="bg-[#232842] text-white px-3 py-1.5 rounded-lg">
+                    <span className="text-xl font-bold">{countdown.mins}</span>
+                    <span className="text-xs ml-1">min</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Stats */}
+            <div className="flex items-center gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#30d158]">{stats.available}</div>
+                <div className="text-xs text-gray-500">squares left</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#d4af37]">${squarePrice}</div>
+                <div className="text-xs text-gray-500">per square</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Pool Closed */}
       {!poolActive && (
