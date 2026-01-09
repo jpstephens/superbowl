@@ -196,7 +196,7 @@ export default function PoolGrid({
         {/* Grid */}
         <div className="flex-1 overflow-x-auto scrollbar-hide">
           <div style={{ minWidth: '400px' }}>
-            {/* Column Headers */}
+            {/* Column Headers - Only show after tournament launch */}
             <div className="flex mb-1">
               <div className="w-10 sm:w-12 h-8 sm:h-10" /> {/* Corner */}
               {numbers.map((num) => (
@@ -204,7 +204,7 @@ export default function PoolGrid({
                   key={`col-${num}`}
                   className="flex-1 h-8 sm:h-10 flex items-center justify-center text-gray-500 font-bold text-base"
                 >
-                  {tournamentLaunched ? colScoreMap.get(num) : num}
+                  {tournamentLaunched ? colScoreMap.get(num) : ''}
                 </div>
               ))}
             </div>
@@ -212,9 +212,9 @@ export default function PoolGrid({
             {/* Rows */}
             {numbers.map((rowNum) => (
               <div key={`row-${rowNum}`} className="flex mb-1">
-                {/* Row Header */}
+                {/* Row Header - Only show after tournament launch */}
                 <div className="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center text-gray-500 font-bold text-base">
-                  {tournamentLaunched ? rowScoreMap.get(rowNum) : rowNum}
+                  {tournamentLaunched ? rowScoreMap.get(rowNum) : ''}
                 </div>
 
                 {/* Cells */}
@@ -287,8 +287,17 @@ export default function PoolGrid({
                           </motion.span>
                         )}
 
-                        {/* Initials for claimed squares */}
-                        {isClaimed && !isSelected && !isWinner && square.user_name && (
+                        {/* Before tournament: Show square numbers 1-100 */}
+                        {!tournamentLaunched && !isSelected && !isWinner && (
+                          <span className={`text-xs sm:text-sm font-semibold ${
+                            isClaimed ? 'text-gray-400' : 'text-gray-500'
+                          }`}>
+                            {rowNum * 10 + colNum + 1}
+                          </span>
+                        )}
+
+                        {/* After tournament: Initials for claimed squares */}
+                        {tournamentLaunched && isClaimed && !isSelected && !isWinner && square.user_name && (
                           <span className="text-gray-500">
                             {square.user_name
                               .split(' ')

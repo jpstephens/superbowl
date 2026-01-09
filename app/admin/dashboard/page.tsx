@@ -311,6 +311,14 @@ export default function AdminDashboardPage() {
 
           {/* Quick Links */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Link href="/admin/squares">
+              <Card className="p-6 bg-gray-800 border-gray-700 hover:border-amber-600 transition-all cursor-pointer group">
+                <Grid3x3 className="w-8 h-8 text-amber-400 mb-3 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-bold text-white mb-1">Square Management</h3>
+                <p className="text-sm text-gray-400">Edit ownership & view contact info</p>
+              </Card>
+            </Link>
+
             <Link href="/admin/live">
               <Card className="p-6 bg-gray-800 border-gray-700 hover:border-red-600 transition-all cursor-pointer group">
                 <Rocket className="w-8 h-8 text-red-400 mb-3 group-hover:scale-110 transition-transform" />

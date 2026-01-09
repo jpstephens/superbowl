@@ -6,6 +6,7 @@ import type { GameState } from '@/lib/supabase/types';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import PrizeBreakdown from '@/components/PrizeBreakdown';
 
 /**
  * HOMEPAGE
@@ -412,6 +413,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ===== PRIZE BREAKDOWN ===== */}
+      <PrizeBreakdown />
 
       {/* ===== THE CAUSE ===== */}
       <section className="py-24 bg-gray-50">
