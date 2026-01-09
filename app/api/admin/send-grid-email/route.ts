@@ -2,10 +2,15 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST() {
   try {
+    // Initialize Resend inside handler to avoid build-time errors
+    const apiKey = process.env.RESEND_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 });
+    }
+    const resend = new Resend(apiKey);
+
     const supabase = await createClient();
 
     // Verify admin user

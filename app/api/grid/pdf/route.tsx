@@ -324,7 +324,7 @@ export async function GET() {
     const pdfDoc = createGridPDF(processedSquares, rowScores, colScores, tournamentLaunched);
     const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
 
-    return new NextResponse(pdfBuffer, {
+    return new Response(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="super-bowl-pool-grid.pdf"',
