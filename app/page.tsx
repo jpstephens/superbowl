@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import PoolGrid from '@/components/PoolGrid';
 import type { GridSquare, GameState } from '@/lib/supabase/types';
-import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
@@ -104,10 +103,6 @@ export default function GridPage() {
     });
   };
 
-  const handleRemoveSquare = (squareId: string) => {
-    setSelectedSquares(prev => prev.filter(s => s.id !== squareId));
-  };
-
   const handleScoreUpdate = (data: any) => {
     setGameState({
       ...gameState,
@@ -135,12 +130,12 @@ export default function GridPage() {
           <div className="h-16 flex items-center justify-between">
             {/* Logo + Title */}
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white p-0.5 shadow flex-shrink-0">
-                <Image src="/logo.png" alt="MWMS" width={36} height={36} className="rounded-full" />
+              <div className="w-12 h-12 rounded-full bg-white p-0.5 shadow flex-shrink-0">
+                <Image src="/logo.png" alt="MWMS" width={44} height={44} className="rounded-full" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-lg font-bold text-white leading-tight">Super Bowl Pool</h1>
-                <p className="text-xs text-[#d4af37]">Michael Williams Memorial Scholarship</p>
+                <h1 className="text-xl font-bold text-white leading-tight">Super Bowl Pool</h1>
+                <p className="text-sm text-[#d4af37]">Michael Williams Memorial Scholarship</p>
               </div>
             </Link>
 
@@ -233,7 +228,7 @@ export default function GridPage() {
         </div>
 
         {/* The Grid */}
-        <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 sm:p-6 mb-6">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-200 p-4 sm:p-6 mb-4">
           <PoolGrid
             onSquareSelect={handleSquareSelect}
             selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
@@ -250,19 +245,56 @@ export default function GridPage() {
           />
         </div>
 
-        {/* Legend */}
-        <div className="flex justify-center gap-8 text-sm text-gray-500 mb-8">
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-emerald-100 border border-emerald-300" />
-            <span>Available</span>
+        {/* Legend + Selection inline */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-6 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded bg-emerald-100 border border-emerald-300" />
+              <span>Available</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded bg-[#d4af37]" />
+              <span>Selected</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded bg-gray-200 border border-gray-300" />
+              <span>Taken</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-[#d4af37]" />
-            <span>Selected</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="w-5 h-5 rounded bg-gray-200 border border-gray-300" />
-            <span>Taken</span>
+
+          {/* Selection summary - inline */}
+          {selectedSquares.length > 0 && (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500">
+                {selectedSquares.length} selected
+              </span>
+              <span className="text-lg font-bold text-[#232842]">
+                ${selectionTotal}
+              </span>
+              <Link
+                href="/payment"
+                onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)))}
+                className="bg-[#d4af37] text-[#232842] px-5 py-2 rounded-lg font-semibold text-sm hover:bg-[#c49b2f] transition-colors"
+              >
+                Continue to Payment
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Prop Bets CTA */}
+        <div className="bg-[#232842] rounded-2xl p-6 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h3 className="text-white font-bold text-lg">Want more action?</h3>
+              <p className="text-gray-400 text-sm">Place prop bets on game events for extra chances to win</p>
+            </div>
+            <Link
+              href="/props"
+              className="bg-white text-[#232842] px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap"
+            >
+              View Prop Bets
+            </Link>
           </div>
         </div>
 
@@ -271,61 +303,6 @@ export default function GridPage() {
           100% of proceeds benefit the <span className="text-[#232842] font-medium">Michael Williams Memorial Scholarship</span>
         </p>
       </main>
-
-      {/* Selection Bar - Fixed Bottom */}
-      <AnimatePresence>
-        {selectedSquares.length > 0 && (
-          <motion.div
-            initial={{ y: 100, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 100, opacity: 0 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
-          >
-            <div className="bg-[#232842] text-white rounded-2xl px-4 py-3 flex items-center gap-4 shadow-2xl shadow-black/30">
-              {/* Selected squares preview */}
-              <div className="flex items-center gap-2">
-                {selectedSquares.slice(0, 5).map((square) => {
-                  const boxNum = square.row_number * 10 + square.col_number + 1;
-                  return (
-                    <motion.button
-                      key={square.id}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      onClick={() => handleRemoveSquare(square.id)}
-                      className="w-9 h-9 bg-[#d4af37] rounded-lg text-xs font-bold text-[#232842] flex items-center justify-center hover:bg-[#c49b2f] transition-colors"
-                    >
-                      {boxNum}
-                    </motion.button>
-                  );
-                })}
-                {selectedSquares.length > 5 && (
-                  <span className="text-gray-400 text-sm">+{selectedSquares.length - 5}</span>
-                )}
-              </div>
-
-              <div className="h-8 w-px bg-white/20" />
-
-              {/* Total */}
-              <div className="text-sm">
-                <span className="text-gray-400">{selectedSquares.length} squares</span>
-                <span className="font-bold text-[#d4af37] ml-2 text-lg">${selectionTotal}</span>
-              </div>
-
-              <div className="h-8 w-px bg-white/20" />
-
-              {/* CTA */}
-              <Link
-                href="/payment"
-                onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)))}
-                className="bg-[#d4af37] text-[#232842] px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#c49b2f] transition-colors"
-              >
-                Continue
-              </Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
