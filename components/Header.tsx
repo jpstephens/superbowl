@@ -389,15 +389,6 @@ export default function Header() {
         )}
       </div>
 
-      {/* Live game banner */}
-      {isGameLive && (
-        <div className="bg-red-600 text-white text-center py-1 text-xs font-bold animate-pulse">
-          <Link href="/pool" className="flex items-center justify-center gap-2">
-            <Radio className="h-3 w-3" />
-            GAME IS LIVE - Watch Now
-          </Link>
-        </div>
-      )}
     </header>
   );
 }
