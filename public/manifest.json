@@ -1,0 +1,47 @@
+{
+  "name": "Super Bowl Squares & Props",
+  "short_name": "SB Squares",
+  "description": "Super Bowl party command center - squares pool, prop bets, and live game tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#CDA33B",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["sports", "entertainment", "games"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "View Grid",
+      "short_name": "Grid",
+      "url": "/",
+      "description": "View the squares grid"
+    },
+    {
+      "name": "Prop Bets",
+      "short_name": "Props",
+      "url": "/props",
+      "description": "Make your prop bet picks"
+    },
+    {
+      "name": "Watch Mode",
+      "short_name": "Watch",
+      "url": "/watch",
+      "description": "Game day live view"
+    }
+  ]
+}
+

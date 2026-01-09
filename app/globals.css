@@ -1,26 +1,726 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================================
+   SUPER BOWL POOL - LIGHT MODE DESIGN SYSTEM
+
+   Design Philosophy (Apple/Claude/OpenAI inspired):
+   - Clean, bright, professional light mode
+   - Clear visual hierarchy through subtle shadows
+   - Excellent readability with proper contrast
+   - Gold accent for scholarship branding
+   - Navy for headings and important text
+   ============================================================================ */
 
 @theme inline {
+  --font-sans: var(--font-sans);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  /* ========== SPACING SYSTEM ========== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* ========== LIGHT MODE COLOR PALETTE ========== */
+  /* Inspired by Apple, Claude, OpenAI light modes */
+
+  /* Base: Clean white backgrounds */
+  --background: #ffffff;
+  --background-elevated: #f9fafb;
+  --background-hover: #f3f4f6;
+  --foreground: #232842;
+
+  /* Cards: White with subtle shadow */
+  --card: #ffffff;
+  --card-foreground: #232842;
+  --card-hover: #f9fafb;
+  --card-border: #e5e7eb;
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #232842;
+
+  /* Primary: Championship Gold (scholarship brand) */
+  --primary: #d4af37;
+  --primary-light: #e5c65c;
+  --primary-dark: #b8960c;
+  --primary-foreground: #ffffff;
+  --primary-hover: #c49b2f;
+  --primary-glow: rgba(212, 175, 55, 0.25);
+  --primary-glow-strong: rgba(212, 175, 55, 0.4);
+
+  /* Secondary: Navy (for headings and important elements) */
+  --secondary: #232842;
+  --secondary-light: #3a4063;
+  --secondary-foreground: #ffffff;
+
+  /* Text hierarchy - excellent contrast */
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+
+  /* Accent: Success Green */
+  --accent: #30d158;
+  --accent-dark: #248a3d;
+  --accent-foreground: #ffffff;
+  --accent-glow: rgba(48, 209, 88, 0.2);
+
+  /* Status colors */
+  --live: #ef4444;
+  --live-glow: rgba(239, 68, 68, 0.25);
+  --info: #3b82f6;
+  --info-glow: rgba(59, 130, 246, 0.2);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --destructive: #ef4444;
+
+  /* Borders & inputs */
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --input: #f9fafb;
+  --ring: var(--primary);
+
+  /* ========== GRID SPECIFIC COLORS ========== */
+  --grid-available: rgba(48, 209, 88, 0.15);
+  --grid-available-hover: rgba(48, 209, 88, 0.25);
+  --grid-available-border: rgba(48, 209, 88, 0.5);
+  --grid-selected: var(--primary);
+  --grid-selected-glow: var(--primary-glow);
+  --grid-claimed: #f3f4f6;
+  --grid-winner: var(--primary);
+  --grid-winner-glow: var(--primary-glow-strong);
+  --grid-user: rgba(59, 130, 246, 0.15);
+  --grid-user-border: rgba(59, 130, 246, 0.5);
+
+  /* ========== SHADOWS (subtle, elegant) ========== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow-gold: 0 0 24px rgba(212, 175, 55, 0.3);
+  --shadow-glow-green: 0 0 20px rgba(48, 209, 88, 0.2);
+  --shadow-glow-red: 0 0 20px rgba(239, 68, 68, 0.2);
+  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.2);
+
+  /* ========== GRADIENTS ========== */
+  --gradient-page: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+  --gradient-card: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  --gradient-gold: linear-gradient(135deg, #d4af37 0%, #e5c65c 50%, #d4af37 100%);
+  --gradient-gold-text: linear-gradient(135deg, #d4af37 0%, #b8960c 100%);
+  --gradient-hero: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
+
+  /* Legacy */
+  --radius: 12px;
+}
+
+/* ============================================================================
+   TYPOGRAPHY - Clean, Professional, Readable
+   ============================================================================ */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+    font-size: 16px;
+    font-weight: 400;
+    background: var(--background);
+    min-height: 100vh;
+    color: var(--foreground);
+  }
+
+  /* Premium Typography Scale */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--foreground);
+  }
+
+  /* Display - Hero Headlines */
+  .text-display {
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+  }
+
+  h2 {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  h3 {
+    font-size: clamp(20px, 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+  }
+
+  h4 {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  h5 {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  p {
+    margin-bottom: 1em;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  /* Links */
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  a:hover {
+    color: var(--primary-dark);
+  }
+
+  /* Focus states */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
   }
 }
 
-body {
-  background: var(--background);
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+@layer utilities {
+
+  /* ========== GLASS MORPHISM (for overlays) ========== */
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  /* ========== PREMIUM CARDS ========== */
+  .card-premium {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+  }
+
+  .card-premium:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  .card-glow-gold {
+    box-shadow: var(--shadow-lg), var(--shadow-glow-gold);
+  }
+
+  .card-glow-green {
+    box-shadow: var(--shadow-lg), var(--shadow-glow-green);
+  }
+
+  /* ========== GOLD TEXT EFFECTS ========== */
+  .text-gold {
+    color: var(--primary);
+  }
+
+  .text-gold-gradient {
+    background: var(--gradient-gold-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ========== GLOWING BORDERS ========== */
+  .border-glow-gold {
+    border: 2px solid var(--primary);
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  .border-glow-green {
+    border: 2px solid var(--accent);
+    box-shadow: var(--shadow-glow-green);
+  }
+
+  /* ========== GRID CELL STATES ========== */
+  .grid-cell {
+    position: relative;
+    transition: all 0.2s ease;
+    border-radius: var(--radius-sm);
+  }
+
+  .grid-cell-available {
+    background: var(--grid-available);
+    border: 2px solid var(--grid-available-border);
+    cursor: pointer;
+  }
+
+  .grid-cell-available:hover {
+    background: var(--grid-available-hover);
+    transform: scale(1.05);
+    box-shadow: var(--shadow-glow-green);
+    z-index: 10;
+  }
+
+  .grid-cell-selected {
+    background: var(--grid-selected);
+    border: 2px solid var(--primary-dark);
+    box-shadow: var(--shadow-glow-gold);
+    transform: scale(1.02);
+    z-index: 5;
+  }
+
+  .grid-cell-claimed {
+    background: var(--grid-claimed);
+    border: 2px solid var(--border);
+  }
+
+  .grid-cell-winner {
+    background: var(--grid-winner);
+    border: 2px solid var(--primary-dark);
+    box-shadow: var(--shadow-glow-gold);
+    animation: winner-pulse 2s ease-in-out infinite;
+  }
+
+  .grid-cell-user {
+    background: var(--grid-user);
+    border: 2px solid var(--grid-user-border);
+  }
+
+  /* ========== LIVE INDICATOR ========== */
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--live);
+    border-radius: 50%;
+    animation: live-pulse 1.5s ease-in-out infinite;
+  }
+
+  .live-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: var(--live);
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: white;
+  }
+
+  /* ========== SCORE DISPLAY ========== */
+  .score-display {
+    font-size: clamp(48px, 12vw, 120px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+
+  .score-team {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+  }
+
+  /* ========== COUNTDOWN ========== */
+  .countdown-number {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 800;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+
+  .countdown-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted-foreground);
+  }
+
+  /* ========== STAT CARDS ========== */
+  .stat-value {
+    font-size: clamp(24px, 4vw, 40px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--foreground);
+  }
+
+  .stat-value-gold {
+    color: var(--primary);
+  }
+
+  .stat-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground);
+  }
+
+  /* ========== ANIMATIONS ========== */
+  @keyframes live-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.95);
+    }
+  }
+
+  @keyframes winner-pulse {
+    0%, 100% {
+      box-shadow: var(--shadow-glow-gold);
+    }
+    50% {
+      box-shadow: var(--shadow-glow-gold), 0 0 40px rgba(212, 175, 55, 0.4);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* ========== SCROLLBAR ========== */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+  }
+
+  /* ========== RESPONSIVE PADDING ========== */
+  .section-padding {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  @media (min-width: 640px) {
+    .section-padding {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding-left: 48px;
+      padding-right: 48px;
+    }
+  }
+}
+
+/* ============================================================================
+   BUTTON STYLES
+   ============================================================================ */
+
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-gold:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg), var(--shadow-glow-gold);
+}
+
+.btn-gold:active {
+  transform: translateY(0);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--foreground);
+  font-weight: 600;
+  font-size: 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-ghost:hover {
+  background: var(--muted);
+}
+
+/* Legacy support */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--secondary);
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-light);
+}
+
+/* ============================================================================
+   FORM ELEMENTS
+   ============================================================================ */
+
+input, textarea, select {
+  font-size: 16px;
+  font-weight: 400;
+  background: var(--input);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  color: var(--foreground);
+  transition: all 0.2s ease;
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+  background: white;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ============================================================================
+   SAFE AREA INSETS (PWA/Mobile)
+   ============================================================================ */
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* ============================================================================
+   REDUCED MOTION
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
