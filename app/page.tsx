@@ -269,7 +269,7 @@ export default function Home() {
                   {/* Prize + Stats Row */}
                   <div className="flex items-center gap-6 flex-wrap">
                     <div className="flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-xl">
-                      <span className="text-[#d4af37] font-black text-xl">$5,000</span>
+                      <span className="text-[#d4af37] font-black text-xl">$2,500</span>
                       <span className="text-gray-400 text-sm">in prizes</span>
                     </div>
                     {!tournamentLaunched && (
