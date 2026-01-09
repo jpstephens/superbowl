@@ -8,17 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
-import { cn } from '@/lib/utils';
 
-/**
- * GRID PAGE - Light Mode
- *
- * Design Intent:
- * - Clean, bright, professional
- * - The grid IS the visual focus
- * - Selection should feel tactile and satisfying
- * - Clear visual hierarchy
- */
 export default function GridPage() {
   const [selectedSquares, setSelectedSquares] = useState<GridSquare[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
@@ -27,12 +17,9 @@ export default function GridPage() {
   const [poolActive, setPoolActive] = useState<boolean>(true);
   const [squarePrice, setSquarePrice] = useState<number>(50);
   const [tournamentLaunched, setTournamentLaunched] = useState<boolean>(false);
-  // Hardcoded prizes
   const prizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
   const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
-  const [showInfo, setShowInfo] = useState(false);
 
-  // Super Bowl LX - February 8, 2026
   const GAME_DATE = new Date('2026-02-08T18:30:00-05:00');
 
   useEffect(() => {
@@ -42,7 +29,6 @@ export default function GridPage() {
     const timer = setInterval(() => {
       const now = new Date();
       const diff = GAME_DATE.getTime() - now.getTime();
-
       if (diff > 0) {
         setCountdown({
           days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -93,11 +79,7 @@ export default function GridPage() {
         .select('status');
 
       const sold = allSquares?.filter(s => s.status === 'paid' || s.status === 'confirmed').length || 0;
-
-      setStats({
-        sold,
-        available: 100 - sold
-      });
+      setStats({ sold, available: 100 - sold });
     } catch (error) {
       console.error('Error loading data:', error);
     }
@@ -105,17 +87,10 @@ export default function GridPage() {
 
   const setupRealtime = () => {
     const supabase = createClient();
-
     const channel = supabase
       .channel('grid_page_updates')
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'grid_squares' },
-        () => loadData()
-      )
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'settings' },
-        () => loadData()
-      )
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'grid_squares' }, () => loadData())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => loadData())
       .subscribe();
 
     return () => supabase.removeChannel(channel);
@@ -123,12 +98,9 @@ export default function GridPage() {
 
   const handleSquareSelect = (square: GridSquare) => {
     if (!poolActive) return;
-
     setSelectedSquares(prev => {
       const isSelected = prev.some(s => s.id === square.id);
-      return isSelected
-        ? prev.filter(s => s.id !== square.id)
-        : [...prev, square];
+      return isSelected ? prev.filter(s => s.id !== square.id) : [...prev, square];
     });
   };
 
@@ -151,370 +123,190 @@ export default function GridPage() {
     } as GameState);
   };
 
-  const totalPrizePool = useMemo(() => prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4, [prizes]);
+  const totalPrizePool = useMemo(() => prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4, []);
   const selectionTotal = useMemo(() => selectedSquares.length * squarePrice, [selectedSquares.length, squarePrice]);
   const isLive = gameState?.is_live || false;
 
   return (
-    <div className="min-h-screen bg-white text-[#232842]">
-
-      {/* ===== HEADER ===== */}
-      <header className="sticky top-0 z-50 bg-[#232842]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="h-16 flex items-center justify-between">
-            {/* Left: Logo + Title */}
+    <div className="min-h-screen bg-[#fafafa]">
+      {/* Minimal Header */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="h-14 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white p-0.5 shadow-sm flex-shrink-0">
-                <Image src="/logo.png" alt="MWMS" width={36} height={36} className="rounded-full" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-white leading-tight">Super Bowl Pool</h1>
-                <p className="text-xs text-[#d4af37]">Michael Williams Memorial</p>
-              </div>
+              <Image src="/logo.png" alt="MWMS" width={32} height={32} className="rounded-full" />
+              <span className="font-semibold text-[#1d1d1f]">Super Bowl Pool</span>
             </Link>
 
-            {/* Center: Countdown */}
-            {countdown && (
-              <div className="hidden md:flex items-center gap-3 text-center">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-white">{countdown.days}</span>
-                  <span className="text-xs text-gray-400 uppercase">days</span>
-                </div>
-                <span className="text-gray-500">:</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-white">{countdown.hours}</span>
-                  <span className="text-xs text-gray-400 uppercase">hrs</span>
-                </div>
-                <span className="text-gray-500">:</span>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-black text-white">{countdown.mins}</span>
-                  <span className="text-xs text-gray-400 uppercase">min</span>
-                </div>
-              </div>
-            )}
-
-            {/* Right: Nav + Stats */}
             <div className="flex items-center gap-6">
-              <nav className="hidden sm:flex items-center gap-4">
-                <Link href="/props" className="text-sm text-gray-300 hover:text-white transition-colors">
-                  Prop Bets
+              {countdown && (
+                <div className="hidden sm:flex items-center gap-1 text-sm text-[#86868b]">
+                  <span className="font-medium text-[#1d1d1f]">{countdown.days}d</span>
+                  <span className="font-medium text-[#1d1d1f]">{countdown.hours}h</span>
+                  <span className="font-medium text-[#1d1d1f]">{countdown.mins}m</span>
+                  <span className="ml-1">until kickoff</span>
+                </div>
+              )}
+
+              <nav className="flex items-center gap-4">
+                <Link href="/props" className="text-sm text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                  Props
                 </Link>
                 {tournamentLaunched && (
-                  <a
-                    href="/api/grid/pdf"
-                    target="_blank"
-                    className="text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    Download PDF
+                  <a href="/api/grid/pdf" target="_blank" className="text-sm text-[#86868b] hover:text-[#1d1d1f] transition-colors">
+                    PDF
                   </a>
                 )}
               </nav>
-              <div className="flex items-center gap-1 bg-white/10 rounded-lg px-3 py-1.5">
-                <span className="text-xl font-bold text-[#30d158]">{stats.available}</span>
-                <span className="text-xs text-gray-400">left</span>
-                <span className="text-gray-500 mx-2">·</span>
-                <span className="text-xl font-bold text-white">${squarePrice}</span>
-                <span className="text-xs text-gray-400">each</span>
+
+              <div className="flex items-center gap-2 text-sm">
+                <span className="font-semibold text-[#1d1d1f]">{stats.available}</span>
+                <span className="text-[#86868b]">left</span>
+                <span className="text-[#d1d1d6]">·</span>
+                <span className="font-semibold text-[#1d1d1f]">${squarePrice}</span>
+                <span className="text-[#86868b]">each</span>
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-
-        {/* Pool Closed Banner */}
+      <main className="max-w-5xl mx-auto px-6 py-8">
+        {/* Pool Closed */}
         {!poolActive && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-              <div>
-                <span className="font-bold text-red-600 text-lg">Pool Closed</span>
-                <span className="text-gray-600 ml-2 text-base">Not accepting purchases at this time</span>
-              </div>
-            </div>
-          </motion.div>
+          <div className="mb-6 px-4 py-3 bg-red-50 rounded-xl text-center">
+            <span className="text-red-600 font-medium">Pool closed — not accepting purchases</span>
+          </div>
         )}
 
-        {/* Live Score Banner - Only show when game is live */}
+        {/* Live Score */}
         {isLive && (
-          <div className="mb-6">
-            <LiveScoreBanner
-              onScoreUpdate={handleScoreUpdate}
-              refreshInterval={10000}
-              showDetails={true}
-            />
+          <div className="mb-8">
+            <LiveScoreBanner onScoreUpdate={handleScoreUpdate} refreshInterval={10000} showDetails={true} />
           </div>
         )}
 
-        {/* Main Layout */}
-        <div className="grid lg:grid-cols-[1fr_360px] gap-6">
+        {/* Hero Section */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold text-[#1d1d1f] tracking-tight mb-2">
+            Pick Your Squares
+          </h1>
+          <p className="text-[#86868b] text-lg">
+            Win up to <span className="font-semibold text-[#1d1d1f]">${totalPrizePool.toLocaleString()}</span> in prizes
+          </p>
+        </div>
 
-          {/* LEFT: The Grid */}
-          <div className="space-y-4">
-            {/* Prize Info Bar - Always visible */}
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-md">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-[#d4af37]/10 rounded-lg flex items-center justify-center">
-                    <svg className="w-6 h-6 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg text-[#232842]">Total Prize Pool</div>
-                    <div className="text-sm text-gray-500">Win at each quarter end</div>
-                  </div>
-                </div>
-                <span className="text-3xl font-black text-[#d4af37]">${totalPrizePool.toLocaleString()}</span>
-              </div>
-
-              {/* Quarter prizes */}
-              <div className="grid grid-cols-4 gap-3">
-                {[
-                  { q: 'Q1', prize: prizes.q1 },
-                  { q: 'Q2', prize: prizes.q2 },
-                  { q: 'Q3', prize: prizes.q3 },
-                  { q: 'Q4', prize: prizes.q4 },
-                ].map(({ q, prize }) => (
-                  <div key={q} className="text-center p-3 bg-gray-50 rounded-xl border border-gray-200">
-                    <div className="text-sm text-gray-500 font-medium mb-1">{q}</div>
-                    <div className="font-bold text-xl text-[#d4af37]">${prize}</div>
-                  </div>
-                ))}
-              </div>
+        {/* Prize Pills */}
+        <div className="flex justify-center gap-3 mb-8">
+          {[
+            { label: 'Q1', amount: prizes.q1 },
+            { label: 'Q2', amount: prizes.q2 },
+            { label: 'Q3', amount: prizes.q3 },
+            { label: 'Q4', amount: prizes.q4, highlight: true },
+          ].map(({ label, amount, highlight }) => (
+            <div
+              key={label}
+              className={`px-4 py-2 rounded-full text-sm font-medium ${
+                highlight
+                  ? 'bg-[#1d1d1f] text-white'
+                  : 'bg-white text-[#1d1d1f] border border-black/10'
+              }`}
+            >
+              {label} <span className={highlight ? 'text-white/80' : 'text-[#86868b]'}>${amount}</span>
             </div>
+          ))}
+        </div>
 
-            {/* The Grid */}
-            <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 shadow-md">
-              <PoolGrid
-                onSquareSelect={handleSquareSelect}
-                selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
-                userId={userId}
-                disabled={!poolActive}
-                gameScore={gameState ? {
-                  afcScore: gameState.afc_score,
-                  nfcScore: gameState.nfc_score,
-                  afcTeam: gameState.afc_team,
-                  nfcTeam: gameState.nfc_team,
-                  quarter: gameState.quarter,
-                  isLive: gameState.is_live,
-                } : null}
-              />
+        {/* The Grid */}
+        <div className="bg-white rounded-2xl shadow-sm border border-black/5 p-6 mb-6">
+          <PoolGrid
+            onSquareSelect={handleSquareSelect}
+            selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
+            userId={userId}
+            disabled={!poolActive}
+            gameScore={gameState ? {
+              afcScore: gameState.afc_score,
+              nfcScore: gameState.nfc_score,
+              afcTeam: gameState.afc_team,
+              nfcTeam: gameState.nfc_team,
+              quarter: gameState.quarter,
+              isLive: gameState.is_live,
+            } : null}
+          />
+        </div>
 
-              {/* Legend */}
-              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-[#30d158]/20 border-2 border-[#30d158]/50 rounded" />
-                  <span className="text-gray-600 font-medium">Available</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-[#d4af37] rounded" />
-                  <span className="text-gray-600 font-medium">Selected</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 bg-gray-200 border-2 border-gray-300 rounded" />
-                  <span className="text-gray-600 font-medium">Taken</span>
-                </div>
-              </div>
-            </div>
+        {/* How it works - Minimal */}
+        <div className="flex justify-center gap-8 text-sm text-[#86868b] mb-8">
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded bg-[#34c759]/20 border border-[#34c759]/30" />
+            <span>Available</span>
           </div>
-
-          {/* RIGHT: Sidebar - Desktop */}
-          <div className="hidden lg:block">
-            <div className="sticky top-28 space-y-4">
-              {/* When game is live: Show Quarter Winners */}
-              {isLive ? (
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                    <h3 className="font-bold text-xl text-[#232842]">Quarter Winners</h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    {[
-                      { q: 'Q1', label: 'End of 1st', prize: prizes.q1, completed: (gameState?.quarter || 0) > 1 },
-                      { q: 'Q2', label: 'Halftime', prize: prizes.q2, completed: (gameState?.quarter || 0) > 2 },
-                      { q: 'Q3', label: 'End of 3rd', prize: prizes.q3, completed: (gameState?.quarter || 0) > 3 },
-                      { q: 'Q4', label: 'Final', prize: prizes.q4, completed: gameState?.is_final },
-                    ].map(({ q, label, prize, completed }) => (
-                      <div
-                        key={q}
-                        className={cn(
-                          'p-4 rounded-xl border-2 transition-all',
-                          completed
-                            ? 'bg-[#d4af37]/10 border-[#d4af37]'
-                            : 'bg-gray-50 border-gray-200'
-                        )}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              'font-bold',
-                              completed ? 'text-[#d4af37]' : 'text-gray-400'
-                            )}>
-                              {q}
-                            </span>
-                            <span className="text-sm text-gray-500">{label}</span>
-                          </div>
-                          <span className={cn(
-                            'font-bold',
-                            completed ? 'text-[#d4af37]' : 'text-gray-400'
-                          )}>
-                            ${prize}
-                          </span>
-                        </div>
-                        {completed ? (
-                          <div className="text-sm font-semibold text-[#232842]">
-                            Winner announced!
-                          </div>
-                        ) : (
-                          <div className="text-sm text-gray-400">
-                            Pending...
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                /* Pre-game: Selection Panel */
-                <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
-                  <h3 className="font-bold text-xl mb-4 text-[#232842]">Your Selection</h3>
-
-                  {selectedSquares.length === 0 ? (
-                    <div className="text-center py-8">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
-                        </svg>
-                      </div>
-                      <p className="text-gray-500 text-base mb-1 font-medium">No squares selected</p>
-                      <p className="text-gray-400 text-sm">Tap squares on the grid to select them</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {/* Selected squares grid */}
-                      <div className="flex flex-wrap gap-2">
-                        {selectedSquares.map((square) => {
-                          const boxNumber = square.row_number * 10 + square.col_number + 1;
-                          return (
-                            <motion.button
-                              key={square.id}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              exit={{ scale: 0 }}
-                              onClick={() => handleRemoveSquare(square.id)}
-                              className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-base hover:bg-[#c49b2f] transition-colors group relative shadow-md"
-                              title="Click to remove"
-                            >
-                              <span className="group-hover:opacity-0 transition-opacity">
-                                #{boxNumber}
-                              </span>
-                              <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
-                                ×
-                              </span>
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-
-                      {/* Pricing */}
-                      <div className="pt-4 border-t border-gray-200 space-y-2">
-                        <div className="flex justify-between text-base">
-                          <span className="text-gray-500 font-medium">
-                            {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
-                          </span>
-                          <span className="font-bold text-[#232842] text-xl">${selectionTotal}</span>
-                        </div>
-                      </div>
-
-                      {/* CTA */}
-                      <Link
-                        href="/payment"
-                        onClick={() => {
-                          sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
-                        }}
-                        className="w-full flex items-center justify-center gap-2 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
-                      >
-                        Continue to Payment
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Scholarship reminder */}
-              <div className="bg-[#d4af37]/10 border-2 border-[#d4af37]/20 rounded-xl p-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-[#d4af37]/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="font-bold text-[#232842] text-base">Supporting a Good Cause</div>
-                    <div className="text-sm text-gray-600 mt-1">
-                      100% of proceeds support the Michael Williams Memorial Scholarship
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded bg-[#ff9500]" />
+            <span>Selected</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 rounded bg-[#e5e5ea]" />
+            <span>Taken</span>
           </div>
         </div>
+
+        {/* Charity Note */}
+        <p className="text-center text-sm text-[#86868b]">
+          100% of proceeds benefit the <span className="text-[#1d1d1f]">Michael Williams Memorial Scholarship</span>
+        </p>
       </main>
 
-      {/* Mobile Checkout - Fixed Bottom */}
+      {/* Selection Bar - Fixed Bottom */}
       <AnimatePresence>
         {selectedSquares.length > 0 && (
           <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t-2 border-gray-200 pb-safe z-40 shadow-2xl"
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 400 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
           >
-            <div className="px-4 py-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <div className="text-base text-gray-500 font-medium">
-                    {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''}
-                  </div>
-                  <div className="text-3xl font-black text-[#232842]">${selectionTotal}</div>
-                </div>
-                <Link
-                  href="/payment"
-                  onClick={() => {
-                    sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
-                  }}
-                  className="px-8 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
-                >
-                  Continue
-                </Link>
-              </div>
-
-              {/* Selected preview */}
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-                {selectedSquares.map((square) => {
-                  const boxNumber = square.row_number * 10 + square.col_number + 1;
+            <div className="bg-[#1d1d1f] text-white rounded-full px-3 py-2 flex items-center gap-3 shadow-2xl shadow-black/20">
+              {/* Selected squares preview */}
+              <div className="flex items-center gap-1.5 pl-2">
+                {selectedSquares.slice(0, 5).map((square) => {
+                  const boxNum = square.row_number * 10 + square.col_number + 1;
                   return (
-                    <div
+                    <motion.button
                       key={square.id}
-                      className="flex-shrink-0 w-10 h-10 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-md"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      onClick={() => handleRemoveSquare(square.id)}
+                      className="w-8 h-8 bg-[#ff9500] rounded-full text-xs font-semibold flex items-center justify-center hover:bg-[#ff9500]/80 transition-colors"
                     >
-                      #{boxNumber}
-                    </div>
+                      {boxNum}
+                    </motion.button>
                   );
                 })}
+                {selectedSquares.length > 5 && (
+                  <span className="text-white/60 text-sm pl-1">+{selectedSquares.length - 5}</span>
+                )}
               </div>
+
+              <div className="h-8 w-px bg-white/20" />
+
+              {/* Total */}
+              <div className="text-sm">
+                <span className="text-white/60">{selectedSquares.length} squares</span>
+                <span className="font-semibold ml-2">${selectionTotal}</span>
+              </div>
+
+              <div className="h-8 w-px bg-white/20" />
+
+              {/* CTA */}
+              <Link
+                href="/payment"
+                onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)))}
+                className="bg-white text-[#1d1d1f] px-5 py-2 rounded-full font-semibold text-sm hover:bg-white/90 transition-colors"
+              >
+                Continue
+              </Link>
             </div>
           </motion.div>
         )}

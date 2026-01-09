@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { createClient } from '@/lib/supabase/client';
 import type { GridSquare } from '@/lib/supabase/types';
-import { cn } from '@/lib/utils';
 
 interface PoolGridProps {
   onSquareSelect?: (square: GridSquare) => void;
@@ -69,10 +68,7 @@ export default function PoolGrid({
 
       const { data, error } = await supabase
         .from('grid_squares')
-        .select(`
-          *,
-          profiles:user_id (name)
-        `)
+        .select(`*, profiles:user_id (name)`)
         .order('row_number', { ascending: true })
         .order('col_number', { ascending: true });
 
@@ -91,7 +87,6 @@ export default function PoolGrid({
     }
   };
 
-  // Build grid data
   const { gridMap, rowScores, colScores } = useMemo(() => {
     const gridMap = new Map<string, GridSquare>();
     const rowScores = new Map<number, number>();
@@ -110,7 +105,6 @@ export default function PoolGrid({
     return { gridMap, rowScores, colScores };
   }, [squares, tournamentLaunched]);
 
-  // Current winner calculation
   const currentWinner = useMemo(() => {
     if (!gameScore?.isLive || gameScore.afcScore === undefined || gameScore.nfcScore === undefined) {
       return null;
@@ -135,143 +129,112 @@ export default function PoolGrid({
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-[#1d1d1f] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
+  const getInitials = (name: string | null) => {
+    if (!name) return '';
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
   return (
-    <div className="w-full overflow-x-auto">
-      <div className="min-w-[600px]">
-        {/* Grid Container */}
-        <div className="relative">
-          {/* NFC Label - Top */}
-          <div className="flex justify-center mb-3">
-            <div className="flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full">
-              <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span className="text-sm font-semibold text-blue-700">{nfcTeam}</span>
-            </div>
-          </div>
-
-          <div className="flex">
-            {/* AFC Label - Left */}
-            <div className="flex items-center justify-center pr-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full"
-                   style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}>
-                <div className="w-2 h-2 rounded-full bg-red-500" />
-                <span className="text-sm font-semibold text-red-700">{afcTeam}</span>
-              </div>
-            </div>
-
-            {/* Main Grid */}
-            <div className="flex-1">
-              {/* Column Numbers */}
-              <div className="grid grid-cols-10 gap-1 mb-1 ml-8">
-                {numbers.map((col) => (
-                  <div key={`col-${col}`} className="h-6 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-400">
-                      {tournamentLaunched ? colScores.get(col) ?? '-' : ''}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Rows */}
-              {numbers.map((row) => (
-                <div key={`row-${row}`} className="flex gap-1 mb-1">
-                  {/* Row Number */}
-                  <div className="w-8 flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-400">
-                      {tournamentLaunched ? rowScores.get(row) ?? '-' : ''}
-                    </span>
-                  </div>
-
-                  {/* Cells */}
-                  <div className="flex-1 grid grid-cols-10 gap-1">
-                    {numbers.map((col) => {
-                      const square = gridMap.get(`${row}-${col}`);
-                      if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square" />;
-
-                      const isSelected = selectedSquareIds.has(square.id);
-                      const isClaimed = square.status === 'paid' || square.status === 'confirmed';
-                      const isAvailable = square.status === 'available';
-                      const isWinner = currentWinner?.id === square.id;
-                      const boxNum = row * 10 + col + 1;
-
-                      // Get initials (max 2 chars)
-                      const getInitials = () => {
-                        if (!square.user_name) return '';
-                        const parts = square.user_name.trim().split(' ');
-                        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-                        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-                      };
-
-                      return (
-                        <motion.button
-                          key={`cell-${row}-${col}`}
-                          onClick={() => handleSquareClick(square)}
-                          disabled={!isAvailable || tournamentLaunched || disabled}
-                          whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
-                          whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
-                          className={cn(
-                            'aspect-square rounded flex items-center justify-center transition-all text-xs font-semibold',
-                            // Available
-                            isAvailable && !disabled && 'bg-emerald-50 border border-emerald-300 text-emerald-600 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer',
-                            isAvailable && disabled && 'bg-gray-50 border border-gray-200 text-gray-400 cursor-not-allowed',
-                            // Claimed
-                            isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500',
-                            // Selected
-                            isSelected && 'bg-amber-500 border-2 border-amber-600 text-white shadow-lg',
-                            // Winner
-                            isWinner && 'bg-amber-500 border-2 border-amber-600 text-white shadow-[0_0_12px_rgba(245,158,11,0.5)] animate-pulse'
-                          )}
-                        >
-                          {isWinner && '★'}
-                          {isSelected && !isWinner && '✓'}
-                          {isAvailable && !isSelected && boxNum}
-                          {isClaimed && !isSelected && !isWinner && getInitials()}
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-emerald-50 border border-emerald-300" />
-            <span className="text-xs text-gray-500">Available</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-amber-500 border border-amber-600" />
-            <span className="text-xs text-gray-500">Selected</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded bg-gray-100 border border-gray-200" />
-            <span className="text-xs text-gray-500">Taken</span>
-          </div>
-        </div>
-
-        {/* Winner Banner */}
-        <AnimatePresence>
-          {currentWinner && currentWinner.user_name && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-center"
-            >
-              <span className="text-amber-600 font-semibold">
-                ★ {currentWinner.user_name} is currently winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
+    <div className="w-full">
+      {/* NFC Label */}
+      <div className="flex justify-center mb-3">
+        <span className="text-xs font-medium text-[#86868b] tracking-wider uppercase">{nfcTeam}</span>
       </div>
+
+      <div className="flex">
+        {/* AFC Label */}
+        <div className="flex items-center justify-center w-6 mr-2">
+          <span
+            className="text-xs font-medium text-[#86868b] tracking-wider uppercase"
+            style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
+          >
+            {afcTeam}
+          </span>
+        </div>
+
+        {/* Grid */}
+        <div className="flex-1">
+          {/* Column Headers */}
+          <div className="grid grid-cols-10 gap-1 mb-1">
+            {numbers.map((col) => (
+              <div key={`col-${col}`} className="aspect-square flex items-center justify-center">
+                <span className="text-xs font-medium text-[#86868b]">
+                  {tournamentLaunched ? colScores.get(col) ?? '' : ''}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Rows */}
+          {numbers.map((row) => (
+            <div key={`row-${row}`} className="flex gap-1 mb-1">
+              {/* Row Header */}
+              <div className="w-6 flex items-center justify-center -ml-8 mr-1">
+                <span className="text-xs font-medium text-[#86868b]">
+                  {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
+                </span>
+              </div>
+
+              {/* Cells */}
+              <div className="flex-1 grid grid-cols-10 gap-1">
+                {numbers.map((col) => {
+                  const square = gridMap.get(`${row}-${col}`);
+                  if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square" />;
+
+                  const isSelected = selectedSquareIds.has(square.id);
+                  const isClaimed = square.status === 'paid' || square.status === 'confirmed';
+                  const isAvailable = square.status === 'available';
+                  const isWinner = currentWinner?.id === square.id;
+                  const boxNum = row * 10 + col + 1;
+
+                  return (
+                    <motion.button
+                      key={`cell-${row}-${col}`}
+                      onClick={() => handleSquareClick(square)}
+                      disabled={!isAvailable || tournamentLaunched || disabled}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
+                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
+                      className={`
+                        aspect-square rounded-lg flex items-center justify-center text-xs font-medium transition-all
+                        ${isAvailable && !disabled && 'bg-[#34c759]/10 border border-[#34c759]/30 text-[#34c759] hover:bg-[#34c759]/20 cursor-pointer'}
+                        ${isAvailable && disabled && 'bg-[#f5f5f7] border border-[#e5e5ea] text-[#86868b] cursor-not-allowed'}
+                        ${isClaimed && !isSelected && !isWinner && 'bg-[#f5f5f7] border border-[#e5e5ea] text-[#86868b]'}
+                        ${isSelected && 'bg-[#ff9500] border-2 border-[#ff9500] text-white shadow-lg shadow-[#ff9500]/30'}
+                        ${isWinner && 'bg-[#ff9500] border-2 border-[#ff9500] text-white shadow-lg shadow-[#ff9500]/50 animate-pulse'}
+                      `}
+                    >
+                      {isWinner && '★'}
+                      {isSelected && !isWinner && '✓'}
+                      {isAvailable && !isSelected && boxNum}
+                      {isClaimed && !isSelected && !isWinner && getInitials(square.user_name ?? null)}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Winner Banner */}
+      {currentWinner && currentWinner.user_name && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-4 p-3 bg-[#ff9500]/10 border border-[#ff9500]/30 rounded-xl text-center"
+        >
+          <span className="text-[#1d1d1f] font-medium">
+            ★ {currentWinner.user_name} is winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})
+          </span>
+        </motion.div>
+      )}
     </div>
   );
 }
