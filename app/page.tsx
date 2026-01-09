@@ -135,16 +135,16 @@ export default function Home() {
       <Header />
 
       {/* ===== HERO ===== */}
-      <section className="relative min-h-screen flex items-center justify-center pt-24">
+      <section className="relative pt-28 pb-16">
         {/* Decorative circular elements inspired by logo */}
-        <div className="absolute top-40 right-10 w-64 h-64 rounded-full border-2 border-[#d4af37]/10 opacity-50" />
-        <div className="absolute top-48 right-18 w-48 h-48 rounded-full border border-[#d4af37]/5" />
-        <div className="absolute bottom-40 left-10 w-40 h-40 rounded-full border-2 border-[#d4af37]/10 opacity-30" />
+        <div className="absolute top-20 right-10 w-64 h-64 rounded-full border-2 border-[#d4af37]/10 opacity-50" />
+        <div className="absolute top-28 right-18 w-48 h-48 rounded-full border border-[#d4af37]/5" />
+        <div className="absolute bottom-10 left-10 w-40 h-40 rounded-full border-2 border-[#d4af37]/10 opacity-30" />
 
         {/* Subtle background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#d4af37]/3 via-transparent to-transparent" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6 py-20">
+        <div className="relative z-10 max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
 
             {/* Left: Copy */}

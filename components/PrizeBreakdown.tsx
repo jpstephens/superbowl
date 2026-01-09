@@ -88,7 +88,7 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
   }
 
   return (
-    <section className={`py-24 bg-white relative overflow-hidden ${className}`}>
+    <section id="prizes" className={`py-24 bg-white relative overflow-hidden ${className}`}>
       {/* Decorative elements */}
       <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-[#d4af37]/20" />
       <div className="absolute -right-20 top-1/3 w-48 h-48 rounded-full border border-[#d4af37]/10" />

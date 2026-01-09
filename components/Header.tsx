@@ -128,8 +128,9 @@ export default function Header() {
   // Build nav items based on state
   const getNavItems = () => {
     const items = [
-      { href: '/grid', label: 'Grid', icon: Grid3x3 },
-      { href: '/props', label: 'Props', icon: Target },
+      { href: '/grid', label: 'View Grid', icon: Grid3x3 },
+      { href: '/props', label: 'Prop Bets', icon: Target },
+      { href: '/#prizes', label: 'Prizes', icon: Trophy },
     ];
 
     if (isLoggedIn) {
@@ -139,7 +140,7 @@ export default function Header() {
 
     // Add Pool/Scores link when tournament is launched
     if (tournamentLaunched) {
-      items.push({ href: '/pool', label: isGameLive ? 'Scores' : 'Pool', icon: isGameLive ? Radio : Trophy });
+      items.push({ href: '/pool', label: isGameLive ? 'Live Scores' : 'Pool', icon: isGameLive ? Radio : Trophy });
     }
 
     return items;
@@ -151,13 +152,13 @@ export default function Header() {
       if (isGameLive) {
         return { href: '/grid', label: 'Check Winners', variant: 'live' as const };
       }
-      return { href: '/grid', label: 'View Grid', variant: 'default' as const };
+      return { href: '/my-squares', label: 'My Numbers', variant: 'default' as const };
     }
     // Pre-launch: sales mode
     if (availableSquares > 0) {
-      return { href: '/grid', label: 'Pick Squares', variant: 'default' as const };
+      return { href: '/grid', label: 'Buy Squares', variant: 'default' as const };
     }
-    return { href: '/grid', label: 'Grid Full', variant: 'disabled' as const };
+    return { href: '/grid', label: 'Sold Out', variant: 'disabled' as const };
   };
 
   const navItems = getNavItems();
