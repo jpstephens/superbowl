@@ -170,11 +170,11 @@ export default function PoolGrid({
     <div className="w-full">
       {/* NFC Team Header (Columns) */}
       <div className="flex mb-2">
-        <div className="w-10 sm:w-12" /> {/* Spacer for row headers */}
+        <div className="w-12 sm:w-14" /> {/* Spacer for row headers */}
         <div className="flex-1 text-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border-2 border-gray-200 rounded-lg text-base font-bold text-[#232842]">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#0a84ff]" />
-            {nfcTeam}
+          <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-lg text-lg font-bold text-[#232842]">
+            <span className="w-3 h-3 rounded-full bg-[#0a84ff]" />
+            {gameScore?.isLive ? nfcTeam : 'NFC'}
           </span>
         </div>
       </div>
@@ -183,26 +183,26 @@ export default function PoolGrid({
         {/* AFC Team Header (Rows) - Vertical */}
         <div className="flex flex-col items-center justify-center mr-2">
           <div
-            className="px-2 py-3 bg-gray-100 border-2 border-gray-200 rounded-lg text-base font-bold text-[#232842] whitespace-nowrap"
+            className="px-2.5 py-4 bg-gray-100 border-2 border-gray-200 rounded-lg text-lg font-bold text-[#232842] whitespace-nowrap"
             style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
           >
             <span className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#ff453a]" />
-              {afcTeam}
+              <span className="w-3 h-3 rounded-full bg-[#ff453a]" />
+              {gameScore?.isLive ? afcTeam : 'AFC'}
             </span>
           </div>
         </div>
 
         {/* Grid */}
         <div className="flex-1 overflow-x-auto scrollbar-hide">
-          <div style={{ minWidth: '400px' }}>
+          <div style={{ minWidth: '600px' }}>
             {/* Column Headers - Only show after tournament launch */}
             <div className="flex mb-1">
-              <div className="w-10 sm:w-12 h-8 sm:h-10" /> {/* Corner */}
+              <div className="w-12 sm:w-14 h-10 sm:h-12" /> {/* Corner */}
               {numbers.map((num) => (
                 <div
                   key={`col-${num}`}
-                  className="flex-1 h-8 sm:h-10 flex items-center justify-center text-gray-500 font-bold text-base"
+                  className="flex-1 h-10 sm:h-12 flex items-center justify-center text-gray-500 font-bold text-lg"
                 >
                   {tournamentLaunched ? colScoreMap.get(num) : ''}
                 </div>
@@ -213,7 +213,7 @@ export default function PoolGrid({
             {numbers.map((rowNum) => (
               <div key={`row-${rowNum}`} className="flex mb-1">
                 {/* Row Header - Only show after tournament launch */}
-                <div className="w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center text-gray-500 font-bold text-base">
+                <div className="w-12 sm:w-14 h-16 sm:h-20 flex items-center justify-center text-gray-500 font-bold text-lg">
                   {tournamentLaunched ? rowScoreMap.get(rowNum) : ''}
                 </div>
 
@@ -228,17 +228,29 @@ export default function PoolGrid({
                   const isWinner = currentWinner?.id === square.id;
                   const isUserSquare = userSquares.has(square.id);
                   const isRecentlyPurchased = recentlyPurchased.has(square.id);
+                  const squareNumber = rowNum * 10 + colNum + 1;
+
+                  // Get display name - full first name + last initial, or truncate if too long
+                  const getDisplayName = () => {
+                    if (!square.user_name) return '';
+                    const parts = square.user_name.split(' ');
+                    if (parts.length === 1) return parts[0].slice(0, 8);
+                    const firstName = parts[0];
+                    const lastInitial = parts[parts.length - 1][0];
+                    const display = `${firstName} ${lastInitial}.`;
+                    return display.length > 10 ? `${firstName.slice(0, 6)}...` : display;
+                  };
 
                   return (
                     <div key={`cell-${rowNum}-${colNum}`} className="flex-1 p-0.5">
                       <motion.button
                         onClick={() => handleSquareClick(square)}
                         disabled={!isAvailable || tournamentLaunched || disabled}
-                        whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.08 } : {}}
+                        whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
                         whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
                         className={cn(
-                          'w-full h-10 sm:h-12 rounded-lg transition-all duration-150 relative overflow-hidden',
-                          'flex items-center justify-center text-sm font-bold',
+                          'w-full h-16 sm:h-20 rounded-lg transition-all duration-150 relative overflow-hidden',
+                          'flex flex-col items-center justify-center gap-0.5 text-sm font-bold',
                           // Available
                           isAvailable && !disabled && 'bg-[#30d158]/15 border-2 border-[#30d158]/40 hover:bg-[#30d158]/25 hover:border-[#30d158]/60 cursor-pointer',
                           isAvailable && disabled && 'bg-gray-100 border-2 border-gray-200 cursor-not-allowed',
@@ -270,7 +282,7 @@ export default function PoolGrid({
                           <motion.span
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 1, repeat: Infinity }}
-                            className="text-lg"
+                            className="text-xl"
                           >
                             ★
                           </motion.span>
@@ -281,31 +293,33 @@ export default function PoolGrid({
                           <motion.span
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="text-lg"
+                            className="text-xl"
                           >
                             ✓
                           </motion.span>
                         )}
 
-                        {/* Before tournament: Show square numbers 1-100 */}
-                        {!tournamentLaunched && !isSelected && !isWinner && (
-                          <span className={`text-xs sm:text-sm font-semibold ${
-                            isClaimed ? 'text-gray-400' : 'text-gray-500'
-                          }`}>
-                            {rowNum * 10 + colNum + 1}
+                        {/* Available squares: Show number */}
+                        {isAvailable && !isSelected && (
+                          <span className="text-base sm:text-lg font-bold text-gray-500">
+                            {squareNumber}
                           </span>
                         )}
 
-                        {/* After tournament: Initials for claimed squares */}
-                        {tournamentLaunched && isClaimed && !isSelected && !isWinner && square.user_name && (
-                          <span className="text-gray-500">
-                            {square.user_name
-                              .split(' ')
-                              .map((n) => n[0])
-                              .join('')
-                              .toUpperCase()
-                              .slice(0, 2)}
-                          </span>
+                        {/* Claimed squares (not selected, not winner): Show name + number */}
+                        {isClaimed && !isSelected && !isWinner && (
+                          <>
+                            <span className={`text-xs sm:text-sm font-semibold truncate max-w-full px-1 ${
+                              isUserSquare ? 'text-[#0a84ff]' : 'text-gray-600'
+                            }`}>
+                              {getDisplayName()}
+                            </span>
+                            <span className={`text-[10px] sm:text-xs ${
+                              isUserSquare ? 'text-[#0a84ff]/70' : 'text-gray-400'
+                            }`}>
+                              #{squareNumber}
+                            </span>
+                          </>
                         )}
                       </motion.button>
                     </div>

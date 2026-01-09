@@ -1,43 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import type { GameState } from '@/lib/supabase/types';
-import { motion } from 'framer-motion';
+import PoolGrid from '@/components/PoolGrid';
+import type { GridSquare, GameState } from '@/lib/supabase/types';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import PrizeBreakdown from '@/components/PrizeBreakdown';
-import Header from '@/components/Header';
+import LiveScoreBanner from '@/components/LiveScoreBanner';
 
 /**
- * HOMEPAGE
+ * GRID PAGE - Light Mode
  *
  * Design Intent:
- * - The 10x10 grid IS the visual identity
- * - Michael Williams story provides emotional anchor
- * - Countdown creates urgency
- * - Simple, bold, memorable
+ * - Clean, bright, professional
+ * - The grid IS the visual focus
+ * - Selection should feel tactile and satisfying
+ * - Clear visual hierarchy
  */
-export default function Home() {
+export default function GridPage() {
+  const [selectedSquares, setSelectedSquares] = useState<GridSquare[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [tournamentLaunched, setTournamentLaunched] = useState(false);
-  const [stats, setStats] = useState({
-    sold: 0,
-    available: 100,
-    raised: 0,
-    price: 50
-  });
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
-  const [gridPreview, setGridPreview] = useState<boolean[]>(Array(100).fill(false));
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({ sold: 0, available: 100 });
+  const [poolActive, setPoolActive] = useState<boolean>(true);
+  const [squarePrice, setSquarePrice] = useState<number>(50);
+  // Hardcoded prizes
+  const prizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
+  const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   // Super Bowl LX - February 8, 2026
   const GAME_DATE = new Date('2026-02-08T18:30:00-05:00');
 
   useEffect(() => {
     loadData();
+    setupRealtime();
 
-    // Countdown timer
     const timer = setInterval(() => {
       const now = new Date();
       const diff = GAME_DATE.getTime() - now.getTime();
@@ -47,8 +46,9 @@ export default function Home() {
           days: Math.floor(diff / (1000 * 60 * 60 * 24)),
           hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
           mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-          secs: Math.floor((diff % (1000 * 60)) / 1000)
         });
+      } else {
+        setCountdown(null);
       }
     }, 1000);
 
@@ -59,552 +59,380 @@ export default function Home() {
     try {
       const supabase = createClient();
 
-      // Game state
-      const { data: game } = await supabase
+      const { data: settings } = await supabase
+        .from('settings')
+        .select('key, value')
+        .in('key', ['pool_active', 'square_price']);
+
+      if (settings) {
+        const poolSetting = settings.find(s => s.key === 'pool_active');
+        const priceSetting = settings.find(s => s.key === 'square_price');
+
+        if (poolSetting) setPoolActive(poolSetting.value === 'true');
+        if (priceSetting?.value) setSquarePrice(parseFloat(priceSetting.value) || 50);
+      }
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) setUserId(user.id);
+
+      const { data: gameData } = await supabase
         .from('game_state')
         .select('*')
         .order('updated_at', { ascending: false })
         .limit(1)
         .single();
 
-      if (game) setGameState(game);
+      if (gameData) setGameState(gameData);
 
-      // Check tournament state
-      const { data: tournamentSetting } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('key', 'tournament_launched')
-        .single();
-      setTournamentLaunched(tournamentSetting?.value === 'true');
-
-      // Grid squares for preview
-      const { data: squares } = await supabase
+      const { data: allSquares } = await supabase
         .from('grid_squares')
-        .select('row_number, col_number, status');
+        .select('status');
 
-      if (squares) {
-        const preview = Array(100).fill(false);
-        squares.forEach(sq => {
-          if (sq.status === 'paid' || sq.status === 'confirmed') {
-            const idx = sq.row_number * 10 + sq.col_number;
-            preview[idx] = true;
-          }
-        });
-        setGridPreview(preview);
-      }
-
-      // Stats
-      const sold = squares?.filter(s => s.status === 'paid' || s.status === 'confirmed').length || 0;
-
-      const { data: priceData } = await supabase
-        .from('settings')
-        .select('value')
-        .eq('key', 'square_price')
-        .single();
-
-      const price = priceData?.value ? parseFloat(priceData.value) : 50;
+      const sold = allSquares?.filter(s => s.status === 'paid' || s.status === 'confirmed').length || 0;
 
       setStats({
         sold,
-        available: 100 - sold,
-        raised: sold * price,
-        price
+        available: 100 - sold
       });
     } catch (error) {
       console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const isLive = gameState?.is_live || false;
-  const isFinal = gameState?.is_final || false;
+  const setupRealtime = () => {
+    const supabase = createClient();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+    const channel = supabase
+      .channel('grid_page_updates')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'grid_squares' },
+        () => loadData()
+      )
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'settings' },
+        () => loadData()
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
+  };
+
+  const handleSquareSelect = (square: GridSquare) => {
+    if (!poolActive) return;
+
+    setSelectedSquares(prev => {
+      const isSelected = prev.some(s => s.id === square.id);
+      return isSelected
+        ? prev.filter(s => s.id !== square.id)
+        : [...prev, square];
+    });
+  };
+
+  const handleRemoveSquare = (squareId: string) => {
+    setSelectedSquares(prev => prev.filter(s => s.id !== squareId));
+  };
+
+  const handleScoreUpdate = (data: any) => {
+    setGameState({
+      ...gameState,
+      afc_score: data.afcScore,
+      nfc_score: data.nfcScore,
+      afc_team: data.afcTeam,
+      nfc_team: data.nfcTeam,
+      quarter: data.quarter,
+      time_remaining: data.timeRemaining,
+      is_live: data.isLive,
+      is_halftime: data.isHalftime,
+      is_final: data.isFinal,
+    } as GameState);
+  };
+
+  const totalPrizePool = useMemo(() => prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4, [prizes]);
+  const selectionTotal = useMemo(() => selectedSquares.length * squarePrice, [selectedSquares.length, squarePrice]);
+  const isLive = gameState?.is_live || false;
 
   return (
-    <div className="min-h-screen bg-white text-[#1a1a1a] overflow-x-hidden">
+    <div className="min-h-screen bg-white text-[#232842]">
 
-      {/* ===== NAVIGATION ===== */}
-      <Header />
-
-      {/* ===== COUNTDOWN BAR ===== */}
-      {!isLive && !isFinal && (
-        <div className="bg-[#232842] border-b border-[#1a1f33] py-3">
-          <div className="max-w-6xl mx-auto px-6">
-            <div className="flex items-center justify-center gap-6">
-              <span className="text-sm font-semibold text-gray-400 hidden sm:inline">Super Bowl LX Kickoff:</span>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <span className="text-xl font-black text-white tabular-nums">{countdown.days}</span>
-                  <span className="text-xs text-gray-500 uppercase">d</span>
-                </div>
-                <span className="text-gray-600">:</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xl font-black text-white tabular-nums">{String(countdown.hours).padStart(2, '0')}</span>
-                  <span className="text-xs text-gray-500 uppercase">h</span>
-                </div>
-                <span className="text-gray-600">:</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xl font-black text-white tabular-nums">{String(countdown.mins).padStart(2, '0')}</span>
-                  <span className="text-xs text-gray-500 uppercase">m</span>
-                </div>
-                <span className="text-gray-600">:</span>
-                <div className="flex items-center gap-1">
-                  <span className="text-xl font-black text-[#d4af37] tabular-nums">{String(countdown.secs).padStart(2, '0')}</span>
-                  <span className="text-xs text-gray-500 uppercase">s</span>
-                </div>
+      {/* ===== HEADER ===== */}
+      <header className="sticky top-0 z-50 bg-[#232842] border-b border-[#1a1f33] shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="h-24 flex items-center justify-between">
+            {/* Left: Logo + Back */}
+            <Link href="/" className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-full bg-white p-1.5 shadow-md">
+                <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={72} height={72} className="rounded-full" />
               </div>
-              <span className="text-sm text-gray-500 hidden md:inline">Feb 8, 2026</span>
+              <div className="hidden sm:block">
+                <div className="text-lg font-bold text-white">Michael Williams</div>
+                <div className="text-base text-[#d4af37] font-semibold">Memorial Scholarship</div>
+              </div>
+            </Link>
+
+            {/* Center: Title + Countdown */}
+            <div className="flex items-center gap-4">
+              <h1 className="font-bold text-2xl text-white">Super Bowl Pool</h1>
+              {countdown && (
+                <div className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white/10 border border-white/20 rounded-full text-base">
+                  <span className="text-[#d4af37] font-bold">
+                    {countdown.days}d {countdown.hours}h {countdown.mins}m
+                  </span>
+                  <span className="text-gray-300 font-medium">to kickoff</span>
+                </div>
+              )}
+            </div>
+
+            {/* Right: Stats */}
+            <div className="flex items-center gap-6">
+              <div className="text-right">
+                <div className="text-2xl font-bold text-[#30d158]">{stats.available}</div>
+                <div className="text-sm text-gray-400 font-medium">available</div>
+              </div>
+              <div className="text-right hidden sm:block">
+                <div className="text-2xl font-bold text-[#d4af37]">${squarePrice}</div>
+                <div className="text-sm text-gray-400 font-medium">per square</div>
+              </div>
             </div>
           </div>
         </div>
-      )}
+      </header>
 
-      {/* ===== HERO ===== */}
-      <section className="relative pt-12 pb-16">
-        {/* Decorative circular elements inspired by logo */}
-        <div className="absolute top-20 right-10 w-64 h-64 rounded-full border-2 border-[#d4af37]/10 opacity-50" />
-        <div className="absolute top-28 right-18 w-48 h-48 rounded-full border border-[#d4af37]/5" />
-        <div className="absolute bottom-10 left-10 w-40 h-40 rounded-full border-2 border-[#d4af37]/10 opacity-30" />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
 
-        {/* Subtle background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#d4af37]/3 via-transparent to-transparent" />
+        {/* Pool Closed Banner */}
+        {!poolActive && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+              <div>
+                <span className="font-bold text-red-600 text-lg">Pool Closed</span>
+                <span className="text-gray-600 ml-2 text-base">Not accepting purchases at this time</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
-        <div className="relative z-10 max-w-6xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        {/* Live Score Banner - Only show when game is live */}
+        {isLive && (
+          <div className="mb-6">
+            <LiveScoreBanner
+              onScoreUpdate={handleScoreUpdate}
+              refreshInterval={10000}
+              showDetails={true}
+            />
+          </div>
+        )}
 
-            {/* Left: Copy */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              {/* LIVE GAME STATE - Clean scoreboard focus */}
-              {isLive && gameState ? (
-                <>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 rounded-full text-base mb-6 animate-pulse">
-                    <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
-                    <span className="text-white font-bold">LIVE • Q{gameState.quarter || 1}</span>
-                  </div>
+        {/* Main Layout */}
+        <div className="grid lg:grid-cols-[1fr_360px] gap-6">
 
-                  {/* Live Scoreboard */}
-                  <div className="bg-[#232842] rounded-2xl p-6 mb-6">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="text-center flex-1">
-                        <div className="text-5xl font-black text-white">{gameState.afc_score || 0}</div>
-                        <div className="text-sm text-gray-400 mt-1 font-medium">{gameState.afc_team || 'AFC'}</div>
-                      </div>
-                      <div className="text-2xl text-gray-500 font-bold">vs</div>
-                      <div className="text-center flex-1">
-                        <div className="text-5xl font-black text-white">{gameState.nfc_score || 0}</div>
-                        <div className="text-sm text-gray-400 mt-1 font-medium">{gameState.nfc_team || 'NFC'}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <Link
-                    href="/grid"
-                    className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg w-full justify-center"
-                  >
-                    Check Your Squares
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          {/* LEFT: The Grid */}
+          <div className="space-y-4">
+            {/* Prize Info Bar - Always visible */}
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-5 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-[#d4af37]/10 rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  {/* NON-LIVE STATES */}
-                  {/* Badge */}
-                  {tournamentLaunched ? (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-full text-base mb-6">
-                      <span className="w-2.5 h-2.5 bg-white rounded-full" />
-                      <span className="text-white font-medium">Numbers Assigned</span>
+                  </div>
+                  <div>
+                    <div className="font-bold text-lg text-[#232842]">Total Prize Pool</div>
+                    <div className="text-sm text-gray-500">Win at each quarter end</div>
+                  </div>
+                </div>
+                <span className="text-3xl font-black text-[#d4af37]">${totalPrizePool.toLocaleString()}</span>
+              </div>
+
+              {/* Quarter prizes */}
+              <div className="grid grid-cols-4 gap-3">
+                {[
+                  { q: 'Q1', prize: prizes.q1 },
+                  { q: 'Q2', prize: prizes.q2 },
+                  { q: 'Q3', prize: prizes.q3 },
+                  { q: 'Q4', prize: prizes.q4 },
+                ].map(({ q, prize }) => (
+                  <div key={q} className="text-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="text-sm text-gray-500 font-medium mb-1">{q}</div>
+                    <div className="font-bold text-xl text-[#d4af37]">${prize}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* The Grid */}
+            <div className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 shadow-md">
+              <PoolGrid
+                onSquareSelect={handleSquareSelect}
+                selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
+                userId={userId}
+                disabled={!poolActive}
+                gameScore={gameState ? {
+                  afcScore: gameState.afc_score,
+                  nfcScore: gameState.nfc_score,
+                  afcTeam: gameState.afc_team,
+                  nfcTeam: gameState.nfc_team,
+                  quarter: gameState.quarter,
+                  isLive: gameState.is_live,
+                } : null}
+              />
+
+              {/* Legend */}
+              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-[#30d158]/20 border-2 border-[#30d158]/50 rounded" />
+                  <span className="text-gray-600 font-medium">Available</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-[#d4af37] rounded" />
+                  <span className="text-gray-600 font-medium">Selected</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-5 h-5 bg-gray-200 border-2 border-gray-300 rounded" />
+                  <span className="text-gray-600 font-medium">Taken</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT: Selection Panel - Desktop */}
+          <div className="hidden lg:block">
+            <div className="sticky top-28 space-y-4">
+              {/* Selection Summary */}
+              <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
+                <h3 className="font-bold text-xl mb-4 text-[#232842]">Your Selection</h3>
+
+                {selectedSquares.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                      </svg>
                     </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-full text-base mb-6">
-                      <span className="w-2.5 h-2.5 bg-[#30d158] rounded-full animate-pulse" />
-                      <span className="text-white font-medium">Super Bowl LX • Feb 8, 2026</span>
+                    <p className="text-gray-500 text-base mb-1 font-medium">No squares selected</p>
+                    <p className="text-gray-400 text-sm">Tap squares on the grid to select them</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Selected squares grid */}
+                    <div className="flex flex-wrap gap-2">
+                      {selectedSquares.map((square) => (
+                        <motion.button
+                          key={square.id}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          onClick={() => handleRemoveSquare(square.id)}
+                          className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm hover:bg-[#c49b2f] transition-colors group relative shadow-md"
+                          title="Click to remove"
+                        >
+                          <span className="group-hover:opacity-0 transition-opacity">
+                            {square.row_number},{square.col_number}
+                          </span>
+                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
+                            ×
+                          </span>
+                        </motion.button>
+                      ))}
                     </div>
-                  )}
 
-                  {/* Headline */}
-                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#232842]">
-                    {tournamentLaunched ? (
-                      <>View Your <span className="text-[#d4af37]">Numbers</span></>
-                    ) : (
-                      <>Pick Your <span className="text-[#d4af37]">Squares</span></>
-                    )}
-                  </h1>
+                    {/* Pricing */}
+                    <div className="pt-4 border-t border-gray-200 space-y-2">
+                      <div className="flex justify-between text-base">
+                        <span className="text-gray-500 font-medium">
+                          {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
+                        </span>
+                        <span className="font-bold text-[#232842] text-xl">${selectionTotal}</span>
+                      </div>
+                    </div>
 
-                  {/* Subheadline */}
-                  <p className="text-xl text-gray-600 mb-8 max-w-md leading-relaxed">
-                    {tournamentLaunched ? (
-                      <>Numbers have been assigned. Check your squares to see your winning combinations!</>
-                    ) : (
-                      <>Join our Super Bowl pool and support the <span className="text-[#232842] font-semibold">Michael Williams Memorial Scholarship</span>.</>
-                    )}
-                  </p>
-
-                  {/* CTA */}
-                  <div className="flex flex-wrap gap-4 mb-8">
+                    {/* CTA */}
                     <Link
-                      href="/grid"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                      href="/payment"
+                      onClick={() => {
+                        sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
                     >
-                      {tournamentLaunched ? 'View Grid' : 'Pick Your Squares'}
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      Continue to Payment
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </Link>
                   </div>
+                )}
+              </div>
 
-                  {/* Prize + Stats Row */}
-                  <div className="flex items-center gap-6 flex-wrap">
-                    <div className="flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-xl">
-                      <span className="text-[#d4af37] font-black text-xl">$2,500</span>
-                      <span className="text-gray-400 text-sm">in prizes</span>
-                    </div>
-                    {!tournamentLaunched && (
-                      <>
-                        <div className="text-center">
-                          <div className="text-2xl font-black text-[#232842]">{stats.available}</div>
-                          <div className="text-xs text-gray-500">available</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-2xl font-black text-[#30d158]">${stats.price}</div>
-                          <div className="text-xs text-gray-500">per square</div>
-                        </div>
-                      </>
-                    )}
+              {/* Scholarship reminder */}
+              <div className="bg-[#d4af37]/10 border-2 border-[#d4af37]/20 rounded-xl p-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-[#d4af37]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg className="w-5 h-5 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
                   </div>
-                </>
-              )}
-            </motion.div>
-
-            {/* Right: Mini Grid Preview */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              {/* Subtle glow */}
-              <div className="absolute -inset-10 bg-[#d4af37]/10 blur-3xl rounded-full" />
-
-              {/* The Grid */}
-              <div className="relative bg-white rounded-2xl p-6 border border-gray-200 shadow-xl">
-                {/* Grid header - State aware */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-base font-bold text-[#232842]">
-                    {isLive ? 'LIVE GAME' : tournamentLaunched ? 'NUMBERS ASSIGNED' : 'LIVE GRID'}
-                  </span>
-                  <span className={`text-base font-bold ${isLive ? 'text-red-600' : 'text-[#d4af37]'}`}>
-                    {isLive ? `Q${gameState?.quarter || 1}` : tournamentLaunched ? 'READY' : `$${stats.price}/square`}
-                  </span>
-                </div>
-
-                {/* Mini grid */}
-                <div className="grid grid-cols-10 gap-1">
-                  {gridPreview.map((sold, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: idx * 0.005 }}
-                      className={`aspect-square rounded-sm transition-all ${
-                        sold
-                          ? 'bg-[#d4af37]'
-                          : 'bg-[#30d158]/20 hover:bg-[#30d158]/40 cursor-pointer border border-[#30d158]/30'
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                {/* Grid footer */}
-                <div className="mt-4 flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 bg-[#30d158]/30 rounded-sm border border-[#30d158]/50" />
-                      <span className="text-gray-600 font-medium">Available</span>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 bg-[#d4af37] rounded-sm" />
-                      <span className="text-gray-600 font-medium">Taken</span>
+                  <div>
+                    <div className="font-bold text-[#232842] text-base">Supporting a Good Cause</div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      100% of proceeds support the Michael Williams Memorial Scholarship
                     </div>
                   </div>
-                  <Link href="/grid" className="text-[#d4af37] font-bold hover:underline">
-                    View Full Grid →
-                  </Link>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
+      </main>
 
-      </section>
-
-      {/* ===== HOW IT WORKS ===== */}
-      <section className="py-24 bg-white relative overflow-hidden">
-        {/* Decorative circle */}
-        <div className="absolute -right-40 top-20 w-96 h-96 rounded-full border border-[#d4af37]/20" />
-
-        <div className="relative max-w-6xl mx-auto px-6">
+      {/* Mobile Checkout - Fixed Bottom */}
+      <AnimatePresence>
+        {selectedSquares.length > 0 && (
           <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t-2 border-gray-200 pb-safe z-40 shadow-2xl"
           >
-            <h2 className="text-3xl sm:text-4xl font-black mb-4 text-[#232842]">How It Works</h2>
-            <p className="text-gray-600 max-w-lg mx-auto text-lg">
-              Simple rules, big excitement. Here's how the pool works.
-            </p>
+            <div className="px-4 py-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="text-base text-gray-500 font-medium">
+                    {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''}
+                  </div>
+                  <div className="text-3xl font-black text-[#232842]">${selectionTotal}</div>
+                </div>
+                <Link
+                  href="/payment"
+                  onClick={() => {
+                    sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
+                  }}
+                  className="px-8 py-4 bg-[#d4af37] text-white rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors shadow-lg"
+                >
+                  Continue
+                </Link>
+              </div>
+
+              {/* Selected preview */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+                {selectedSquares.map((square) => (
+                  <div
+                    key={square.id}
+                    className="flex-shrink-0 w-10 h-10 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-md"
+                  >
+                    {square.row_number},{square.col_number}
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                step: '1',
-                title: 'Pick Your Squares',
-                description: `Choose any available squares on the 10×10 grid. Each square costs $${stats.price} and your money goes directly to the scholarship fund.`,
-              },
-              {
-                step: '2',
-                title: 'Numbers Get Assigned',
-                description: 'Once the grid is full, numbers 0-9 are randomly assigned to each row and column. Your winning numbers are determined by where your squares land.',
-              },
-              {
-                step: '3',
-                title: 'Win Each Quarter',
-                description: 'At the end of each quarter, the last digit of each team\'s score determines the winning square. Match both numbers and you win that quarter\'s prize!',
-              },
-            ].map((item, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="relative p-8 bg-white border border-gray-200 rounded-2xl shadow-lg"
-              >
-                {/* Circular badge step number */}
-                <div className="absolute -top-5 left-8 w-10 h-10 rounded-full bg-[#d4af37] flex items-center justify-center border-4 border-white shadow-md">
-                  <span className="text-lg font-black text-white">{item.step}</span>
-                </div>
-                <h3 className="text-xl font-bold mb-3 mt-2 text-[#232842]">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed text-base">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ===== PRIZE BREAKDOWN ===== */}
-      <PrizeBreakdown />
-
-      {/* ===== THE CAUSE ===== */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Story */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              {/* Large logo */}
-              <div className="mb-8">
-                <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={130} height={130} />
-              </div>
-
-              <h2 className="text-3xl sm:text-4xl font-black mb-6 leading-tight text-[#232842]">
-                Honoring Michael Williams Through Education
-              </h2>
-
-              <p className="text-lg text-gray-600 mb-6 leading-relaxed">
-                Every square you purchase directly supports the Michael Williams Memorial Scholarship Fund.
-                We're not just playing a game—we're investing in students who will carry forward Michael's legacy of
-                kindness, determination, and community spirit.
-              </p>
-
-              <p className="text-gray-600 mb-8 text-base">
-                100% of proceeds from this pool go directly to scholarship awards for deserving students.
-              </p>
-
-              <Link
-                href="https://michaelwilliamsscholarship.com"
-                target="_blank"
-                className="inline-flex items-center gap-2 text-[#d4af37] font-bold text-lg hover:underline"
-              >
-                Learn more about the scholarship
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </Link>
-            </motion.div>
-
-            {/* Right: Impact */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="grid grid-cols-2 gap-4"
-            >
-              <div className="col-span-2 p-8 bg-gradient-to-br from-[#d4af37]/20 to-[#d4af37]/10 border-2 border-[#d4af37]/30 rounded-2xl">
-                <div className="text-5xl font-black text-[#d4af37] mb-2">${stats.raised.toLocaleString()}</div>
-                <div className="text-gray-600 text-lg font-medium">Raised This Year</div>
-              </div>
-              <div className="p-6 bg-white border-2 border-gray-200 rounded-2xl shadow-md">
-                <div className="text-4xl font-black mb-2 text-[#232842]">{stats.sold}</div>
-                <div className="text-base text-gray-600 font-medium">Squares Sold</div>
-              </div>
-              <div className="p-6 bg-white border-2 border-gray-200 rounded-2xl shadow-md">
-                <div className="text-4xl font-black mb-2 text-[#232842]">{stats.available}</div>
-                <div className="text-base text-gray-600 font-medium">Still Available</div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== FINAL CTA - State aware ===== */}
-      <section className={`py-24 relative overflow-hidden ${isLive ? 'bg-red-700' : 'bg-[#232842]'}`}>
-        {/* Decorative circles */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#d4af37]/20" />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#d4af37]/10" />
-
-        <div className="relative max-w-4xl mx-auto px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl sm:text-5xl font-black mb-6 text-white">
-              {isLive ? (
-                <>The Game is <span className="text-white animate-pulse">LIVE</span>!</>
-              ) : tournamentLaunched ? (
-                <>Check Your <span className="text-[#d4af37]">Numbers</span></>
-              ) : (
-                <>Ready to <span className="text-[#d4af37]">Play</span>?</>
-              )}
-            </h2>
-            <p className="text-xl text-gray-300 mb-10 max-w-lg mx-auto">
-              {isLive
-                ? 'Watch the winners update in real-time as the game unfolds!'
-                : tournamentLaunched
-                ? 'Numbers have been assigned. See your winning combinations and get ready for kickoff!'
-                : "Don't wait until the squares are gone. Pick your numbers and join the excitement."}
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              {isLive ? (
-                <>
-                  <Link
-                    href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
-                  >
-                    Check Winners
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                  <Link
-                    href="/pool"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 bg-white/10 border-2 border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-colors"
-                  >
-                    View Scores
-                  </Link>
-                </>
-              ) : tournamentLaunched ? (
-                <>
-                  <Link
-                    href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
-                  >
-                    View Your Numbers
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                  <Link
-                    href="/props"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 bg-white/10 border-2 border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-colors"
-                  >
-                    Make Your Picks
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
-                  >
-                    Pick Your Squares
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                  <Link
-                    href="/props"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 bg-white/10 border-2 border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-colors"
-                  >
-                    Try Prop Bets
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {!tournamentLaunched && stats.available <= 20 && stats.available > 0 && (
-              <div className="mt-8 inline-flex items-center gap-2 px-4 py-2 bg-[#ff9f0a]/20 border border-[#ff9f0a]/40 rounded-full">
-                <span className="w-2 h-2 bg-[#ff9f0a] rounded-full animate-pulse" />
-                <span className="text-[#ff9f0a] text-base font-bold">
-                  Only {stats.available} squares left!
-                </span>
-              </div>
-            )}
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ===== FOOTER ===== */}
-      <footer className="py-12 bg-white border-t border-gray-200">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-5">
-              <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={70} height={70} />
-              <div className="text-center sm:text-left">
-                <div className="font-bold text-xl mb-1 text-[#232842]">
-                  Michael Williams Memorial Scholarship
-                </div>
-                <div className="text-base text-gray-600">
-                  100% of proceeds support educational scholarships
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6 text-base font-semibold">
-              <Link href="https://michaelwilliamsscholarship.com" target="_blank" className="text-gray-600 hover:text-[#232842] transition-colors">
-                Main Website
-              </Link>
-              <Link href="/admin" className="text-gray-600 hover:text-[#232842] transition-colors">
-                Admin
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Michael Williams Memorial Scholarship Fund
-          </div>
-        </div>
-      </footer>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

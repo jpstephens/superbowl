@@ -128,9 +128,8 @@ export default function Header() {
   // Build nav items based on state
   const getNavItems = () => {
     const items = [
-      { href: '/grid', label: 'View Grid', icon: Grid3x3 },
       { href: '/props', label: 'Prop Bets', icon: Target },
-      { href: '/#prizes', label: 'Prizes', icon: Trophy },
+      { href: '/about#prizes', label: 'Prizes', icon: Trophy },
     ];
 
     if (isLoggedIn) {
