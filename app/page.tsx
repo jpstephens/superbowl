@@ -169,9 +169,15 @@ export default function GridPage() {
               </div>
             </Link>
 
-            {/* Center: Title + Countdown */}
-            <div className="flex items-center gap-4">
-              <h1 className="font-bold text-2xl text-white">Super Bowl Pool</h1>
+            {/* Center: Title + Nav + Countdown */}
+            <div className="flex items-center gap-6">
+              <h1 className="font-bold text-2xl text-white hidden sm:block">Super Bowl Pool</h1>
+              <Link
+                href="/props"
+                className="text-gray-300 hover:text-[#d4af37] font-semibold transition-colors"
+              >
+                Prop Bets
+              </Link>
               {countdown && (
                 <div className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white/10 border border-white/20 rounded-full text-base">
                   <span className="text-[#d4af37] font-bold">
@@ -321,24 +327,27 @@ export default function GridPage() {
                   <div className="space-y-4">
                     {/* Selected squares grid */}
                     <div className="flex flex-wrap gap-2">
-                      {selectedSquares.map((square) => (
-                        <motion.button
-                          key={square.id}
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                          onClick={() => handleRemoveSquare(square.id)}
-                          className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm hover:bg-[#c49b2f] transition-colors group relative shadow-md"
-                          title="Click to remove"
-                        >
-                          <span className="group-hover:opacity-0 transition-opacity">
-                            {square.row_number},{square.col_number}
-                          </span>
-                          <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
-                            ×
-                          </span>
-                        </motion.button>
-                      ))}
+                      {selectedSquares.map((square) => {
+                        const boxNumber = square.row_number * 10 + square.col_number + 1;
+                        return (
+                          <motion.button
+                            key={square.id}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                            onClick={() => handleRemoveSquare(square.id)}
+                            className="w-12 h-12 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-base hover:bg-[#c49b2f] transition-colors group relative shadow-md"
+                            title="Click to remove"
+                          >
+                            <span className="group-hover:opacity-0 transition-opacity">
+                              #{boxNumber}
+                            </span>
+                            <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xl">
+                              ×
+                            </span>
+                          </motion.button>
+                        );
+                      })}
                     </div>
 
                     {/* Pricing */}
@@ -420,14 +429,17 @@ export default function GridPage() {
 
               {/* Selected preview */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide">
-                {selectedSquares.map((square) => (
-                  <div
-                    key={square.id}
-                    className="flex-shrink-0 w-10 h-10 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-md"
-                  >
-                    {square.row_number},{square.col_number}
-                  </div>
-                ))}
+                {selectedSquares.map((square) => {
+                  const boxNumber = square.row_number * 10 + square.col_number + 1;
+                  return (
+                    <div
+                      key={square.id}
+                      className="flex-shrink-0 w-10 h-10 bg-[#d4af37] text-white rounded-lg flex items-center justify-center font-bold text-sm shadow-md"
+                    >
+                      #{boxNumber}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>

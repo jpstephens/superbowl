@@ -170,10 +170,10 @@ export default function PoolGrid({
     <div className="w-full">
       {/* NFC Team Header (Columns) */}
       <div className="flex mb-2">
-        <div className="w-12 sm:w-14" /> {/* Spacer for row headers */}
+        <div className="w-10 sm:w-12" /> {/* Spacer for row headers */}
         <div className="flex-1 text-center">
-          <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-100 border-2 border-gray-200 rounded-lg text-lg font-bold text-[#232842]">
-            <span className="w-3 h-3 rounded-full bg-[#0a84ff]" />
+          <span className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg text-base font-bold text-[#232842]">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#0a84ff]" />
             {gameScore?.isLive ? nfcTeam : 'NFC'}
           </span>
         </div>
@@ -183,11 +183,11 @@ export default function PoolGrid({
         {/* AFC Team Header (Rows) - Vertical */}
         <div className="flex flex-col items-center justify-center mr-2">
           <div
-            className="px-2.5 py-4 bg-gray-100 border-2 border-gray-200 rounded-lg text-lg font-bold text-[#232842] whitespace-nowrap"
+            className="px-2 py-3 bg-gray-100 border border-gray-200 rounded-lg text-base font-bold text-[#232842] whitespace-nowrap"
             style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}
           >
             <span className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-[#ff453a]" />
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff453a]" />
               {gameScore?.isLive ? afcTeam : 'AFC'}
             </span>
           </div>
@@ -195,14 +195,14 @@ export default function PoolGrid({
 
         {/* Grid */}
         <div className="flex-1 overflow-x-auto scrollbar-hide">
-          <div style={{ minWidth: '600px' }}>
+          <div style={{ minWidth: '500px' }}>
             {/* Column Headers - Only show after tournament launch */}
             <div className="flex mb-1">
-              <div className="w-12 sm:w-14 h-10 sm:h-12" /> {/* Corner */}
+              <div className="w-10 sm:w-12 h-8" /> {/* Corner */}
               {numbers.map((num) => (
                 <div
                   key={`col-${num}`}
-                  className="flex-1 h-10 sm:h-12 flex items-center justify-center text-gray-500 font-bold text-lg"
+                  className="flex-1 h-8 flex items-center justify-center text-gray-500 font-bold text-sm"
                 >
                   {tournamentLaunched ? colScoreMap.get(num) : ''}
                 </div>
@@ -213,7 +213,7 @@ export default function PoolGrid({
             {numbers.map((rowNum) => (
               <div key={`row-${rowNum}`} className="flex mb-1">
                 {/* Row Header - Only show after tournament launch */}
-                <div className="w-12 sm:w-14 h-16 sm:h-20 flex items-center justify-center text-gray-500 font-bold text-lg">
+                <div className="w-10 sm:w-12 h-12 sm:h-14 flex items-center justify-center text-gray-500 font-bold text-sm">
                   {tournamentLaunched ? rowScoreMap.get(rowNum) : ''}
                 </div>
 
@@ -230,15 +230,11 @@ export default function PoolGrid({
                   const isRecentlyPurchased = recentlyPurchased.has(square.id);
                   const squareNumber = rowNum * 10 + colNum + 1;
 
-                  // Get display name - full first name + last initial, or truncate if too long
+                  // Get display name - first name only, truncated if needed
                   const getDisplayName = () => {
                     if (!square.user_name) return '';
-                    const parts = square.user_name.split(' ');
-                    if (parts.length === 1) return parts[0].slice(0, 8);
-                    const firstName = parts[0];
-                    const lastInitial = parts[parts.length - 1][0];
-                    const display = `${firstName} ${lastInitial}.`;
-                    return display.length > 10 ? `${firstName.slice(0, 6)}...` : display;
+                    const firstName = square.user_name.split(' ')[0];
+                    return firstName.length > 8 ? firstName.slice(0, 7) + '.' : firstName;
                   };
 
                   return (
@@ -246,22 +242,20 @@ export default function PoolGrid({
                       <motion.button
                         onClick={() => handleSquareClick(square)}
                         disabled={!isAvailable || tournamentLaunched || disabled}
-                        whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
-                        whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
+                        whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.03 } : {}}
+                        whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.97 } : {}}
                         className={cn(
-                          'w-full h-16 sm:h-20 rounded-lg transition-all duration-150 relative overflow-hidden',
-                          'flex flex-col items-center justify-center gap-0.5 text-sm font-bold',
-                          // Available
-                          isAvailable && !disabled && 'bg-[#30d158]/15 border-2 border-[#30d158]/40 hover:bg-[#30d158]/25 hover:border-[#30d158]/60 cursor-pointer',
-                          isAvailable && disabled && 'bg-gray-100 border-2 border-gray-200 cursor-not-allowed',
-                          // Claimed
-                          isClaimed && !isSelected && !isWinner && !isUserSquare && 'bg-gray-100 border-2 border-gray-200',
-                          // User's square (not selected)
-                          isUserSquare && !isSelected && !isWinner && 'bg-[#0a84ff]/15 border-2 border-[#0a84ff]/40',
-                          // Selected
+                          'w-full h-12 sm:h-14 rounded-md transition-all duration-150 relative overflow-hidden',
+                          'flex items-center justify-center font-semibold',
+                          // Available - green tint
+                          isAvailable && !disabled && 'bg-[#30d158]/20 border-2 border-[#30d158]/50 hover:bg-[#30d158]/30 hover:border-[#30d158] cursor-pointer text-gray-600',
+                          isAvailable && disabled && 'bg-gray-50 border border-gray-200 cursor-not-allowed text-gray-400',
+                          // Claimed - gray (same for all claimed, no special user styling)
+                          isClaimed && !isSelected && !isWinner && 'bg-gray-100 border border-gray-200 text-gray-500',
+                          // Selected - gold
                           isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-md',
-                          // Winner
-                          isWinner && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-[0_0_20px_rgba(212,175,55,0.5)]'
+                          // Winner - gold with glow
+                          isWinner && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-[0_0_15px_rgba(212,175,55,0.5)]'
                         )}
                       >
                         {/* Pulse for recent purchases */}
@@ -282,18 +276,18 @@ export default function PoolGrid({
                           <motion.span
                             animate={{ scale: [1, 1.2, 1] }}
                             transition={{ duration: 1, repeat: Infinity }}
-                            className="text-xl"
+                            className="text-lg"
                           >
                             ★
                           </motion.span>
                         )}
 
-                        {/* Selected checkmark */}
+                        {/* Selected - show checkmark */}
                         {isSelected && !isWinner && (
                           <motion.span
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="text-xl"
+                            className="text-lg"
                           >
                             ✓
                           </motion.span>
@@ -301,25 +295,16 @@ export default function PoolGrid({
 
                         {/* Available squares: Show number */}
                         {isAvailable && !isSelected && (
-                          <span className="text-base sm:text-lg font-bold text-gray-500">
+                          <span className="text-sm sm:text-base font-bold">
                             {squareNumber}
                           </span>
                         )}
 
-                        {/* Claimed squares (not selected, not winner): Show name + number */}
+                        {/* Claimed squares: Show first name only */}
                         {isClaimed && !isSelected && !isWinner && (
-                          <>
-                            <span className={`text-xs sm:text-sm font-semibold truncate max-w-full px-1 ${
-                              isUserSquare ? 'text-[#0a84ff]' : 'text-gray-600'
-                            }`}>
-                              {getDisplayName()}
-                            </span>
-                            <span className={`text-[10px] sm:text-xs ${
-                              isUserSquare ? 'text-[#0a84ff]/70' : 'text-gray-400'
-                            }`}>
-                              #{squareNumber}
-                            </span>
-                          </>
+                          <span className="text-xs sm:text-sm truncate px-1">
+                            {getDisplayName()}
+                          </span>
                         )}
                       </motion.button>
                     </div>
