@@ -137,9 +137,9 @@ export default function Header() {
       items.push({ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard });
     }
 
-    // Add Watch/Live link when tournament is launched
+    // Add Pool/Scores link when tournament is launched
     if (tournamentLaunched) {
-      items.push({ href: '/pool', label: isGameLive ? 'Live' : 'Pool', icon: isGameLive ? Radio : Trophy });
+      items.push({ href: '/pool', label: isGameLive ? 'Scores' : 'Pool', icon: isGameLive ? Radio : Trophy });
     }
 
     return items;
@@ -149,7 +149,7 @@ export default function Header() {
   const getCTA = () => {
     if (tournamentLaunched) {
       if (isGameLive) {
-        return { href: '/pool', label: 'Watch Live', variant: 'live' as const };
+        return { href: '/grid', label: 'Check Winners', variant: 'live' as const };
       }
       return { href: '/grid', label: 'View Grid', variant: 'default' as const };
     }
@@ -195,10 +195,10 @@ export default function Header() {
                       isActive
                         ? 'text-[#d4af37] bg-[#d4af37]/20'
                         : 'text-gray-300 hover:text-white hover:bg-white/10',
-                      item.label === 'Live' && 'text-red-400 hover:text-red-300'
+                      item.label === 'Scores' && isGameLive && 'text-red-400 hover:text-red-300'
                     )}
                   >
-                    <Icon className={cn('h-4 w-4', item.label === 'Live' && 'animate-pulse')} />
+                    <Icon className={cn('h-4 w-4', item.label === 'Scores' && isGameLive && 'animate-pulse')} />
                     {item.label}
                   </Button>
                 </Link>
@@ -307,10 +307,10 @@ export default function Header() {
                       isActive
                         ? 'text-[#d4af37] bg-[#d4af37]/20'
                         : 'text-gray-300 hover:text-white hover:bg-white/10',
-                      item.label === 'Live' && 'text-red-400'
+                      item.label === 'Scores' && isGameLive && 'text-red-400'
                     )}
                   >
-                    <Icon className={cn('h-5 w-5', item.label === 'Live' && 'animate-pulse')} />
+                    <Icon className={cn('h-5 w-5', item.label === 'Scores' && isGameLive && 'animate-pulse')} />
                     {item.label}
                   </Link>
                 );

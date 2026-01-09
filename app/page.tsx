@@ -175,9 +175,9 @@ export default function Home() {
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#232842]">
                 {isLive ? (
                   <>
-                    Watch the
+                    Check Your
                     <br />
-                    <span className="text-red-600">Action</span>
+                    <span className="text-[#d4af37]">Squares</span>
                   </>
                 ) : tournamentLaunched ? (
                   <>
@@ -220,19 +220,19 @@ export default function Home() {
                 {isLive ? (
                   <>
                     <Link
-                      href="/pool"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-red-600 text-white font-bold text-lg rounded-xl hover:bg-red-700 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg animate-pulse"
+                      href="/grid"
+                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                     >
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" />
+                      Check Winners
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
-                      Watch Live
                     </Link>
                     <Link
-                      href="/grid"
+                      href="/pool"
                       className="inline-flex items-center gap-2 px-6 py-4 bg-[#232842] text-white font-semibold rounded-xl hover:bg-[#1a1f33] transition-colors shadow-lg"
                     >
-                      View Grid
+                      View Scores
                     </Link>
                   </>
                 ) : tournamentLaunched ? (
@@ -592,19 +592,19 @@ export default function Home() {
               {isLive ? (
                 <>
                   <Link
-                    href="/pool"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-red-700 font-bold text-lg rounded-xl hover:bg-gray-100 transition-all shadow-lg"
+                    href="/grid"
+                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10" />
+                    Check Winners
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
-                    Watch Live Now
                   </Link>
                   <Link
-                    href="/grid"
+                    href="/pool"
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-5 bg-white/10 border-2 border-white/20 text-white font-bold rounded-xl hover:bg-white/20 transition-colors"
                   >
-                    View Grid
+                    View Scores
                   </Link>
                 </>
               ) : tournamentLaunched ? (
