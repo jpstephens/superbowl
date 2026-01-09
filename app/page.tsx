@@ -186,191 +186,107 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              {/* Badge - State aware */}
-              {isLive ? (
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 rounded-full text-base mb-6 animate-pulse">
-                  <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
-                  <span className="text-white font-bold">GAME IS LIVE</span>
-                </div>
-              ) : tournamentLaunched ? (
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-full text-base mb-6">
-                  <span className="w-2.5 h-2.5 bg-white rounded-full" />
-                  <span className="text-white font-medium">Numbers Assigned • Ready for Kickoff</span>
-                </div>
+              {/* LIVE GAME STATE - Clean scoreboard focus */}
+              {isLive && gameState ? (
+                <>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 rounded-full text-base mb-6 animate-pulse">
+                    <span className="w-2.5 h-2.5 bg-white rounded-full animate-ping" />
+                    <span className="text-white font-bold">LIVE • Q{gameState.quarter || 1}</span>
+                  </div>
+
+                  {/* Live Scoreboard */}
+                  <div className="bg-[#232842] rounded-2xl p-6 mb-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="text-center flex-1">
+                        <div className="text-5xl font-black text-white">{gameState.afc_score || 0}</div>
+                        <div className="text-sm text-gray-400 mt-1 font-medium">{gameState.afc_team || 'AFC'}</div>
+                      </div>
+                      <div className="text-2xl text-gray-500 font-bold">vs</div>
+                      <div className="text-center flex-1">
+                        <div className="text-5xl font-black text-white">{gameState.nfc_score || 0}</div>
+                        <div className="text-sm text-gray-400 mt-1 font-medium">{gameState.nfc_team || 'NFC'}</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Link
+                    href="/grid"
+                    className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg w-full justify-center"
+                  >
+                    Check Your Squares
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                </>
               ) : (
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-full text-base mb-6">
-                  <span className="w-2.5 h-2.5 bg-[#30d158] rounded-full animate-pulse" />
-                  <span className="text-white font-medium">Super Bowl LX • Feb 8, 2026</span>
-                </div>
+                <>
+                  {/* NON-LIVE STATES */}
+                  {/* Badge */}
+                  {tournamentLaunched ? (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 rounded-full text-base mb-6">
+                      <span className="w-2.5 h-2.5 bg-white rounded-full" />
+                      <span className="text-white font-medium">Numbers Assigned</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-full text-base mb-6">
+                      <span className="w-2.5 h-2.5 bg-[#30d158] rounded-full animate-pulse" />
+                      <span className="text-white font-medium">Super Bowl LX • Feb 8, 2026</span>
+                    </div>
+                  )}
+
+                  {/* Headline */}
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#232842]">
+                    {tournamentLaunched ? (
+                      <>View Your <span className="text-[#d4af37]">Numbers</span></>
+                    ) : (
+                      <>Pick Your <span className="text-[#d4af37]">Squares</span></>
+                    )}
+                  </h1>
+
+                  {/* Subheadline */}
+                  <p className="text-xl text-gray-600 mb-8 max-w-md leading-relaxed">
+                    {tournamentLaunched ? (
+                      <>Numbers have been assigned. Check your squares to see your winning combinations!</>
+                    ) : (
+                      <>Join our Super Bowl pool and support the <span className="text-[#232842] font-semibold">Michael Williams Memorial Scholarship</span>.</>
+                    )}
+                  </p>
+
+                  {/* CTA */}
+                  <div className="flex flex-wrap gap-4 mb-8">
+                    <Link
+                      href="/grid"
+                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                    >
+                      {tournamentLaunched ? 'View Grid' : 'Pick Your Squares'}
+                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                  </div>
+
+                  {/* Prize + Stats Row */}
+                  <div className="flex items-center gap-6 flex-wrap">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-xl">
+                      <span className="text-[#d4af37] font-black text-xl">$5,000</span>
+                      <span className="text-gray-400 text-sm">in prizes</span>
+                    </div>
+                    {!tournamentLaunched && (
+                      <>
+                        <div className="text-center">
+                          <div className="text-2xl font-black text-[#232842]">{stats.available}</div>
+                          <div className="text-xs text-gray-500">available</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-black text-[#30d158]">${stats.price}</div>
+                          <div className="text-xs text-gray-500">per square</div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>
               )}
-
-              {/* Headline - State aware */}
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#232842]">
-                {isLive ? (
-                  <>
-                    Check Your
-                    <br />
-                    <span className="text-[#d4af37]">Squares</span>
-                  </>
-                ) : tournamentLaunched ? (
-                  <>
-                    View Your
-                    <br />
-                    <span className="text-[#d4af37]">Numbers</span>
-                  </>
-                ) : (
-                  <>
-                    Pick Your
-                    <br />
-                    <span className="text-[#d4af37]">Squares</span>
-                  </>
-                )}
-              </h1>
-
-              {/* Subheadline - State aware */}
-              <p className="text-xl text-gray-600 mb-8 max-w-md leading-relaxed">
-                {isLive ? (
-                  <>
-                    The game is on! Check your squares and watch the winners update in real-time.
-                    <span className="text-[#232842] font-semibold"> Good luck!</span>
-                  </>
-                ) : tournamentLaunched ? (
-                  <>
-                    All squares are sold and numbers have been assigned. Check your squares to see your winning numbers!
-                    <span className="text-[#232842] font-semibold"> Game day is coming!</span>
-                  </>
-                ) : (
-                  <>
-                    Join our Super Bowl pool and support the
-                    <span className="text-[#232842] font-semibold"> Michael Williams Memorial Scholarship</span>.
-                    Every square funds a student's future.
-                  </>
-                )}
-              </p>
-
-              {/* CTA - State aware */}
-              <div className="flex flex-wrap gap-4">
-                {isLive ? (
-                  <>
-                    <Link
-                      href="/grid"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-                    >
-                      Check Winners
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="/pool"
-                      className="inline-flex items-center gap-2 px-6 py-4 bg-[#232842] text-white font-semibold rounded-xl hover:bg-[#1a1f33] transition-colors shadow-lg"
-                    >
-                      View Scores
-                    </Link>
-                  </>
-                ) : tournamentLaunched ? (
-                  <>
-                    <Link
-                      href="/grid"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-                    >
-                      View Your Numbers
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="/my-squares"
-                      className="inline-flex items-center gap-2 px-6 py-4 bg-[#232842] text-white font-semibold rounded-xl hover:bg-[#1a1f33] transition-colors shadow-lg"
-                    >
-                      My Squares
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href="/grid"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
-                    >
-                      Pick Your Squares
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
-                    <Link
-                      href="/pool"
-                      className="inline-flex items-center gap-2 px-6 py-4 bg-[#232842] text-white font-semibold rounded-xl hover:bg-[#1a1f33] transition-colors shadow-lg"
-                    >
-                      View Pool
-                    </Link>
-                  </>
-                )}
-              </div>
-
-              {/* Prize highlights - visible above the fold */}
-              <div className="mt-10 p-4 bg-[#232842] rounded-2xl">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-bold text-[#d4af37] uppercase tracking-wide">Win Every Quarter</span>
-                  <Link href="/#prizes" className="text-sm text-gray-400 hover:text-white">Details →</Link>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="text-center p-2 bg-white/5 rounded-lg">
-                    <div className="text-xs text-gray-400 mb-1">Q1</div>
-                    <div className="text-lg font-bold text-white">$1,000</div>
-                  </div>
-                  <div className="text-center p-2 bg-white/5 rounded-lg">
-                    <div className="text-xs text-gray-400 mb-1">Q2</div>
-                    <div className="text-lg font-bold text-white">$1,000</div>
-                  </div>
-                  <div className="text-center p-2 bg-white/5 rounded-lg">
-                    <div className="text-xs text-gray-400 mb-1">Q3</div>
-                    <div className="text-lg font-bold text-white">$1,000</div>
-                  </div>
-                  <div className="text-center p-2 bg-[#d4af37]/20 rounded-lg border border-[#d4af37]/30">
-                    <div className="text-xs text-[#d4af37] mb-1">Q4</div>
-                    <div className="text-lg font-bold text-[#d4af37]">$2,000</div>
-                  </div>
-                </div>
-                <div className="mt-3 text-center">
-                  <span className="text-2xl font-black text-white">$5,000</span>
-                  <span className="text-sm text-gray-400 ml-2">Total Prizes</span>
-                </div>
-              </div>
-
-              {/* Quick stats */}
-              <div className="mt-6 flex gap-6">
-                {isLive && gameState ? (
-                  <>
-                    <div>
-                      <div className="text-3xl font-black text-[#232842]">{gameState.afc_score || 0}</div>
-                      <div className="text-sm text-gray-600 font-medium">{gameState.afc_team || 'AFC'}</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl font-black text-[#232842]">{gameState.nfc_score || 0}</div>
-                      <div className="text-sm text-gray-600 font-medium">{gameState.nfc_team || 'NFC'}</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl font-black text-red-600">Q{gameState.quarter || 1}</div>
-                      <div className="text-sm text-gray-600 font-medium">Quarter</div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <div className="text-3xl font-black text-[#d4af37]">{stats.sold}</div>
-                      <div className="text-sm text-gray-600 font-medium">Sold</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl font-black text-[#232842]">{stats.available}</div>
-                      <div className="text-sm text-gray-600 font-medium">Available</div>
-                    </div>
-                    <div>
-                      <div className="text-3xl font-black text-[#30d158]">${stats.price}</div>
-                      <div className="text-sm text-gray-600 font-medium">Per Square</div>
-                    </div>
-                  </>
-                )}
-              </div>
             </motion.div>
 
             {/* Right: Mini Grid Preview */}
