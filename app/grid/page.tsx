@@ -349,6 +349,42 @@ export default function GridPage() {
           {/* RIGHT: Selection Panel - Desktop */}
           <div className="hidden lg:block">
             <div className="sticky top-28 space-y-4">
+              {/* Prize Breakdown - Prominent */}
+              <div className="bg-gradient-to-br from-[#232842] to-[#1a1f33] rounded-xl p-5 shadow-lg text-white">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-6 h-6 text-[#d4af37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="font-bold text-lg">Win Every Quarter</h3>
+                </div>
+
+                {/* Total Prize Pool */}
+                <div className="text-center mb-4 pb-4 border-b border-white/20">
+                  <div className="text-4xl font-black text-[#d4af37]">${totalPrizePool.toLocaleString()}</div>
+                  <div className="text-sm text-gray-400 mt-1">Total Prize Pool</div>
+                </div>
+
+                {/* Quarter Prizes */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-white/10 rounded-lg p-3 text-center">
+                    <div className="text-xs text-gray-400 mb-1">Q1</div>
+                    <div className="text-xl font-bold text-white">${prizes.q1.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-3 text-center">
+                    <div className="text-xs text-gray-400 mb-1">Q2 (Half)</div>
+                    <div className="text-xl font-bold text-white">${prizes.q2.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-white/10 rounded-lg p-3 text-center">
+                    <div className="text-xs text-gray-400 mb-1">Q3</div>
+                    <div className="text-xl font-bold text-white">${prizes.q3.toLocaleString()}</div>
+                  </div>
+                  <div className="bg-[#d4af37]/20 border border-[#d4af37]/40 rounded-lg p-3 text-center">
+                    <div className="text-xs text-[#d4af37] mb-1">Q4 (Final)</div>
+                    <div className="text-xl font-bold text-[#d4af37]">${prizes.q4.toLocaleString()}</div>
+                  </div>
+                </div>
+              </div>
+
               {/* Selection Summary */}
               <div className="bg-white border-2 border-gray-200 rounded-xl p-6 shadow-md">
                 <h3 className="font-bold text-xl mb-4 text-[#232842]">Your Selection</h3>
