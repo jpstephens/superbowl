@@ -5,10 +5,10 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Users, DollarSign, Grid3x3, Trophy, Rocket, 
+import {
+  Users, DollarSign, Grid3x3, Trophy, Rocket,
   Settings, CreditCard, LogOut, AlertCircle, Shield,
-  TrendingUp, CheckCircle2
+  TrendingUp, CheckCircle2, Download, Mail, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
@@ -36,6 +36,8 @@ export default function AdminDashboardPage() {
   const [canLaunch, setCanLaunch] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [sendingEmails, setSendingEmails] = useState(false);
+  const [emailResult, setEmailResult] = useState<{ sent: number; failed: number } | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -168,6 +170,40 @@ export default function AdminDashboardPage() {
     router.push('/admin/login');
   };
 
+  const handleDownloadPDF = () => {
+    window.open('/api/grid/pdf', '_blank');
+  };
+
+  const handleSendEmails = async () => {
+    if (!confirm('Send grid announcement email to all participants?')) {
+      return;
+    }
+
+    setSendingEmails(true);
+    setEmailResult(null);
+
+    try {
+      const response = await fetch('/api/admin/send-grid-email', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || 'Failed to send emails');
+        return;
+      }
+
+      setEmailResult({ sent: data.sent, failed: data.failed });
+      alert(`Emails sent! ${data.sent} successful, ${data.failed} failed.`);
+    } catch (error) {
+      console.error('Error sending emails:', error);
+      alert('An error occurred while sending emails');
+    } finally {
+      setSendingEmails(false);
+    }
+  };
+
   if (loading || !authChecked) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -275,14 +311,14 @@ export default function AdminDashboardPage() {
                   </div>
                 ) : (
                   <p className="text-gray-400">
-                    {canLaunch 
-                      ? 'All squares sold! Ready to launch.' 
+                    {canLaunch
+                      ? 'All squares sold! Ready to launch.'
                       : `${stats.availableSquares} squares remaining before launch.`
                     }
                   </p>
                 )}
               </div>
-              
+
               {!tournamentLaunched && (
                 <Button
                   onClick={() => setShowLaunchDialog(true)}
@@ -296,12 +332,51 @@ export default function AdminDashboardPage() {
               )}
             </div>
 
+            {/* Post-Launch Actions */}
+            {tournamentLaunched && (
+              <div className="mt-6 pt-6 border-t border-gray-700">
+                <h3 className="text-sm font-semibold text-gray-400 mb-4">GRID DISTRIBUTION</h3>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={handleDownloadPDF}
+                    variant="outline"
+                    className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download Grid PDF
+                  </Button>
+                  <Button
+                    onClick={handleSendEmails}
+                    disabled={sendingEmails}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    {sendingEmails ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Mail className="w-4 h-4 mr-2" />
+                        Email Grid to Participants
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {emailResult && (
+                  <div className="mt-3 text-sm text-gray-400">
+                    Last send: {emailResult.sent} delivered, {emailResult.failed} failed
+                  </div>
+                )}
+              </div>
+            )}
+
             {!canLaunch && !tournamentLaunched && (
               <div className="mt-4 p-4 bg-amber-900/30 border border-amber-700 rounded-lg">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
                   <div className="text-sm text-amber-200">
-                    <strong>Important:</strong> Tournament can only be launched when all 100 squares are sold. 
+                    <strong>Important:</strong> Tournament can only be launched when all 100 squares are sold.
                     Numbers will be randomly assigned at launch time.
                   </div>
                 </div>

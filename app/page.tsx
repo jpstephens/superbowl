@@ -26,6 +26,7 @@ export default function GridPage() {
   const [stats, setStats] = useState({ sold: 0, available: 100 });
   const [poolActive, setPoolActive] = useState<boolean>(true);
   const [squarePrice, setSquarePrice] = useState<number>(50);
+  const [tournamentLaunched, setTournamentLaunched] = useState<boolean>(false);
   // Hardcoded prizes
   const prizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
   const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
@@ -63,14 +64,16 @@ export default function GridPage() {
       const { data: settings } = await supabase
         .from('settings')
         .select('key, value')
-        .in('key', ['pool_active', 'square_price']);
+        .in('key', ['pool_active', 'square_price', 'tournament_launched']);
 
       if (settings) {
         const poolSetting = settings.find(s => s.key === 'pool_active');
         const priceSetting = settings.find(s => s.key === 'square_price');
+        const launchSetting = settings.find(s => s.key === 'tournament_launched');
 
         if (poolSetting) setPoolActive(poolSetting.value === 'true');
         if (priceSetting?.value) setSquarePrice(parseFloat(priceSetting.value) || 50);
+        if (launchSetting) setTournamentLaunched(launchSetting.value === 'true');
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -189,8 +192,22 @@ export default function GridPage() {
               )}
             </div>
 
-            {/* Right: Stats */}
-            <div className="flex items-center gap-6">
+            {/* Right: Stats + PDF */}
+            <div className="flex items-center gap-4 sm:gap-6">
+              {tournamentLaunched && (
+                <a
+                  href="/api/grid/pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white transition-colors"
+                  title="Download Grid PDF"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="hidden sm:inline text-sm font-medium">PDF</span>
+                </a>
+              )}
               <div className="text-right">
                 <div className="text-2xl font-bold text-[#30d158]">{stats.available}</div>
                 <div className="text-sm text-gray-400 font-medium">available</div>
