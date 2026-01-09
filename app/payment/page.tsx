@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import type { GridSquare } from '@/lib/supabase/types';
-import { ArrowLeft, CreditCard, Heart, Shield, Lock, User, Mail, Phone } from 'lucide-react';
+import { ArrowLeft, CreditCard, Heart, Shield, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -162,44 +162,41 @@ export default function PaymentPage() {
 
               {/* Your Information */}
               <Card className="p-6 mb-6">
-                <h2 className="text-lg font-bold text-foreground mb-4">Your Information</h2>
-                <div className="space-y-4">
+                <h2 className="text-lg font-bold text-foreground mb-6">Your Information</h2>
+                <div className="space-y-5">
                   <div>
-                    <Label htmlFor="name" className="flex items-center gap-2 mb-2">
-                      <User className="w-4 h-4" />
-                      Full Name *
+                    <Label htmlFor="name" className="text-sm font-medium text-foreground mb-1.5 block">
+                      Name <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="name"
                       type="text"
-                      placeholder="John Smith"
+                      placeholder="Your full name"
                       value={registrationData.name}
                       onChange={(e) => setRegistrationData({ ...registrationData, name: e.target.value })}
-                      className={errors.name ? 'border-destructive' : ''}
+                      className={`h-11 ${errors.name ? 'border-destructive' : ''}`}
                     />
                     {errors.name && <p className="text-sm text-destructive mt-1">{errors.name}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="email" className="flex items-center gap-2 mb-2">
-                      <Mail className="w-4 h-4" />
-                      Email Address *
+                    <Label htmlFor="email" className="text-sm font-medium text-foreground mb-1.5 block">
+                      Email <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="john@example.com"
+                      placeholder="you@example.com"
                       value={registrationData.email}
                       onChange={(e) => setRegistrationData({ ...registrationData, email: e.target.value })}
-                      className={errors.email ? 'border-destructive' : ''}
+                      className={`h-11 ${errors.email ? 'border-destructive' : ''}`}
                     />
                     {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="phone" className="flex items-center gap-2 mb-2">
-                      <Phone className="w-4 h-4" />
-                      Phone Number (optional)
+                    <Label htmlFor="phone" className="text-sm font-medium text-foreground mb-1.5 block">
+                      Phone <span className="text-muted-foreground font-normal">(optional)</span>
                     </Label>
                     <Input
                       id="phone"
@@ -207,10 +204,9 @@ export default function PaymentPage() {
                       placeholder="(555) 123-4567"
                       value={registrationData.phone}
                       onChange={(e) => setRegistrationData({ ...registrationData, phone: e.target.value })}
-                      className={errors.phone ? 'border-destructive' : ''}
+                      className={`h-11 ${errors.phone ? 'border-destructive' : ''}`}
                     />
                     {errors.phone && <p className="text-sm text-destructive mt-1">{errors.phone}</p>}
-                    <p className="text-xs text-muted-foreground mt-1">For winner notifications via SMS</p>
                   </div>
                 </div>
               </Card>

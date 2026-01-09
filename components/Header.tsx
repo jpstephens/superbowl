@@ -167,22 +167,22 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#1a1f33] bg-[#232842] shadow-lg">
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="flex h-24 items-center justify-between">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo & Title */}
-          <Link href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white p-1 shadow-md">
-              <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={76} height={76} className="rounded-full" />
+          <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-white p-0.5 shadow-md flex-shrink-0">
+              <Image src="/logo.png" alt="Michael Williams Memorial Scholarship" width={46} height={46} className="rounded-full" />
             </div>
-            <div className="hidden md:block">
-              <h1 className="text-xl font-bold text-white leading-tight">
+            <div className="hidden lg:block whitespace-nowrap">
+              <h1 className="text-lg font-bold text-white leading-tight">
                 Super Bowl Pool
               </h1>
-              <p className="text-sm text-[#d4af37] font-semibold">Michael Williams Scholarship</p>
+              <p className="text-xs text-[#d4af37] font-semibold">Michael Williams Scholarship</p>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
+          <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               const Icon = item.icon;
@@ -190,16 +190,16 @@ export default function Header() {
                 <Link key={item.href} href={item.href}>
                   <Button
                     variant="ghost"
-                    size="default"
+                    size="sm"
                     className={cn(
-                      'gap-2 text-base font-semibold transition-colors px-4 py-2',
+                      'gap-1.5 text-sm font-medium transition-colors px-3 py-1.5',
                       isActive
                         ? 'text-[#d4af37] bg-[#d4af37]/20'
                         : 'text-gray-300 hover:text-white hover:bg-white/10',
                       item.label === 'Live Scores' && isGameLive && 'text-red-400 hover:text-red-300'
                     )}
                   >
-                    <Icon className={cn('h-5 w-5', item.label === 'Live Scores' && isGameLive && 'animate-pulse')} />
+                    <Icon className={cn('h-4 w-4', item.label === 'Live Scores' && isGameLive && 'animate-pulse')} />
                     {item.label}
                   </Button>
                 </Link>
@@ -208,15 +208,15 @@ export default function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {/* Share button - desktop only */}
             <Button
               variant="ghost"
-              size="default"
+              size="sm"
               onClick={handleShare}
-              className="gap-2 text-gray-300 hover:text-[#d4af37] text-base font-semibold hidden lg:flex hover:bg-white/10"
+              className="gap-1.5 text-gray-300 hover:text-[#d4af37] text-sm font-medium hidden xl:flex hover:bg-white/10"
             >
-              <Share2 className="h-5 w-5" />
+              <Share2 className="h-4 w-4" />
               Share
             </Button>
 
@@ -224,31 +224,31 @@ export default function Header() {
             {!loading && (
               <>
                 {isLoggedIn ? (
-                  <div className="hidden sm:flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-2">
                     {userName && (
-                      <span className="text-base text-gray-400 hidden lg:inline">
+                      <span className="text-sm text-gray-400 hidden xl:inline">
                         Hi, {userName.split(' ')[0]}
                       </span>
                     )}
                     <Button
                       variant="ghost"
-                      size="default"
+                      size="sm"
                       onClick={handleSignOut}
-                      className="gap-2 text-gray-300 hover:text-white hover:bg-white/10 text-base"
+                      className="gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 text-sm"
                     >
-                      <LogOut className="h-5 w-5" />
+                      <LogOut className="h-4 w-4" />
                       <span className="hidden lg:inline">Sign Out</span>
                     </Button>
                   </div>
                 ) : (
-                  <div className="hidden sm:flex items-center gap-3">
+                  <div className="hidden sm:flex items-center gap-2">
                     <Link href="/auth/login">
                       <Button
                         variant="ghost"
-                        size="default"
-                        className="gap-2 text-gray-300 hover:text-white hover:bg-white/10 text-base"
+                        size="sm"
+                        className="gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 text-sm"
                       >
-                        <LogIn className="h-5 w-5" />
+                        <LogIn className="h-4 w-4" />
                         Log In
                       </Button>
                     </Link>
@@ -261,20 +261,20 @@ export default function Header() {
             <Link href={cta.href}>
               <Button
                 variant="default"
-                size="lg"
+                size="sm"
                 disabled={cta.variant === 'disabled'}
                 className={cn(
-                  'gap-2 border-0 text-base font-bold px-6 py-3 shadow-md',
+                  'gap-1.5 border-0 text-sm font-bold px-4 py-2 shadow-md',
                   cta.variant === 'live'
                     ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
                     : 'bg-[#d4af37] hover:bg-[#e5c65c] text-[#232842]',
                   cta.variant === 'disabled' && 'opacity-50 cursor-not-allowed'
                 )}
               >
-                {cta.variant === 'live' && <Radio className="h-5 w-5" />}
+                {cta.variant === 'live' && <Radio className="h-4 w-4" />}
                 {cta.label}
                 {!tournamentLaunched && availableSquares > 0 && availableSquares <= 20 && (
-                  <span className="ml-1 text-sm opacity-80">({availableSquares})</span>
+                  <span className="ml-1 text-xs opacity-80">({availableSquares})</span>
                 )}
               </Button>
             </Link>
@@ -282,11 +282,11 @@ export default function Header() {
             {/* Mobile menu button */}
             <Button
               variant="ghost"
-              size="default"
+              size="sm"
               className="md:hidden p-2 text-white hover:bg-white/10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
