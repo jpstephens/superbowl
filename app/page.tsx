@@ -237,17 +237,17 @@ export default function GridPage() {
               />
 
               {/* Legend */}
-              <div className="flex justify-center gap-5 mt-4 pt-4 border-t border-[#e8e5e0] text-xs text-[#6b6966]">
+              <div className="flex justify-center gap-5 mt-4 pt-4 border-t border-gray-200 text-xs text-gray-600">
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-md bg-white border border-[#e8e5e0]" />
+                  <span className="w-4 h-4 rounded bg-emerald-50 border-2 border-emerald-300" />
                   <span>Available</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-md bg-[#232842]" />
+                  <span className="w-4 h-4 rounded bg-[#d4af37] border-2 border-[#c49b2f]" />
                   <span>Selected</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-md bg-[#f5f4f2] border border-[#f5f4f2]" />
+                  <span className="w-4 h-4 rounded bg-slate-100 border-2 border-slate-200" />
                   <span>Taken</span>
                 </div>
               </div>
