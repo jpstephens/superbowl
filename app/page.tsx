@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import PoolGrid from '@/components/PoolGrid';
 import type { GridSquare, GameState } from '@/lib/supabase/types';
 import Link from 'next/link';
-import Image from 'next/image';
+import Header from '@/components/Header';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
 
 export default function GridPage() {
@@ -128,35 +128,7 @@ export default function GridPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-[#232842]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex items-center justify-between">
-            {/* Logo + Title */}
-            <Link href="/" className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white p-1 shadow-lg flex-shrink-0">
-                <Image src="/logo.png" alt="MWMS" width={72} height={72} className="rounded-full" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">Super Bowl Pool</h1>
-                <p className="text-base text-[#d4af37]">Michael Williams Memorial Scholarship</p>
-              </div>
-            </Link>
-
-            {/* Navigation */}
-            <nav className="flex items-center gap-4">
-              <Link href="/props" className="bg-[#d4af37] text-[#232842] px-4 py-2 rounded-full font-semibold hover:bg-[#e5c04a] transition-colors">
-                Place Prop Bets
-              </Link>
-              {tournamentLaunched && (
-                <a href="/api/grid/pdf" target="_blank" className="text-base text-gray-300 hover:text-white transition-colors font-medium">
-                  Download PDF
-                </a>
-              )}
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Info Bar */}
       <div className="bg-gray-100 border-b border-gray-200">
