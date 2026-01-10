@@ -125,24 +125,12 @@ export default function Header() {
     }
   };
 
-  // Build nav items based on state
+  // Build nav items - simplified to just Super Bowl Pool and Prop Bets
   const getNavItems = () => {
-    const items = [
+    return [
+      { href: '/', label: 'Super Bowl Pool', icon: Grid3x3 },
       { href: '/props', label: 'Prop Bets', icon: Target },
-      { href: '/about#prizes', label: 'Prizes', icon: Trophy },
     ];
-
-    if (isLoggedIn) {
-      items.push({ href: '/my-squares', label: 'My Squares', icon: Ticket });
-      items.push({ href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard });
-    }
-
-    // Add Pool/Scores link when tournament is launched
-    if (tournamentLaunched) {
-      items.push({ href: '/pool', label: isGameLive ? 'Live Scores' : 'Pool', icon: isGameLive ? Radio : Trophy });
-    }
-
-    return items;
   };
 
   // Get CTA button config based on state
