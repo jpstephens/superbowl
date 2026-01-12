@@ -209,18 +209,18 @@ export default function PoolGrid({
                       title={tooltipText}
                       className={`
                         aspect-square rounded flex items-center justify-center transition-all duration-100
-                        ${isAvailable && !disabled && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer font-bold'}
-                        ${isAvailable && disabled && 'bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed'}
+                        ${isSelected ? 'bg-[#d4af37] border-2 border-[#c49b2f] text-[#232842] shadow-lg font-bold cursor-pointer' : ''}
+                        ${isAvailable && !disabled && !isSelected && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer font-bold'}
+                        ${isAvailable && disabled && !isSelected && 'bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed'}
                         ${isClaimed && !isSelected && !isWinner && 'bg-slate-100 border-2 border-slate-200 text-slate-600'}
-                        ${isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-[#232842] shadow-lg font-bold'}
-                        ${isWinner && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg animate-pulse font-bold'}
+                        ${isWinner && !isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg animate-pulse font-bold'}
                       `}
                     >
                       {isWinner && <span className="text-sm">★</span>}
                       {isSelected && !isWinner && <span className="text-sm font-bold">{boxNum}</span>}
                       {isAvailable && !isSelected && <span className="text-sm font-bold">{boxNum}</span>}
                       {isClaimed && !isSelected && !isWinner && (
-                        <span className="text-[11px] font-semibold leading-tight text-center truncate px-0.5">
+                        <span className="text-xs font-bold leading-tight text-center truncate px-0.5">
                           {getFirstName(square.user_name ?? null)}
                         </span>
                       )}
