@@ -100,24 +100,20 @@ export default function AdminDashboardPage() {
     try {
       const supabase = createClient();
 
-      // Get total users
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id', { count: 'exact' });
+      // Parallelize all database queries for better performance
+      const [profilesResult, squaresResult, paymentsResult] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact' }),
+        supabase.from('grid_squares').select('status'),
+        supabase.from('payments').select('amount, status'),
+      ]);
 
-      // Get square stats
-      const { data: squares } = await supabase
-        .from('grid_squares')
-        .select('status');
+      const { data: profiles } = profilesResult;
+      const { data: squares } = squaresResult;
+      const { data: payments } = paymentsResult;
 
-      const soldSquares = squares?.filter(s => 
+      const soldSquares = squares?.filter(s =>
         s.status === 'paid' || s.status === 'confirmed'
       ).length || 0;
-
-      // Get revenue
-      const { data: payments } = await supabase
-        .from('payments')
-        .select('amount, status');
 
       const totalRevenue = payments
         ?.filter(p => p.status === 'completed')

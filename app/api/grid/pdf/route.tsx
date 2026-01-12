@@ -328,6 +328,7 @@ export async function GET() {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="super-bowl-pool-grid.pdf"',
+        'Cache-Control': 'public, max-age=300, stale-while-revalidate=60', // Cache for 5 minutes
       },
     });
   } catch (error) {

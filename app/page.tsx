@@ -16,7 +16,7 @@ export default function GridPage() {
   const [poolActive, setPoolActive] = useState<boolean>(true);
   const [squarePrice, setSquarePrice] = useState<number>(50);
   const [tournamentLaunched, setTournamentLaunched] = useState<boolean>(false);
-  const prizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
+  const [prizes, setPrizes] = useState({ q1: 350, q2: 600, q3: 350, q4: 1200 });
   const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
 
   const GAME_DATE = new Date('2026-02-08T18:30:00-05:00');
@@ -49,16 +49,28 @@ export default function GridPage() {
       const { data: settings } = await supabase
         .from('settings')
         .select('key, value')
-        .in('key', ['pool_active', 'square_price', 'tournament_launched']);
+        .in('key', ['pool_active', 'square_price', 'tournament_launched', 'prize_q1', 'prize_q2', 'prize_q3', 'prize_q4']);
 
       if (settings) {
         const poolSetting = settings.find(s => s.key === 'pool_active');
         const priceSetting = settings.find(s => s.key === 'square_price');
         const launchSetting = settings.find(s => s.key === 'tournament_launched');
+        const q1Setting = settings.find(s => s.key === 'prize_q1');
+        const q2Setting = settings.find(s => s.key === 'prize_q2');
+        const q3Setting = settings.find(s => s.key === 'prize_q3');
+        const q4Setting = settings.find(s => s.key === 'prize_q4');
 
         if (poolSetting) setPoolActive(poolSetting.value === 'true');
         if (priceSetting?.value) setSquarePrice(parseFloat(priceSetting.value) || 50);
         if (launchSetting) setTournamentLaunched(launchSetting.value === 'true');
+
+        // Update prizes from settings (use defaults if not set)
+        setPrizes({
+          q1: q1Setting?.value ? parseFloat(q1Setting.value) : 350,
+          q2: q2Setting?.value ? parseFloat(q2Setting.value) : 600,
+          q3: q3Setting?.value ? parseFloat(q3Setting.value) : 350,
+          q4: q4Setting?.value ? parseFloat(q4Setting.value) : 1200,
+        });
       }
 
       const { data: { user } } = await supabase.auth.getUser();
@@ -122,7 +134,7 @@ export default function GridPage() {
     } as GameState);
   };
 
-  const totalPrizePool = useMemo(() => prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4, []);
+  const totalPrizePool = useMemo(() => prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4, [prizes]);
   const selectionTotal = useMemo(() => selectedSquares.length * squarePrice, [selectedSquares.length, squarePrice]);
   const isLive = gameState?.is_live || false;
 

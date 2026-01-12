@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { createClient } from '@/lib/supabase/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -15,8 +16,33 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!Array.isArray(selectedSquares) || selectedSquares.length === 0) {
+      return NextResponse.json(
+        { error: 'No squares selected' },
+        { status: 400 }
+      );
+    }
+
+    // Server-side price validation - fetch authoritative price from database
+    const supabase = await createClient();
+    const { data: priceSetting } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'square_price')
+      .single();
+
+    const serverPrice = priceSetting?.value ? parseFloat(priceSetting.value) : 50;
     const squareCount = selectedSquares.length;
-    const pricePerSquare = Math.round((baseAmount || totalAmount) / squareCount);
+    const calculatedTotal = squareCount * serverPrice;
+
+    // Verify the amount matches (allow small floating point tolerance)
+    if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
+      console.error(`Payment amount mismatch: expected ${calculatedTotal}, got ${totalAmount}`);
+      return NextResponse.json(
+        { error: 'Invalid payment amount' },
+        { status: 400 }
+      );
+    }
 
     // Create the Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -29,7 +55,7 @@ export async function POST(request: Request) {
               name: 'Super Bowl Pool Squares',
               description: `${squareCount} square${squareCount !== 1 ? 's' : ''} for the Michael Williams Memorial Scholarship Super Bowl Pool`,
             },
-            unit_amount: Math.round((baseAmount || totalAmount) * 100), // Stripe uses cents
+            unit_amount: Math.round(calculatedTotal * 100), // Stripe uses cents - use server-calculated amount
           },
           quantity: 1,
         },
@@ -45,7 +71,7 @@ export async function POST(request: Request) {
       metadata: {
         selected_squares: JSON.stringify(selectedSquares.map((sq: any) => sq.id)),
         square_count: squareCount.toString(),
-        base_amount: (baseAmount || totalAmount).toString(),
+        base_amount: calculatedTotal.toString(),
       },
     });
 

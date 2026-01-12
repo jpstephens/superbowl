@@ -47,10 +47,8 @@ export default function PaymentPage() {
       setSquarePrice(price);
       setLoading(false);
 
-      // Auto-redirect to Stripe after a brief moment
-      setTimeout(() => {
-        redirectToStripe(squares, price);
-      }, 1500);
+      // Redirect to Stripe immediately
+      redirectToStripe(squares, price);
     } catch (error) {
       console.error('Error loading price:', error);
       setLoading(false);
