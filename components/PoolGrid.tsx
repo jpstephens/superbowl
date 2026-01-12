@@ -143,17 +143,17 @@ export default function PoolGrid({
   return (
     <div className="w-full">
       {/* NFC Label - Top */}
-      <div className="flex justify-center mb-2">
-        <div className="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold tracking-wide shadow-sm">
+      <div className="flex justify-center mb-4">
+        <div className="bg-blue-600 text-white px-8 py-3 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg">
           {nfcTeam}
         </div>
       </div>
 
       <div className="flex items-stretch">
         {/* AFC Label - Left Side */}
-        <div className="flex items-center justify-center pr-2">
+        <div className="flex items-center justify-center pr-3">
           <div
-            className="bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold tracking-wide shadow-sm whitespace-nowrap"
+            className="bg-red-600 text-white px-6 py-3 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg whitespace-nowrap"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
