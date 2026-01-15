@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Download, Edit2, X, Check } from 'lucide-react';
+import { Download, X, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -49,8 +48,6 @@ export default function AdminSquaresPage() {
   const [squares, setSquares] = useState<GridSquareWithProfile[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editingSquare, setEditingSquare] = useState<GridSquareWithProfile | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
@@ -126,8 +123,8 @@ export default function AdminSquaresPage() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Square #', 'Row', 'Col', 'Row Score', 'Col Score', 'Owner', 'Email', 'Phone', 'Status'];
-    const rows = filteredSquares.map(sq => [
+    const headers = ['Square #', 'Row', 'Col', 'Row Score', 'Col Score', 'Owner', 'Email', 'Status'];
+    const rows = squares.map(sq => [
       getSquareNumber(sq.row_number, sq.col_number),
       sq.row_number,
       sq.col_number,
@@ -135,7 +132,6 @@ export default function AdminSquaresPage() {
       sq.col_score ?? '-',
       sq.profiles?.name || '-',
       sq.profiles?.email || '-',
-      sq.profiles?.phone || '-',
       sq.status,
     ]);
 
@@ -154,24 +150,23 @@ export default function AdminSquaresPage() {
 
   const getSquareNumber = (row: number, col: number) => row * 10 + col + 1;
 
-  const filteredSquares = squares.filter(sq => {
-    if (statusFilter !== 'all' && sq.status !== statusFilter) return false;
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      const squareNum = getSquareNumber(sq.row_number, sq.col_number).toString();
-      const ownerName = sq.profiles?.name?.toLowerCase() || '';
-      const ownerEmail = sq.profiles?.email?.toLowerCase() || '';
-      if (!squareNum.includes(search) && !ownerName.includes(search) && !ownerEmail.includes(search)) {
-        return false;
-      }
-    }
-    return true;
+  const getFirstName = (name: string | null) => {
+    if (!name) return '';
+    return name.trim().split(' ')[0];
+  };
+
+  // Create a map for quick lookup
+  const squareMap = new Map<string, GridSquareWithProfile>();
+  squares.forEach(sq => {
+    squareMap.set(`${sq.row_number}-${sq.col_number}`, sq);
   });
 
   const stats = {
     available: squares.filter(s => s.status === 'available').length,
-    paid: squares.filter(s => s.status === 'paid' || s.status === 'confirmed').length,
+    sold: squares.filter(s => s.status === 'paid').length,
   };
+
+  const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   if (loading) {
     return (
@@ -184,134 +179,105 @@ export default function AdminSquaresPage() {
   return (
     <div className="p-6 lg:p-8">
       {/* Page Title */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Squares</h1>
-        <p className="text-white/60">Manage square ownership and status</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Squares</h1>
+          <p className="text-white/60">Click any square to edit</p>
+        </div>
+        <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
+          <Download className="w-4 h-4 mr-2" />
+          Export CSV
+        </Button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6 max-w-md">
         <Card className="p-4 bg-white/5 border-white/10">
           <p className="text-2xl font-bold text-green-400">{stats.available}</p>
           <p className="text-sm text-white/60">Available</p>
         </Card>
         <Card className="p-4 bg-white/5 border-white/10">
-          <p className="text-2xl font-bold text-[#cda33b]">{stats.paid}</p>
+          <p className="text-2xl font-bold text-[#cda33b]">{stats.sold}</p>
           <p className="text-sm text-white/60">Sold</p>
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card className="p-4 bg-white/5 border-white/10 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div className="flex flex-col sm:flex-row gap-3 flex-1">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-              <Input
-                placeholder="Search by #, name, email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-36 bg-white/5 border-white/10 text-white">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#1a1f35] border-white/10">
-                <SelectItem value="all" className="text-white">All</SelectItem>
-                <SelectItem value="available" className="text-green-400">Available</SelectItem>
-                <SelectItem value="paid" className="text-[#cda33b]">Paid</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-        </div>
-      </Card>
-
-      {/* Table */}
-      <Card className="bg-white/5 border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-white/10 bg-white/5">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">#</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Position</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Numbers</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Owner</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Contact</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-white/60 uppercase">Edit</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filteredSquares.map((square) => (
-                <tr key={square.id} className="hover:bg-white/5 transition-colors">
-                  <td className="px-4 py-3">
-                    <span className="text-lg font-bold text-white">
-                      {getSquareNumber(square.row_number, square.col_number)}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-white/70 text-sm">
-                    R{square.row_number} C{square.col_number}
-                  </td>
-                  <td className="px-4 py-3">
-                    {square.row_score !== null && square.col_score !== null ? (
-                      <span className="font-mono text-[#cda33b] font-bold">
-                        {square.row_score}-{square.col_score}
-                      </span>
-                    ) : (
-                      <span className="text-white/30">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-white font-medium">
-                      {square.profiles?.name || <span className="text-white/30">—</span>}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    {square.profiles?.email ? (
-                      <a href={`mailto:${square.profiles.email}`} className="text-blue-400 hover:underline text-sm">
-                        {square.profiles.email}
-                      </a>
-                    ) : (
-                      <span className="text-white/30">—</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      square.status === 'available' ? 'bg-green-500/20 text-green-400' :
-                      square.status === 'paid' ? 'bg-[#cda33b]/20 text-[#cda33b]' :
-                      'bg-white/10 text-white/60'
-                    }`}>
-                      {square.status === 'paid' ? 'Sold' : square.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <Button
-                      onClick={() => handleEditClick(square)}
-                      size="sm"
-                      variant="ghost"
-                      className="text-white/60 hover:text-white hover:bg-white/10"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                  </td>
-                </tr>
+      {/* Grid */}
+      <Card className="p-6 bg-white/5 border-white/10 overflow-x-auto">
+        <table className="border-collapse mx-auto">
+          <thead>
+            <tr>
+              <th className="w-12 h-10" />
+              {numbers.map(col => (
+                <th key={col} className="w-16 h-10 text-center text-white/60 text-sm font-medium">
+                  Col {col}
+                </th>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            {numbers.map(row => (
+              <tr key={row}>
+                <td className="w-12 h-16 text-center text-white/60 text-sm font-medium">
+                  Row {row}
+                </td>
+                {numbers.map(col => {
+                  const square = squareMap.get(`${row}-${col}`);
+                  if (!square) return <td key={col} className="w-16 h-16" />;
 
-        {filteredSquares.length === 0 && (
-          <div className="p-8 text-center text-white/50">
-            No squares match your search.
-          </div>
-        )}
+                  const isAvailable = square.status === 'available';
+                  const boxNum = row * 10 + col + 1;
+
+                  return (
+                    <td key={col} className="p-0.5">
+                      <button
+                        onClick={() => handleEditClick(square)}
+                        className={`
+                          w-16 h-16 rounded-lg border-2 transition-all
+                          flex flex-col items-center justify-center gap-0.5
+                          hover:scale-105 hover:z-10 cursor-pointer
+                          ${isAvailable
+                            ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
+                            : 'bg-[#cda33b]/20 border-[#cda33b]/40 hover:border-[#cda33b]'
+                          }
+                        `}
+                      >
+                        <span className={`text-xs font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
+                          #{boxNum}
+                        </span>
+                        {square.profiles?.name ? (
+                          <span className="text-[10px] text-white/70 truncate max-w-14 px-1">
+                            {getFirstName(square.profiles.name)}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-white/40">Available</span>
+                        )}
+                        {square.row_score !== null && (
+                          <span className="text-[9px] text-white/50">
+                            {square.row_score}-{square.col_score}
+                          </span>
+                        )}
+                      </button>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Card>
+
+      {/* Legend */}
+      <div className="flex items-center gap-6 mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded bg-green-500/20 border border-green-500/40" />
+          <span className="text-white/60">Available</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded bg-[#cda33b]/20 border border-[#cda33b]/40" />
+          <span className="text-white/60">Sold</span>
+        </div>
+      </div>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingSquare} onOpenChange={(open) => !open && setEditingSquare(null)}>
@@ -321,7 +287,12 @@ export default function AdminSquaresPage() {
               Edit Square #{editingSquare && getSquareNumber(editingSquare.row_number, editingSquare.col_number)}
             </DialogTitle>
             <DialogDescription className="text-white/60">
-              Change ownership or status for this square.
+              Row {editingSquare?.row_number}, Column {editingSquare?.col_number}
+              {editingSquare?.row_score !== null && (
+                <span className="ml-2 text-[#cda33b]">
+                  (Numbers: {editingSquare?.row_score}-{editingSquare?.col_score})
+                </span>
+              )}
             </DialogDescription>
           </DialogHeader>
 
@@ -334,7 +305,7 @@ export default function AdminSquaresPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a1f35] border-white/10 max-h-60">
                   <SelectItem value="available" className="text-green-400">
-                    Make Available
+                    Make Available (No Owner)
                   </SelectItem>
                   {profiles.map((profile) => (
                     <SelectItem key={profile.id} value={profile.id} className="text-white">
@@ -353,14 +324,24 @@ export default function AdminSquaresPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a1f35] border-white/10">
                   <SelectItem value="available" className="text-green-400">Available</SelectItem>
-                  <SelectItem value="paid" className="text-[#cda33b]">Paid (Sold)</SelectItem>
+                  <SelectItem value="paid" className="text-[#cda33b]">Sold (Paid)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {editingSquare?.profiles && (
-              <div className="p-3 bg-white/5 rounded-lg">
-                <p className="text-sm text-white/60">Current: <span className="text-white">{editingSquare.profiles.name}</span></p>
+              <div className="p-3 bg-white/5 rounded-lg space-y-1">
+                <p className="text-sm text-white/60">
+                  Current Owner: <span className="text-white font-medium">{editingSquare.profiles.name}</span>
+                </p>
+                <p className="text-sm text-white/60">
+                  Email: <span className="text-white">{editingSquare.profiles.email}</span>
+                </p>
+                {editingSquare.profiles.phone && (
+                  <p className="text-sm text-white/60">
+                    Phone: <span className="text-white">{editingSquare.profiles.phone}</span>
+                  </p>
+                )}
               </div>
             )}
           </div>
