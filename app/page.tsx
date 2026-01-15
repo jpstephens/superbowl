@@ -200,86 +200,153 @@ export default function GridPage() {
         </div>
       )}
 
-      {/* Main Content - Grid Focused */}
-      <main className="flex-1 px-2 py-4 pb-32">
-        <div className="flex justify-center">
-          <PoolGrid
-            onSquareSelect={handleSquareSelect}
-            selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
-            userId={userId}
-            disabled={!poolActive}
-            gameScore={gameState ? {
-              afcScore: gameState.afc_score,
-              nfcScore: gameState.nfc_score,
-              afcTeam: gameState.afc_team,
-              nfcTeam: gameState.nfc_team,
-              quarter: gameState.quarter,
-              isLive: gameState.is_live,
-            } : null}
-          />
-        </div>
-
-        {/* Prize Pool & How to Play */}
-        <div className="max-w-4xl mx-auto mt-8 px-4 space-y-6">
-          {/* Prize Pool */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-xl font-bold text-[#232842] mb-4 flex items-center gap-2">
-              <span className="text-2xl">🏆</span> Prize Pool — ${totalPrizePool.toLocaleString()}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 font-medium mb-1">Q1</div>
-                <div className="text-2xl font-bold text-[#232842]">${prizes.q1}</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 font-medium mb-1">Halftime</div>
-                <div className="text-2xl font-bold text-[#cda33b]">${prizes.q2}</div>
-              </div>
-              <div className="bg-gray-50 rounded-xl p-4 text-center">
-                <div className="text-sm text-gray-500 font-medium mb-1">Q3</div>
-                <div className="text-2xl font-bold text-[#232842]">${prizes.q3}</div>
-              </div>
-              <div className="bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-xl p-4 text-center">
-                <div className="text-sm text-white/80 font-medium mb-1">Final</div>
-                <div className="text-2xl font-bold text-white">${prizes.q4}</div>
-              </div>
+      {/* Main Content - Two Column Layout */}
+      <main className="flex-1 pb-28 lg:pb-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* Left Column - Grid */}
+            <div className="flex-shrink-0 flex justify-center lg:justify-start">
+              <PoolGrid
+                onSquareSelect={handleSquareSelect}
+                selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
+                userId={userId}
+                disabled={!poolActive}
+                gameScore={gameState ? {
+                  afcScore: gameState.afc_score,
+                  nfcScore: gameState.nfc_score,
+                  afcTeam: gameState.afc_team,
+                  nfcTeam: gameState.nfc_team,
+                  quarter: gameState.quarter,
+                  isLive: gameState.is_live,
+                } : null}
+              />
             </div>
-          </div>
 
-          {/* How to Play */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-            <h2 className="text-xl font-bold text-[#232842] mb-4 flex items-center gap-2">
-              <span className="text-2xl">📋</span> How to Play
-            </h2>
-            <div className="space-y-3 text-gray-600">
-              <div className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
-                <p><strong>Pick your squares</strong> — Tap any available square on the grid to select it. You can choose as many as you want.</p>
+            {/* Right Column - Info Cards */}
+            <div className="flex-1 space-y-4 min-w-0 lg:max-w-sm">
+              {/* Prize Pool - Compact */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-lg font-bold text-[#232842] flex items-center gap-2">
+                    <span>🏆</span> Prizes
+                  </h2>
+                  <span className="text-lg font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <div className="bg-gray-50 rounded-lg p-2 text-center">
+                    <div className="text-[10px] text-gray-500 font-medium">Q1</div>
+                    <div className="text-sm font-bold text-[#232842]">${prizes.q1}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-2 text-center">
+                    <div className="text-[10px] text-gray-500 font-medium">HALF</div>
+                    <div className="text-sm font-bold text-[#232842]">${prizes.q2}</div>
+                  </div>
+                  <div className="bg-gray-50 rounded-lg p-2 text-center">
+                    <div className="text-[10px] text-gray-500 font-medium">Q3</div>
+                    <div className="text-sm font-bold text-[#232842]">${prizes.q3}</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg p-2 text-center">
+                    <div className="text-[10px] text-white/80 font-medium">FINAL</div>
+                    <div className="text-sm font-bold text-white">${prizes.q4}</div>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
-                <p><strong>Complete payment</strong> — Each square is ${squarePrice}. Pay securely with credit card or Venmo.</p>
+
+              {/* How to Play - Collapsible on mobile */}
+              <details className="bg-white rounded-xl shadow-sm border border-gray-100 group" open>
+                <summary className="p-4 cursor-pointer flex items-center justify-between list-none">
+                  <h2 className="text-lg font-bold text-[#232842] flex items-center gap-2">
+                    <span>📋</span> How to Play
+                  </h2>
+                  <svg className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <div className="px-4 pb-4 space-y-2 text-sm text-gray-600">
+                  <div className="flex gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                    <p><strong>Pick squares</strong> — Tap to select</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <p><strong>Pay ${squarePrice}/square</strong> — Card or Venmo</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <p><strong>Numbers assigned</strong> — Before kickoff</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                    <p><strong>Win!</strong> — Match last digits of score</p>
+                  </div>
+                </div>
+              </details>
+
+              {/* Scholarship Info */}
+              <div className="bg-[#232842] rounded-xl p-4 text-center">
+                <p className="text-white text-sm">
+                  <span className="text-[#cda33b] font-bold">100%</span> benefits the Michael Williams Memorial Scholarship
+                </p>
+                <Link href="/about" className="text-xs text-white/60 hover:text-white/80 underline mt-1 inline-block">
+                  Learn more →
+                </Link>
               </div>
-              <div className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
-                <p><strong>Numbers assigned</strong> — Before kickoff, random numbers (0-9) are assigned to each row and column.</p>
+
+              {/* Desktop Checkout - Hidden on mobile (sticky footer shows instead) */}
+              <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-gray-500 font-medium">Your Selection</span>
+                  {selectedSquares.length > 0 && (
+                    <span className="text-sm text-gray-400">{selectedSquares.length} squares</span>
+                  )}
+                </div>
+                {selectedSquares.length === 0 ? (
+                  <p className="text-gray-400 text-sm text-center py-2">Tap squares on the grid to select</p>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {selectedSquares.slice(0, 8).map((square) => {
+                        const boxNum = square.row_number * 10 + square.col_number + 1;
+                        return (
+                          <span key={square.id} className="w-8 h-8 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-xs flex items-center justify-center">
+                            {boxNum}
+                          </span>
+                        );
+                      })}
+                      {selectedSquares.length > 8 && (
+                        <span className="w-8 h-8 bg-gray-100 rounded-lg text-gray-500 font-bold text-xs flex items-center justify-center">
+                          +{selectedSquares.length - 8}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-gray-500">{selectedSquares.length} × ${squarePrice}</span>
+                      <span className="text-2xl font-bold text-[#232842]">${selectionTotal}</span>
+                    </div>
+                  </>
+                )}
+                <Link
+                  href={selectedSquares.length > 0 ? "/payment" : "#"}
+                  onClick={(e) => {
+                    if (selectedSquares.length === 0) { e.preventDefault(); return; }
+                    sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
+                  }}
+                  className={`block w-full py-3 rounded-xl font-bold text-center transition-all duration-200 ${
+                    selectedSquares.length > 0
+                      ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
+                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  {selectedSquares.length > 0 ? `Checkout · $${selectionTotal}` : 'Select squares'}
+                </Link>
               </div>
-              <div className="flex gap-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
-                <p><strong>Win prizes</strong> — If your square matches the last digit of each team&apos;s score at the end of Q1, halftime, Q3, or the final, you win!</p>
-              </div>
-            </div>
-            <div className="mt-4 p-4 bg-[#232842]/5 rounded-xl">
-              <p className="text-sm text-gray-500">
-                <strong className="text-[#232842]">100% of proceeds</strong> benefit the Michael Williams Memorial Scholarship Fund.
-              </p>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Sticky Checkout Footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50">
+      {/* Sticky Checkout Footer - Mobile Only */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           {/* Selection Info */}
           <div className="flex items-center gap-4">
