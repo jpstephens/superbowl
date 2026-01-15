@@ -196,11 +196,11 @@ export default function PaymentPage() {
               </div>
             </div>
 
-            {/* Charity Note */}
+            {/* Thank You Note */}
             <div className="bg-[#cda33b]/10 border border-[#cda33b]/30 rounded-xl p-4 flex items-center gap-3">
               <Heart className="w-6 h-6 text-[#cda33b] flex-shrink-0" fill="currentColor" />
               <p className="text-sm text-gray-700">
-                Supporting the <strong className="text-[#232842]">Michael Williams Memorial Scholarship Fund</strong>
+                Thank you for supporting the <strong className="text-[#232842]">Michael Williams Memorial Scholarship Fund</strong>
               </p>
             </div>
 
