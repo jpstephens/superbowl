@@ -157,43 +157,44 @@ export default function GridPage() {
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Info Bar - Hide countdown when game is live */}
+      {/* Info Bar - Compact on mobile */}
       {!isLive && !isFinal && (
-        <div className="bg-gradient-to-b from-gray-50 to-gray-100 border-b border-gray-200 shadow-sm">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5">
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12">
-              {/* Countdown */}
+        <div className="bg-[#232842] border-b border-white/10">
+          <div className="max-w-6xl mx-auto px-3 sm:px-6 py-2 sm:py-4">
+            {/* Mobile: Single compact row */}
+            <div className="flex items-center justify-between sm:justify-center gap-3 sm:gap-12">
+              {/* Countdown - Compact on mobile */}
               {countdown && (
-                <div className="flex items-center gap-4">
-                  <span className="text-gray-600 font-semibold text-sm uppercase tracking-wide">Kickoff</span>
-                  <div className="flex items-center gap-2">
-                    <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] text-white px-4 py-2 rounded-xl shadow-md">
-                      <span className="text-2xl font-bold tabular-nums">{countdown.days}</span>
-                      <span className="text-xs ml-1 opacity-80">d</span>
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <span className="text-white/60 font-medium text-xs sm:text-sm uppercase tracking-wide hidden sm:inline">Kickoff</span>
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <div className="bg-white/10 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg">
+                      <span className="text-lg sm:text-2xl font-bold tabular-nums">{countdown.days}</span>
+                      <span className="text-[10px] sm:text-xs ml-0.5 opacity-70">d</span>
                     </div>
-                    <span className="text-gray-400 font-bold">:</span>
-                    <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] text-white px-4 py-2 rounded-xl shadow-md">
-                      <span className="text-2xl font-bold tabular-nums">{countdown.hours}</span>
-                      <span className="text-xs ml-1 opacity-80">h</span>
+                    <span className="text-white/40 font-bold text-sm">:</span>
+                    <div className="bg-white/10 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg">
+                      <span className="text-lg sm:text-2xl font-bold tabular-nums">{countdown.hours}</span>
+                      <span className="text-[10px] sm:text-xs ml-0.5 opacity-70">h</span>
                     </div>
-                    <span className="text-gray-400 font-bold">:</span>
-                    <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] text-white px-4 py-2 rounded-xl shadow-md">
-                      <span className="text-2xl font-bold tabular-nums">{countdown.mins}</span>
-                      <span className="text-xs ml-1 opacity-80">m</span>
+                    <span className="text-white/40 font-bold text-sm">:</span>
+                    <div className="bg-white/10 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-lg">
+                      <span className="text-lg sm:text-2xl font-bold tabular-nums">{countdown.mins}</span>
+                      <span className="text-[10px] sm:text-xs ml-0.5 opacity-70">m</span>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Stats */}
-              <div className="flex items-center gap-8">
-                <div className="text-center bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100">
-                  <div className="text-3xl font-bold text-emerald-500">{stats.available}</div>
-                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">available</div>
+              {/* Stats - Inline on mobile */}
+              <div className="flex items-center gap-3 sm:gap-8">
+                <div className="text-center">
+                  <span className="text-lg sm:text-2xl font-bold text-emerald-400">{stats.available}</span>
+                  <span className="text-[10px] sm:text-xs text-white/60 font-medium uppercase ml-1">left</span>
                 </div>
-                <div className="text-center bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100">
-                  <div className="text-3xl font-bold text-[#cda33b]">${squarePrice}</div>
-                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">per square</div>
+                <div className="text-center">
+                  <span className="text-lg sm:text-2xl font-bold text-[#cda33b]">${squarePrice}</span>
+                  <span className="text-[10px] sm:text-xs text-white/60 font-medium uppercase ml-1">each</span>
                 </div>
               </div>
             </div>

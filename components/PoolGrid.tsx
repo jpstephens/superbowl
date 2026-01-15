@@ -194,10 +194,10 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
-  // Cell size - responsive grid
-  // Mobile: fills available width (no horizontal scroll)
-  // sm+: fixed sizes for consistent appearance
-  const cellSize = 'w-[8vw] h-[8vw] min-w-[30px] min-h-[30px] sm:w-[58px] sm:h-[58px] md:w-[70px] md:h-[70px] lg:w-[90px] lg:h-[90px]';
+  // Cell size - responsive grid optimized for touch
+  // Mobile: ~8.5vw per cell = 93.5vw for 11 cells (leaves room for AFC label)
+  // Ensures large touch targets on mobile
+  const cellSize = 'w-[8.2vw] h-[8.2vw] min-w-[32px] min-h-[32px] sm:w-[60px] sm:h-[60px] md:w-[72px] md:h-[72px] lg:w-[90px] lg:h-[90px]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
