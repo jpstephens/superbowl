@@ -11,6 +11,15 @@ import {
 import Link from 'next/link';
 
 // Type for purchase history with joined squares
+// Note: Supabase returns nested relations as arrays
+interface PurchaseSquare {
+  id: string;
+  row_number: number;
+  col_number: number;
+  row_score: number | null;
+  col_score: number | null;
+}
+
 interface PurchaseWithSquares {
   id: string;
   amount: number;
@@ -20,13 +29,7 @@ interface PurchaseWithSquares {
   status: string;
   created_at: string;
   purchase_squares: {
-    square: {
-      id: string;
-      row_number: number;
-      col_number: number;
-      row_score: number | null;
-      col_score: number | null;
-    };
+    square: PurchaseSquare | PurchaseSquare[];
   }[];
 }
 
@@ -386,19 +389,24 @@ export default function DashboardPage() {
                             {purchase.purchase_squares.length} square{purchase.purchase_squares.length !== 1 ? 's' : ''} purchased
                           </div>
                           <div className="flex flex-wrap gap-1.5">
-                            {purchase.purchase_squares.map(({ square }) => (
-                              <div
-                                key={square.id}
-                                className="px-2 py-1 bg-[#d4af37]/10 text-[#d4af37] rounded text-xs font-medium"
-                              >
-                                [{square.row_number},{square.col_number}]
-                                {square.row_score !== null && (
-                                  <span className="text-gray-500 ml-1">
-                                    ({square.row_score}-{square.col_score})
-                                  </span>
-                                )}
-                              </div>
-                            ))}
+                            {purchase.purchase_squares.map(({ square }, idx) => {
+                              // Handle both array and single object from Supabase
+                              const sq = Array.isArray(square) ? square[0] : square;
+                              if (!sq) return null;
+                              return (
+                                <div
+                                  key={sq.id || idx}
+                                  className="px-2 py-1 bg-[#d4af37]/10 text-[#d4af37] rounded text-xs font-medium"
+                                >
+                                  [{sq.row_number},{sq.col_number}]
+                                  {sq.row_score !== null && (
+                                    <span className="text-gray-500 ml-1">
+                                      ({sq.row_score}-{sq.col_score})
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       )}
