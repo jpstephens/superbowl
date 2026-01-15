@@ -229,10 +229,9 @@ export default function PoolGrid({
                       className={`
                         w-full h-full flex items-center justify-center transition-all duration-150 relative
                         ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
-                        ${isAvailable && !disabled && !isSelected && 'bg-gradient-to-br from-emerald-50 to-white text-gray-700 hover:from-emerald-100 hover:to-emerald-50 hover:shadow-md cursor-pointer font-medium'}
-                        ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
-                        ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-500'}
-                        ${isWinner && !isSelected && 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50'}
+                        ${isAvailable && !isSelected ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 hover:shadow-md cursor-pointer font-semibold' : ''}
+                        ${isClaimed && !isSelected && !isWinner ? 'bg-gray-200 text-gray-700' : ''}
+                        ${isWinner && !isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50' : ''}
                       `}
                     >
                       {isWinner && <span className="text-xl drop-shadow-sm">★</span>}
