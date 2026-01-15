@@ -166,9 +166,9 @@ export default function PaymentPage() {
                 </div>
 
                 {/* Fee Option Row */}
-                <div className="flex justify-between items-start border-t border-gray-100 pt-4">
-                  <label className="flex items-start gap-3 cursor-pointer flex-1">
-                    <div className="relative mt-0.5">
+                <label className="flex items-center justify-between border-t border-gray-100 pt-4 cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
                       <input
                         type="checkbox"
                         checked={coversFee}
@@ -179,15 +179,12 @@ export default function PaymentPage() {
                         {coversFee && <Check className="w-3.5 h-3.5 text-white" />}
                       </div>
                     </div>
-                    <div>
-                      <span className="text-[15px] text-gray-700 font-medium">Cover processing fee</span>
-                      <p className="text-[13px] text-gray-500">100% goes to the scholarship fund</p>
-                    </div>
-                  </label>
+                    <span className="text-[15px] text-gray-700">Cover processing fee <span className="text-gray-400">· 100% to scholarship</span></span>
+                  </div>
                   <span className={`text-[17px] tabular-nums ${coversFee ? 'font-semibold text-[#232842]' : 'text-gray-400'}`}>
                     +${processingFee.toFixed(2)}
                   </span>
-                </div>
+                </label>
 
                 {/* Total Row */}
                 <div className="flex justify-between items-baseline border-t-2 border-[#232842]/20 pt-4 mt-4">
