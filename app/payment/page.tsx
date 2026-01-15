@@ -129,7 +129,7 @@ export default function PaymentPage() {
 
             {/* Selected Squares Display */}
             <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
-              <div className="text-sm text-gray-500 mb-3">Your Squares</div>
+              <div className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide mb-3">Your Squares</div>
               <div className="flex flex-wrap gap-2">
                 {selectedSquares.map((square) => {
                   const boxNum = square.row_number * 10 + square.col_number + 1;
@@ -166,8 +166,8 @@ export default function PaymentPage() {
                 </div>
 
                 {/* Fee Option Row */}
-                <label className="flex items-center justify-between gap-4 border-t border-gray-100 pt-4 cursor-pointer">
-                  <div className="flex items-center gap-3 min-w-0">
+                <label className="flex flex-nowrap items-center justify-between gap-4 border-t border-gray-100 pt-4 cursor-pointer">
+                  <div className="flex items-center gap-3 min-w-0 flex-1 overflow-hidden">
                     <div className="relative flex-shrink-0">
                       <input
                         type="checkbox"
@@ -179,9 +179,9 @@ export default function PaymentPage() {
                         {coversFee && <Check className="w-3.5 h-3.5 text-white" />}
                       </div>
                     </div>
-                    <span className="text-[15px] text-gray-700 truncate">Cover processing fee <span className="text-gray-400 hidden sm:inline">· 100% to scholarship</span></span>
+                    <span className="text-[15px] text-gray-700 truncate">Cover processing fee</span>
                   </div>
-                  <span className={`text-[17px] tabular-nums flex-shrink-0 ${coversFee ? 'font-semibold text-[#232842]' : 'text-gray-400'}`}>
+                  <span className={`text-[17px] tabular-nums flex-shrink-0 whitespace-nowrap ${coversFee ? 'font-semibold text-[#232842]' : 'text-gray-400'}`}>
                     +${processingFee.toFixed(2)}
                   </span>
                 </label>
