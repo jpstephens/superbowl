@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
 
 interface QuarterWinnerWithProfile extends QuarterWinner {
-  profiles?: { name: string } | null;
+  profiles?: { name: string; photo_url: string | null } | null;
 }
 
 export default function GridPage() {
