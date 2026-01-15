@@ -6,7 +6,7 @@ import { FileText } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto w-full overflow-x-hidden">
+    <footer className="hidden sm:block bg-white border-t border-gray-200 mt-auto w-full overflow-x-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full max-w-full">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
