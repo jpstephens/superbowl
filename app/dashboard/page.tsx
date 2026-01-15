@@ -70,7 +70,7 @@ export default function DashboardPage() {
           .from('grid_squares')
           .select('*')
           .eq('user_id', profile.id)
-          .in('status', ['paid', 'confirmed']);
+          .eq('status', 'paid');
         
         if (squares) setUserSquares(squares);
 
@@ -273,13 +273,11 @@ export default function DashboardPage() {
                               {purchase.method === 'stripe' ? 'Card' : 'Venmo'}
                             </span>
                             <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                              purchase.status === 'confirmed'
+                              purchase.status === 'completed'
                                 ? 'bg-green-100 text-green-700'
-                                : purchase.status === 'completed'
-                                ? 'bg-yellow-100 text-yellow-700'
                                 : 'bg-gray-100 text-gray-600'
                             }`}>
-                              {purchase.status}
+                              {purchase.status === 'completed' ? 'Paid' : purchase.status}
                             </span>
                           </div>
                         </div>

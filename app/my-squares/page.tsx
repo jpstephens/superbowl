@@ -47,7 +47,7 @@ export default function MySquaresPage() {
           .from('grid_squares')
           .select('*')
           .eq('user_id', profile.id)
-          .in('status', ['paid', 'confirmed'])
+          .eq('status', 'paid')
           .order('row_number', { ascending: true });
 
         if (userSquares) {

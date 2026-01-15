@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Payment, Profile } from '@/lib/supabase/types';
-import { Check, DollarSign, CreditCard, Users } from 'lucide-react';
+import { DollarSign, CreditCard, Users } from 'lucide-react';
 
 interface ExtendedPayment extends Payment {
   profile: Profile;
@@ -38,7 +38,7 @@ export default function AdminPaymentsPage() {
   };
 
   const stats = useMemo(() => {
-    const completed = payments.filter(p => p.status === 'completed' || p.status === 'confirmed');
+    const completed = payments.filter(p => p.status === 'completed');
     const totalRevenue = completed.reduce((sum, p) => sum + Number(p.amount || 0), 0);
     const stripePayments = completed.filter(p => p.method === 'stripe').length;
     const venmoPayments = completed.filter(p => p.method === 'venmo').length;
@@ -51,43 +51,13 @@ export default function AdminPaymentsPage() {
     };
   }, [payments]);
 
-  const handleConfirmPayment = async (paymentId: string, userId: string) => {
-    try {
-      const supabase = createClient();
-
-      const { error: paymentError } = await supabase
-        .from('payments')
-        .update({ status: 'confirmed' })
-        .eq('id', paymentId);
-
-      if (paymentError) throw paymentError;
-
-      const { error: squaresError } = await supabase
-        .from('grid_squares')
-        .update({
-          status: 'confirmed',
-          paid_at: new Date().toISOString(),
-        })
-        .eq('user_id', userId)
-        .eq('status', 'paid');
-
-      if (squaresError) {
-        console.error('Error updating squares:', squaresError);
-      }
-
-      loadPayments();
-    } catch (error) {
-      console.error('Error confirming payment:', error);
-      alert('Error confirming payment. Please try again.');
-    }
-  };
 
   const getStatusBadge = (status: string) => {
-    if (status === 'confirmed') {
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Confirmed</Badge>;
-    }
     if (status === 'completed') {
-      return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Completed</Badge>;
+      return <Badge className="bg-[#cda33b]/20 text-[#cda33b] border-[#cda33b]/30">Paid</Badge>;
+    }
+    if (status === 'pending') {
+      return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pending</Badge>;
     }
     return <Badge className="bg-white/10 text-white/60 border-white/20">{status}</Badge>;
   };
@@ -177,7 +147,6 @@ export default function AdminPaymentsPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Method</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-white/60 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -196,18 +165,6 @@ export default function AdminPaymentsPage() {
                   <td className="px-4 py-4">{getStatusBadge(payment.status)}</td>
                   <td className="px-4 py-4 text-sm text-white/60">
                     {new Date(payment.created_at).toLocaleDateString()}
-                  </td>
-                  <td className="px-4 py-4 text-right">
-                    {payment.status === 'completed' && (
-                      <Button
-                        size="sm"
-                        onClick={() => handleConfirmPayment(payment.id, payment.user_id)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <Check className="mr-1 h-4 w-4" />
-                        Confirm
-                      </Button>
-                    )}
                   </td>
                 </tr>
               ))}

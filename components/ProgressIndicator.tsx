@@ -19,7 +19,7 @@ export default function ProgressIndicator() {
       const { data } = await supabase
         .from('grid_squares')
         .select('id', { count: 'exact' })
-        .in('status', ['paid', 'confirmed']);
+        .eq('status', 'paid');
 
       setSoldCount(data?.length || 0);
     } catch (error) {

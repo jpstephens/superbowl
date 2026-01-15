@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Valid statuses
-    const validStatuses = ['available', 'claimed', 'paid', 'confirmed'];
+    const validStatuses = ['available', 'claimed', 'paid'];
 
     // Build update data based on provided parameters
     const updateData: Record<string, unknown> = {};
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     } else {
       // Assign to user
       updateData.user_id = userId;
-      // Only set paid_at if status is paid or confirmed
-      if (status === 'paid' || status === 'confirmed') {
+      // Only set paid_at if status is paid
+      if (status === 'paid') {
         updateData.paid_at = new Date().toISOString();
       }
     }

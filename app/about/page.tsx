@@ -85,7 +85,7 @@ export default function Home() {
       if (squares) {
         const preview = Array(100).fill(false);
         squares.forEach(sq => {
-          if (sq.status === 'paid' || sq.status === 'confirmed') {
+          if (sq.status === 'paid') {
             const idx = sq.row_number * 10 + sq.col_number;
             preview[idx] = true;
           }
@@ -94,7 +94,7 @@ export default function Home() {
       }
 
       // Stats
-      const sold = squares?.filter(s => s.status === 'paid' || s.status === 'confirmed').length || 0;
+      const sold = squares?.filter(s => s.status === 'paid').length || 0;
 
       const { data: priceData } = await supabase
         .from('settings')

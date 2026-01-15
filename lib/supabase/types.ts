@@ -13,7 +13,7 @@ export type GridSquare = {
   col_number: number;
   row_score: number | null;
   col_score: number | null;
-  status: 'available' | 'claimed' | 'paid' | 'confirmed';
+  status: 'available' | 'claimed' | 'paid';
   user_id: string | null;
   user_name?: string | null;
   claimed_at: string | null;
@@ -53,7 +53,7 @@ export type Payment = {
   user_id: string;
   amount: number;
   method: 'venmo' | 'stripe';
-  status: 'pending' | 'completed' | 'confirmed';
+  status: 'pending' | 'completed';
   stripe_payment_intent_id: string | null;
   created_at: string;
   updated_at: string;

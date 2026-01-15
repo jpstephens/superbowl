@@ -221,8 +221,7 @@ export default function AdminSquaresPage() {
               <SelectContent className="bg-[#1a1f35] border-white/10">
                 <SelectItem value="all" className="text-white">All</SelectItem>
                 <SelectItem value="available" className="text-green-400">Available</SelectItem>
-                <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
-                <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
+                <SelectItem value="paid" className="text-[#cda33b]">Paid</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -285,11 +284,10 @@ export default function AdminSquaresPage() {
                   <td className="px-4 py-3">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       square.status === 'available' ? 'bg-green-500/20 text-green-400' :
-                      square.status === 'paid' ? 'bg-yellow-500/20 text-yellow-400' :
-                      square.status === 'confirmed' ? 'bg-blue-500/20 text-blue-400' :
+                      square.status === 'paid' ? 'bg-[#cda33b]/20 text-[#cda33b]' :
                       'bg-white/10 text-white/60'
                     }`}>
-                      {square.status}
+                      {square.status === 'paid' ? 'Sold' : square.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right">
@@ -355,8 +353,7 @@ export default function AdminSquaresPage() {
                 </SelectTrigger>
                 <SelectContent className="bg-[#1a1f35] border-white/10">
                   <SelectItem value="available" className="text-green-400">Available</SelectItem>
-                  <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
-                  <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
+                  <SelectItem value="paid" className="text-[#cda33b]">Paid (Sold)</SelectItem>
                 </SelectContent>
               </Select>
             </div>

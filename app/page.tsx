@@ -89,7 +89,7 @@ export default function GridPage() {
         .from('grid_squares')
         .select('status');
 
-      const sold = allSquares?.filter(s => s.status === 'paid' || s.status === 'confirmed').length || 0;
+      const sold = allSquares?.filter(s => s.status === 'paid').length || 0;
       setStats({ sold, available: 100 - sold });
     } catch (error) {
       console.error('Error loading data:', error);

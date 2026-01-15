@@ -93,7 +93,7 @@ export default function PoolPage() {
             .from('grid_squares')
             .select('id, row_number, col_number, row_score, col_score')
             .eq('user_id', profile.id)
-            .in('status', ['paid', 'confirmed']);
+            .eq('status', 'paid');
 
           if (squares) {
             setUserSquares(
@@ -144,7 +144,7 @@ export default function PoolPage() {
 
         const sold =
           allSquares?.filter(
-            (s) => s.status === 'paid' || s.status === 'confirmed'
+            (s) => s.status === 'paid'
           ).length || 0;
 
         const totalRaised = sold * squarePrice;
@@ -206,7 +206,7 @@ export default function PoolPage() {
       const { data: leaderboardData } = await supabase
         .from('grid_squares')
         .select('user_id, profiles:user_id(name)')
-        .in('status', ['paid', 'confirmed'])
+        .eq('status', 'paid')
         .not('user_id', 'is', null);
 
       if (leaderboardData) {

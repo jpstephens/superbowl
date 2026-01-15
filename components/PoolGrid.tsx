@@ -112,7 +112,7 @@ export default function PoolGrid({
     const afcLast = gameScore.afcScore % 10;
     const nfcLast = gameScore.nfcScore % 10;
     return squares.find(
-      (s) => s.row_score === afcLast && s.col_score === nfcLast && (s.status === 'paid' || s.status === 'confirmed')
+      (s) => s.row_score === afcLast && s.col_score === nfcLast && s.status === 'paid'
     ) || null;
   }, [squares, gameScore?.afcScore, gameScore?.nfcScore, gameScore?.isLive]);
 
@@ -202,7 +202,7 @@ export default function PoolGrid({
                 if (!square) return <td key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-gray-300 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`} />;
 
                 const isSelected = selectedSquareIds.has(square.id);
-                const isClaimed = square.status === 'paid' || square.status === 'confirmed';
+                const isClaimed = square.status === 'paid';
                 const isAvailable = square.status === 'available';
                 const isWinner = currentWinner?.id === square.id;
                 const boxNum = row * 10 + col + 1;

@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const { data: allSquares, error: squaresCheckError } = await supabase
       .from('grid_squares')
       .select('id, status')
-      .in('status', ['paid', 'confirmed']);
+      .eq('status', 'paid');
 
     if (squaresCheckError) throw squaresCheckError;
 

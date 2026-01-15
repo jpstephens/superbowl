@@ -24,6 +24,8 @@ export default function AdminLivePage() {
     timeRemaining: '15:00',
     playDescription: '',
   });
+  const [afcTeam, setAfcTeam] = useState('');
+  const [nfcTeam, setNfcTeam] = useState('');
 
   useEffect(() => {
     loadGameState();
@@ -45,6 +47,8 @@ export default function AdminLivePage() {
               timeRemaining: (payload.new as GameState).time_remaining || '15:00',
               playDescription: '',
             });
+            setAfcTeam((payload.new as GameState).afc_team || '');
+            setNfcTeam((payload.new as GameState).nfc_team || '');
           }
         }
       )
@@ -73,6 +77,8 @@ export default function AdminLivePage() {
         timeRemaining: data.time_remaining || '15:00',
         playDescription: '',
       });
+      setAfcTeam(data.afc_team || '');
+      setNfcTeam(data.nfc_team || '');
     } catch (error) {
       console.error('Error loading game state:', error);
     } finally {
@@ -174,7 +180,7 @@ export default function AdminLivePage() {
       .select('user_id')
       .eq('row_score', afcLast)
       .eq('col_score', nfcLast)
-      .in('status', ['paid', 'confirmed'])
+      .eq('status', 'paid')
       .single();
 
     const { data: prizeSetting } = await supabase
@@ -240,6 +246,42 @@ export default function AdminLivePage() {
         <h1 className="text-2xl font-bold text-white">Live Game Control</h1>
         <p className="text-white/60">Manage scores during the Super Bowl</p>
       </div>
+
+      {/* Team Names */}
+      <Card className="p-6 bg-white/5 border-white/10 mb-6">
+        <h3 className="text-lg font-bold text-white mb-4">Team Names</h3>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <Label className="text-white/80 mb-2 block">AFC Team (Row Headers)</Label>
+            <div className="flex gap-2">
+              <Input
+                value={afcTeam}
+                onChange={(e) => setAfcTeam(e.target.value)}
+                placeholder="e.g. Chiefs"
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+          </div>
+          <div>
+            <Label className="text-white/80 mb-2 block">NFC Team (Column Headers)</Label>
+            <div className="flex gap-2">
+              <Input
+                value={nfcTeam}
+                onChange={(e) => setNfcTeam(e.target.value)}
+                placeholder="e.g. Eagles"
+                className="bg-white/5 border-white/10 text-white"
+              />
+            </div>
+          </div>
+        </div>
+        <Button
+          onClick={() => updateGameState({ afc_team: afcTeam, nfc_team: nfcTeam })}
+          disabled={saving}
+          className="mt-4 bg-[#cda33b] hover:bg-[#b8922f]"
+        >
+          Save Team Names
+        </Button>
+      </Card>
 
       {/* Game Status */}
       <Card className="p-6 bg-white/5 border-white/10 mb-6">

@@ -66,10 +66,10 @@ export default function AdminDashboardPage() {
       const { data: payments } = paymentsResult;
 
       const soldSquares = squares?.filter(s =>
-        s.status === 'paid' || s.status === 'confirmed'
+        s.status === 'paid'
       ).length || 0;
 
-      const completedPayments = payments?.filter(p => p.status === 'completed' || p.status === 'confirmed') || [];
+      const completedPayments = payments?.filter(p => p.status === 'completed') || [];
       const totalRevenue = completedPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
 
       setStats({
@@ -319,7 +319,7 @@ export default function AdminDashboardPage() {
           <div className="py-4">
             <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
               <p className="text-sm text-amber-200">
-                <strong>Confirm:</strong> All 100 squares are sold and payments confirmed?
+                <strong>Confirm:</strong> All 100 squares are sold and paid?
               </p>
             </div>
           </div>

@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 interface SquareStatusBadgeProps {
-  status: 'available' | 'claimed' | 'paid' | 'confirmed' | 'selected';
+  status: 'available' | 'claimed' | 'paid' | 'selected';
   className?: string;
 }
 
@@ -21,14 +21,9 @@ export default function SquareStatusBadge({ status, className }: SquareStatusBad
       className: 'border-gray-400 text-gray-600 bg-gray-100',
     },
     paid: {
-      label: 'Paid',
+      label: 'Sold',
       variant: 'default' as const,
-      className: 'border-blue-500 text-blue-700 bg-blue-50',
-    },
-    confirmed: {
-      label: 'Confirmed',
-      variant: 'default' as const,
-      className: 'border-green-600 text-green-800 bg-green-100',
+      className: 'border-[#cda33b] text-[#cda33b] bg-[#cda33b]/10',
     },
     selected: {
       label: 'Selected',
