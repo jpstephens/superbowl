@@ -25,7 +25,7 @@ const colors = {
  */
 export function emailWrapper(content: string, options?: { hideFooter?: boolean }): string {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://superbowl.michaelwilliamsscholarship.com';
-  const logoUrl = `${baseUrl}/logo.png`;
+  const logoUrl = `${baseUrl}/logo-gold.png`;
 
   return `
 <!DOCTYPE html>
@@ -56,7 +56,7 @@ export function emailWrapper(content: string, options?: { hideFooter?: boolean }
                 <tr>
                   <td align="center">
                     <!-- Logo -->
-                    <img src="${logoUrl}" alt="Super Bowl Pool" width="100" height="100" style="display: block; width: 100px; height: 100px; border-radius: 50%; border: 3px solid ${colors.gold}; margin-bottom: 20px;" />
+                    <img src="${logoUrl}" alt="Super Bowl Pool" width="100" height="100" style="display: block; width: 100px; height: 100px; border-radius: 50%; border: 3px solid ${colors.gold}; margin-bottom: 20px; background-color: #ffffff;" />
 
                     <!-- Title -->
                     <h1 style="color: ${colors.textPrimary}; font-size: 26px; font-weight: 800; margin: 0 0 6px 0; letter-spacing: -0.5px; text-transform: uppercase;">
