@@ -223,123 +223,159 @@ export default function GridPage() {
             </div>
 
             {/* Right Column - Info Cards */}
-            <div className="flex-1 space-y-4 min-w-0 lg:max-w-sm">
-              {/* Prize Pool - Compact */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-lg font-bold text-[#232842] flex items-center gap-2">
-                    <span>🏆</span> Prizes
-                  </h2>
-                  <span className="text-lg font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</span>
+            <div className="flex-1 space-y-3 min-w-0 lg:max-w-[340px]">
+
+              {/* Desktop Checkout - Primary CTA at top */}
+              <div className="hidden lg:block bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
+                {/* Header */}
+                <div className="bg-gradient-to-r from-[#232842] to-[#1a1f35] px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-white font-semibold">Your Squares</span>
+                    <span className="text-white/60 text-sm">${squarePrice} each</span>
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="bg-gray-50 rounded-lg p-2 text-center">
-                    <div className="text-[10px] text-gray-500 font-medium">Q1</div>
-                    <div className="text-sm font-bold text-[#232842]">${prizes.q1}</div>
+
+                {/* Content */}
+                <div className="p-4">
+                  {selectedSquares.length === 0 ? (
+                    <div className="text-center py-4">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                      <p className="text-gray-500 text-sm">Click squares on the grid to add them</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {selectedSquares.map((square) => {
+                          const boxNum = square.row_number * 10 + square.col_number + 1;
+                          return (
+                            <span key={square.id} className="w-10 h-10 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-sm flex items-center justify-center shadow-sm">
+                              {boxNum}
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <div className="border-t border-gray-100 pt-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-gray-600">{selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''}</span>
+                          <span className="text-3xl font-bold text-[#232842]">${selectionTotal}</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                  <Link
+                    href={selectedSquares.length > 0 ? "/payment" : "#"}
+                    onClick={(e) => {
+                      if (selectedSquares.length === 0) { e.preventDefault(); return; }
+                      sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
+                    }}
+                    className={`block w-full py-3.5 rounded-xl font-bold text-center transition-all duration-200 ${
+                      selectedSquares.length > 0
+                        ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    {selectedSquares.length > 0 ? `Checkout · $${selectionTotal}` : 'Select Squares to Begin'}
+                  </Link>
+                </div>
+              </div>
+
+              {/* Prize Pool */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center">
+                    <span className="text-xl">🏆</span>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-2 text-center">
-                    <div className="text-[10px] text-gray-500 font-medium">HALF</div>
-                    <div className="text-sm font-bold text-[#232842]">${prizes.q2}</div>
+                  <div>
+                    <h2 className="text-base font-bold text-[#232842]">Prize Pool</h2>
+                    <p className="text-2xl font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</p>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-2 text-center">
-                    <div className="text-[10px] text-gray-500 font-medium">Q3</div>
-                    <div className="text-sm font-bold text-[#232842]">${prizes.q3}</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                    <span className="text-gray-500 text-sm">End of Q1</span>
+                    <span className="font-semibold text-[#232842]">${prizes.q1}</span>
                   </div>
-                  <div className="bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg p-2 text-center">
-                    <div className="text-[10px] text-white/80 font-medium">FINAL</div>
-                    <div className="text-sm font-bold text-white">${prizes.q4}</div>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                    <span className="text-gray-500 text-sm">Halftime</span>
+                    <span className="font-semibold text-[#232842]">${prizes.q2}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                    <span className="text-gray-500 text-sm">End of Q3</span>
+                    <span className="font-semibold text-[#232842]">${prizes.q3}</span>
+                  </div>
+                  <div className="flex items-center justify-between py-2 bg-gradient-to-r from-[#cda33b]/10 to-transparent -mx-4 px-4 rounded-lg">
+                    <span className="font-semibold text-[#232842]">Final Score</span>
+                    <span className="font-bold text-lg text-[#cda33b]">${prizes.q4}</span>
                   </div>
                 </div>
               </div>
 
-              {/* How to Play - Collapsible on mobile */}
-              <details className="bg-white rounded-xl shadow-sm border border-gray-100 group" open>
-                <summary className="p-4 cursor-pointer flex items-center justify-between list-none">
-                  <h2 className="text-lg font-bold text-[#232842] flex items-center gap-2">
-                    <span>📋</span> How to Play
-                  </h2>
+              {/* How to Play - Collapsed by default */}
+              <details className="bg-white rounded-2xl shadow-sm border border-gray-100 group">
+                <summary className="px-4 py-3 cursor-pointer flex items-center justify-between list-none">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                      <span className="text-base">📖</span>
+                    </div>
+                    <span className="font-semibold text-[#232842]">How to Play</span>
+                  </div>
                   <svg className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </summary>
-                <div className="px-4 pb-4 space-y-2 text-sm text-gray-600">
-                  <div className="flex gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                    <p><strong>Pick squares</strong> — Tap to select</p>
+                <div className="px-4 pb-4 pt-1 space-y-3 text-sm border-t border-gray-50 mt-1">
+                  <div className="flex gap-3 items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                    <div>
+                      <p className="font-medium text-[#232842]">Pick your squares</p>
+                      <p className="text-gray-500 text-xs">Click any green square on the grid</p>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                    <p><strong>Pay ${squarePrice}/square</strong> — Card or Venmo</p>
+                  <div className="flex gap-3 items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <div>
+                      <p className="font-medium text-[#232842]">Pay ${squarePrice} per square</p>
+                      <p className="text-gray-500 text-xs">Credit card or Venmo accepted</p>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-                    <p><strong>Numbers assigned</strong> — Before kickoff</p>
+                  <div className="flex gap-3 items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <div>
+                      <p className="font-medium text-[#232842]">Numbers revealed</p>
+                      <p className="text-gray-500 text-xs">Random 0-9 assigned before kickoff</p>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
-                    <p><strong>Win!</strong> — Match last digits of score</p>
+                  <div className="flex gap-3 items-start">
+                    <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                    <div>
+                      <p className="font-medium text-[#232842]">Win prizes!</p>
+                      <p className="text-gray-500 text-xs">Match last digit of each team&apos;s score</p>
+                    </div>
                   </div>
                 </div>
               </details>
 
-              {/* Scholarship Info */}
-              <div className="bg-[#232842] rounded-xl p-4 text-center">
-                <p className="text-white text-sm">
-                  <span className="text-[#cda33b] font-bold">100%</span> benefits the Michael Williams Memorial Scholarship
-                </p>
-                <Link href="/about" className="text-xs text-white/60 hover:text-white/80 underline mt-1 inline-block">
-                  Learn more →
-                </Link>
-              </div>
-
-              {/* Desktop Checkout - Hidden on mobile (sticky footer shows instead) */}
-              <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-gray-500 font-medium">Your Selection</span>
-                  {selectedSquares.length > 0 && (
-                    <span className="text-sm text-gray-400">{selectedSquares.length} squares</span>
-                  )}
+              {/* Scholarship Banner */}
+              <Link href="/about" className="block bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl p-4 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <span className="text-xl">💛</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium">
+                      <span className="text-[#cda33b]">100%</span> goes to scholarship
+                    </p>
+                    <p className="text-white/50 text-xs truncate">Michael Williams Memorial Fund</p>
+                  </div>
+                  <svg className="w-5 h-5 text-white/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </div>
-                {selectedSquares.length === 0 ? (
-                  <p className="text-gray-400 text-sm text-center py-2">Tap squares on the grid to select</p>
-                ) : (
-                  <>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {selectedSquares.slice(0, 8).map((square) => {
-                        const boxNum = square.row_number * 10 + square.col_number + 1;
-                        return (
-                          <span key={square.id} className="w-8 h-8 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-xs flex items-center justify-center">
-                            {boxNum}
-                          </span>
-                        );
-                      })}
-                      {selectedSquares.length > 8 && (
-                        <span className="w-8 h-8 bg-gray-100 rounded-lg text-gray-500 font-bold text-xs flex items-center justify-center">
-                          +{selectedSquares.length - 8}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-gray-500">{selectedSquares.length} × ${squarePrice}</span>
-                      <span className="text-2xl font-bold text-[#232842]">${selectionTotal}</span>
-                    </div>
-                  </>
-                )}
-                <Link
-                  href={selectedSquares.length > 0 ? "/payment" : "#"}
-                  onClick={(e) => {
-                    if (selectedSquares.length === 0) { e.preventDefault(); return; }
-                    sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
-                  }}
-                  className={`block w-full py-3 rounded-xl font-bold text-center transition-all duration-200 ${
-                    selectedSquares.length > 0
-                      ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.02]'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  {selectedSquares.length > 0 ? `Checkout · $${selectionTotal}` : 'Select squares'}
-                </Link>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
