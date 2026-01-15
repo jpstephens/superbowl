@@ -37,55 +37,54 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#232842]">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex h-20 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full bg-gradient-to-b from-[#232842] to-[#1e2338] shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="flex h-[72px] sm:h-[80px] items-center justify-between">
           {/* Logo & Title */}
-          <Link href="/" className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-white p-0.5 shadow-lg flex-shrink-0">
+          <Link href="/" className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-xl ring-2 ring-[#cda33b]/30 flex-shrink-0">
               <Image
                 src="/logo.png"
                 alt="Michael Williams Memorial Scholarship"
-                width={52}
-                height={52}
+                width={60}
+                height={60}
                 className="rounded-full"
               />
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-[19px] font-semibold text-white leading-tight tracking-[-0.022em]">
+            <div>
+              <h1 className="text-[17px] sm:text-[22px] font-bold text-white leading-tight tracking-[-0.02em]">
                 Super Bowl Pool
               </h1>
-              <p className="text-[13px] text-[#cda33b] font-medium tracking-[-0.008em]">
+              <p className="text-[12px] sm:text-[14px] text-[#cda33b] font-semibold tracking-[-0.01em]">
                 Michael Williams Memorial Scholarship
               </p>
             </div>
           </Link>
 
           {/* Auth */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {!loading && (
               <>
                 {user ? (
                   <>
                     <Link
                       href="/dashboard"
-                      className="hidden sm:flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                      className="hidden sm:flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
                     >
                       Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                      className="flex items-center gap-2 px-3 sm:px-4 py-2.5 min-h-[44px] rounded-xl text-[15px] font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
                     >
                       <UserIcon className="w-5 h-5" />
                       <span className="hidden sm:inline">Sign Out</span>
-                      <LogOut className="w-5 h-5 sm:hidden" />
                     </button>
                   </>
                 ) : (
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                    className="flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl bg-white/10 text-[15px] font-medium text-white hover:bg-white/20 transition-all"
                   >
                     <LogIn className="w-5 h-5" />
                     <span className="hidden sm:inline">Sign In</span>
