@@ -137,7 +137,7 @@ export default function PoolGrid({
 
   // Get first name only for cleaner display
   const getFirstName = (name: string | null) => {
-    if (!name) return '?';
+    if (!name) return 'Taken';
     return name.trim().split(' ')[0];
   };
 
