@@ -207,9 +207,9 @@ export default function AdminSquaresPage() {
         <table className="border-collapse mx-auto">
           <thead>
             <tr>
-              <th className="w-12 h-10" />
+              <th className="w-16 h-12" />
               {numbers.map(col => (
-                <th key={col} className="w-16 h-10 text-center text-white/60 text-sm font-medium">
+                <th key={col} className="w-28 h-12 text-center text-white/60 text-base font-medium">
                   Col {col}
                 </th>
               ))}
@@ -218,23 +218,23 @@ export default function AdminSquaresPage() {
           <tbody>
             {numbers.map(row => (
               <tr key={row}>
-                <td className="w-12 h-16 text-center text-white/60 text-sm font-medium">
+                <td className="w-16 h-28 text-center text-white/60 text-base font-medium">
                   Row {row}
                 </td>
                 {numbers.map(col => {
                   const square = squareMap.get(`${row}-${col}`);
-                  if (!square) return <td key={col} className="w-16 h-16" />;
+                  if (!square) return <td key={col} className="w-28 h-28" />;
 
                   const isAvailable = square.status === 'available';
                   const boxNum = row * 10 + col + 1;
 
                   return (
-                    <td key={col} className="p-0.5">
+                    <td key={col} className="p-1">
                       <button
                         onClick={() => handleEditClick(square)}
                         className={`
-                          w-16 h-16 rounded-lg border-2 transition-all
-                          flex flex-col items-center justify-center gap-0.5
+                          w-28 h-28 rounded-xl border-2 transition-all
+                          flex flex-col items-center justify-center gap-1
                           hover:scale-105 hover:z-10 cursor-pointer
                           ${isAvailable
                             ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
@@ -242,18 +242,18 @@ export default function AdminSquaresPage() {
                           }
                         `}
                       >
-                        <span className={`text-xs font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
+                        <span className={`text-lg font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
                           #{boxNum}
                         </span>
                         {square.profiles?.name ? (
-                          <span className="text-[10px] text-white/70 truncate max-w-14 px-1">
+                          <span className="text-sm text-white/70 truncate max-w-24 px-1">
                             {getFirstName(square.profiles.name)}
                           </span>
                         ) : (
-                          <span className="text-[10px] text-white/40">Available</span>
+                          <span className="text-sm text-white/40">Available</span>
                         )}
                         {square.row_score !== null && (
-                          <span className="text-[9px] text-white/50">
+                          <span className="text-xs text-white/50">
                             {square.row_score}-{square.col_score}
                           </span>
                         )}
@@ -268,13 +268,13 @@ export default function AdminSquaresPage() {
       </Card>
 
       {/* Legend */}
-      <div className="flex items-center gap-6 mt-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-green-500/20 border border-green-500/40" />
+      <div className="flex items-center gap-8 mt-6 text-base">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 rounded bg-green-500/20 border-2 border-green-500/40" />
           <span className="text-white/60">Available</span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-[#cda33b]/20 border border-[#cda33b]/40" />
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 rounded bg-[#cda33b]/20 border-2 border-[#cda33b]/40" />
           <span className="text-white/60">Sold</span>
         </div>
       </div>
