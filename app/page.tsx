@@ -441,23 +441,6 @@ export default function GridPage() {
                 </details>
               )}
 
-              {/* Scholarship Banner */}
-              <Link href="/about" className="block bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl p-4 hover:shadow-lg transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <span className="text-xl">💛</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-medium">
-                      <span className="text-[#cda33b]">100%</span> goes to scholarship
-                    </p>
-                    <p className="text-white/50 text-xs truncate">Michael Williams Memorial Fund</p>
-                  </div>
-                  <svg className="w-5 h-5 text-white/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
             </div>
           </div>
         </div>
