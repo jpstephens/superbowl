@@ -194,10 +194,10 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
-  // Cell size - larger for desktop
+  // Cell size - all cells same size including headers
   const cellSize = 'w-[52px] h-[52px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] lg:w-[82px] lg:h-[82px]';
-  const headerSize = 'w-[52px] h-[36px] sm:w-[62px] sm:h-[36px] md:w-[72px] md:h-[40px] lg:w-[82px] lg:h-[44px]';
-  const rowHeaderSize = 'w-[36px] h-[52px] sm:w-[36px] sm:h-[62px] md:w-[40px] md:h-[72px] lg:w-[44px] lg:h-[82px]';
+  const headerSize = cellSize;
+  const rowHeaderSize = cellSize;
 
   return (
     <div className="w-full flex flex-col items-center overflow-x-auto">
