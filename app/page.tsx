@@ -255,7 +255,7 @@ export default function GridPage() {
             href={selectedSquares.length > 0 ? "/payment" : "#"}
             onClick={(e) => {
               if (selectedSquares.length === 0) { e.preventDefault(); return; }
-              sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
+              sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
             }}
             className={`px-8 py-3 rounded-xl font-bold text-lg transition-colors ${
               selectedSquares.length > 0
