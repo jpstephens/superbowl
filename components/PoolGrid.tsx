@@ -141,9 +141,9 @@ export default function PoolGrid({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col items-center">
       {/* NFC Label - Top */}
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-center mb-3">
         <div className="bg-blue-600 text-white px-8 py-3 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg">
           {nfcTeam}
         </div>
@@ -151,21 +151,21 @@ export default function PoolGrid({
 
       <div className="flex items-stretch">
         {/* AFC Label - Left Side */}
-        <div className="flex items-center justify-center pr-3">
+        <div className="flex items-center justify-center pr-2">
           <div
-            className="bg-red-600 text-white px-6 py-3 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg whitespace-nowrap"
+            className="bg-red-600 text-white px-5 py-2 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg whitespace-nowrap"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
           </div>
         </div>
 
-        {/* Grid Container */}
-        <div className="flex-1 overflow-x-auto">
+        {/* Grid Container - Fixed size */}
+        <div>
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-1.5 mb-1.5 ml-14">
+          <div className="flex ml-10">
             {numbers.map((col) => (
-              <div key={`col-${col}`} className="h-8 flex items-center justify-center">
+              <div key={`col-${col}`} className="w-[60px] sm:w-[70px] md:w-[75px] h-8 flex items-center justify-center">
                 <span className="text-xl font-bold text-gray-500">
                   {tournamentLaunched ? colScores.get(col) ?? '-' : ''}
                 </span>
@@ -175,19 +175,19 @@ export default function PoolGrid({
 
           {/* Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex gap-1.5 mb-1.5">
+            <div key={`row-${row}`} className="flex">
               {/* Row Header */}
-              <div className="w-12 flex items-center justify-center flex-shrink-0">
+              <div className="w-10 flex items-center justify-center flex-shrink-0">
                 <span className="text-xl font-bold text-gray-500">
                   {tournamentLaunched ? rowScores.get(row) ?? '-' : ''}
                 </span>
               </div>
 
               {/* Cells */}
-              <div className="flex-1 grid grid-cols-10 gap-1.5">
+              <div className="flex">
                 {numbers.map((col) => {
                   const square = gridMap.get(`${row}-${col}`);
-                  if (!square) return <div key={`cell-${row}-${col}`} className="w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[80px] md:h-[80px]" />;
+                  if (!square) return <div key={`cell-${row}-${col}`} className="w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[75px] md:h-[75px]" />;
 
                   const isSelected = selectedSquareIds.has(square.id);
                   const isClaimed = square.status === 'paid' || square.status === 'confirmed';
@@ -204,11 +204,11 @@ export default function PoolGrid({
                       key={`cell-${row}-${col}`}
                       onClick={() => handleSquareClick(square)}
                       disabled={!isAvailable || tournamentLaunched || disabled}
-                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.03 } : {}}
-                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.97 } : {}}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
+                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
                       title={tooltipText}
                       className={`
-                        w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[80px] md:h-[80px] rounded-lg flex items-center justify-center transition-all duration-100
+                        w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[75px] md:h-[75px] m-[1px] rounded-lg flex items-center justify-center transition-all duration-100
                         ${isSelected ? 'bg-[#d4af37] border-2 border-[#c49b2f] text-[#232842] shadow-lg font-bold cursor-pointer' : ''}
                         ${isAvailable && !disabled && !isSelected && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer font-bold'}
                         ${isAvailable && disabled && !isSelected && 'bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed'}
