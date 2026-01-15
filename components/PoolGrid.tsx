@@ -140,94 +140,103 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
+  // Cell size
+  const cellSize = 'w-[58px] h-[58px] sm:w-[65px] sm:h-[65px] md:w-[72px] md:h-[72px]';
+  const headerSize = 'w-[58px] h-[50px] sm:w-[65px] sm:h-[55px] md:w-[72px] md:h-[60px]';
+  const rowHeaderSize = 'w-[50px] h-[58px] sm:w-[55px] sm:h-[65px] md:w-[60px] md:h-[72px]';
+
   return (
-    <div className="w-full flex flex-col items-center">
-      {/* NFC Label - Top */}
-      <div className="flex justify-center mb-3">
-        <div className="bg-blue-600 text-white px-8 py-3 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg">
-          {nfcTeam}
-        </div>
+    <div className="w-full flex flex-col items-center overflow-x-auto">
+      {/* Team Label - Top */}
+      <div className="text-center mb-2">
+        <span className="text-2xl sm:text-3xl font-bold text-blue-600">{nfcTeam}</span>
       </div>
 
-      <div className="flex items-stretch">
-        {/* AFC Label - Left Side */}
-        <div className="flex items-center justify-center pr-2">
-          <div
-            className="bg-red-600 text-white px-5 py-2 rounded-full text-2xl sm:text-3xl font-bold tracking-wide shadow-lg whitespace-nowrap"
+      <div className="flex">
+        {/* Team Label - Left (rotated) */}
+        <div className="flex items-center justify-center mr-2">
+          <span
+            className="text-2xl sm:text-3xl font-bold text-red-600"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
-          </div>
+          </span>
         </div>
 
-        {/* Grid Container - Fixed size */}
-        <div>
-          {/* Column Headers */}
-          <div className="flex ml-10">
+        {/* Grid Table */}
+        <div className="border-2 border-gray-400 inline-block">
+          {/* Header Row - Blue */}
+          <div className="flex">
+            {/* Empty corner cell */}
+            <div className={`${rowHeaderSize} bg-white border-r border-b border-gray-300`} />
+            {/* Column headers */}
             {numbers.map((col) => (
-              <div key={`col-${col}`} className="w-[60px] sm:w-[70px] md:w-[75px] h-8 flex items-center justify-center">
-                <span className="text-xl font-bold text-gray-500">
-                  {tournamentLaunched ? colScores.get(col) ?? '-' : ''}
+              <div
+                key={`col-${col}`}
+                className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 flex items-center justify-center last:border-r-0`}
+              >
+                <span className="text-xl sm:text-2xl font-bold text-white">
+                  {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                 </span>
               </div>
             ))}
           </div>
 
-          {/* Rows */}
+          {/* Data Rows */}
           {numbers.map((row) => (
             <div key={`row-${row}`} className="flex">
-              {/* Row Header */}
-              <div className="w-10 flex items-center justify-center flex-shrink-0">
-                <span className="text-xl font-bold text-gray-500">
-                  {tournamentLaunched ? rowScores.get(row) ?? '-' : ''}
+              {/* Row header - Red */}
+              <div className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 flex items-center justify-center last:border-b-0`}>
+                <span className="text-xl sm:text-2xl font-bold text-white">
+                  {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </div>
 
               {/* Cells */}
-              <div className="flex">
-                {numbers.map((col) => {
-                  const square = gridMap.get(`${row}-${col}`);
-                  if (!square) return <div key={`cell-${row}-${col}`} className="w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[75px] md:h-[75px]" />;
+              {numbers.map((col) => {
+                const square = gridMap.get(`${row}-${col}`);
+                if (!square) return <div key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-gray-300`} />;
 
-                  const isSelected = selectedSquareIds.has(square.id);
-                  const isClaimed = square.status === 'paid' || square.status === 'confirmed';
-                  const isAvailable = square.status === 'available';
-                  const isWinner = currentWinner?.id === square.id;
-                  const boxNum = row * 10 + col + 1;
+                const isSelected = selectedSquareIds.has(square.id);
+                const isClaimed = square.status === 'paid' || square.status === 'confirmed';
+                const isAvailable = square.status === 'available';
+                const isWinner = currentWinner?.id === square.id;
+                const boxNum = row * 10 + col + 1;
 
-                  const tooltipText = isClaimed
-                    ? `#${boxNum} · ${square.user_name || 'Claimed'}`
-                    : `#${boxNum} · Available`;
+                const tooltipText = isClaimed
+                  ? `#${boxNum} · ${square.user_name || 'Claimed'}`
+                  : `#${boxNum} · Available`;
 
-                  return (
-                    <motion.button
-                      key={`cell-${row}-${col}`}
-                      onClick={() => handleSquareClick(square)}
-                      disabled={!isAvailable || tournamentLaunched || disabled}
-                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05 } : {}}
-                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
-                      title={tooltipText}
-                      className={`
-                        w-[60px] h-[60px] sm:w-[70px] sm:h-[70px] md:w-[75px] md:h-[75px] m-[1px] rounded-lg flex items-center justify-center transition-all duration-100
-                        ${isSelected ? 'bg-[#d4af37] border-2 border-[#c49b2f] text-[#232842] shadow-lg font-bold cursor-pointer' : ''}
-                        ${isAvailable && !disabled && !isSelected && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer font-bold'}
-                        ${isAvailable && disabled && !isSelected && 'bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed'}
-                        ${isClaimed && !isSelected && !isWinner && 'bg-slate-100 border-2 border-slate-200 text-slate-600'}
-                        ${isWinner && !isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg animate-pulse font-bold'}
-                      `}
-                    >
-                      {isWinner && <span className="text-2xl">★</span>}
-                      {isSelected && !isWinner && <span className="text-lg font-bold">{boxNum}</span>}
-                      {isAvailable && !isSelected && <span className="text-lg font-bold">{boxNum}</span>}
-                      {isClaimed && !isSelected && !isWinner && (
-                        <span className="text-base font-bold leading-tight text-center truncate px-1">
-                          {getFirstName(square.user_name ?? null)}
-                        </span>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
+                return (
+                  <motion.button
+                    key={`cell-${row}-${col}`}
+                    onClick={() => handleSquareClick(square)}
+                    disabled={!isAvailable || tournamentLaunched || disabled}
+                    whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.02 } : {}}
+                    whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.98 } : {}}
+                    title={tooltipText}
+                    className={`
+                      ${cellSize} border-r border-b border-gray-300 flex items-center justify-center transition-all duration-100
+                      ${row === 9 ? 'border-b-0' : ''}
+                      ${col === 9 ? 'border-r-0' : ''}
+                      ${isSelected ? 'bg-[#d4af37] text-[#232842] font-bold cursor-pointer z-10 relative shadow-md' : ''}
+                      ${isAvailable && !disabled && !isSelected && 'bg-white text-gray-700 hover:bg-emerald-50 cursor-pointer font-medium'}
+                      ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
+                      ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-600'}
+                      ${isWinner && !isSelected && 'bg-[#d4af37] text-white font-bold animate-pulse'}
+                    `}
+                  >
+                    {isWinner && <span className="text-xl">★</span>}
+                    {isSelected && !isWinner && <span className="text-lg font-bold">{boxNum}</span>}
+                    {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
+                    {isClaimed && !isSelected && !isWinner && (
+                      <span className="text-sm sm:text-base font-medium leading-tight text-center truncate px-1">
+                        {getFirstName(square.user_name ?? null)}
+                      </span>
+                    )}
+                  </motion.button>
+                );
+              })}
             </div>
           ))}
         </div>
