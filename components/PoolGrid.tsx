@@ -161,12 +161,12 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Container */}
-        <div className="flex-1">
+        <div className="flex-1 overflow-x-auto">
           {/* Column Headers */}
-          <div className="grid grid-cols-10 gap-[2px] mb-[2px]">
+          <div className="grid grid-cols-10 gap-1 mb-1" style={{ minWidth: '600px' }}>
             {numbers.map((col) => (
-              <div key={`col-${col}`} className="h-6 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-500">
+              <div key={`col-${col}`} className="h-10 flex items-center justify-center">
+                <span className="text-lg font-bold text-gray-500">
                   {tournamentLaunched ? colScores.get(col) ?? '-' : ''}
                 </span>
               </div>
@@ -175,19 +175,19 @@ export default function PoolGrid({
 
           {/* Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex gap-[2px] mb-[2px]">
+            <div key={`row-${row}`} className="flex gap-1 mb-1" style={{ minWidth: '600px' }}>
               {/* Row Header */}
-              <div className="w-6 flex items-center justify-center">
-                <span className="text-sm font-bold text-gray-500">
+              <div className="w-10 flex items-center justify-center flex-shrink-0">
+                <span className="text-lg font-bold text-gray-500">
                   {tournamentLaunched ? rowScores.get(row) ?? '-' : ''}
                 </span>
               </div>
 
               {/* Cells */}
-              <div className="flex-1 grid grid-cols-10 gap-[2px]">
+              <div className="flex-1 grid grid-cols-10 gap-1">
                 {numbers.map((col) => {
                   const square = gridMap.get(`${row}-${col}`);
-                  if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square" />;
+                  if (!square) return <div key={`cell-${row}-${col}`} className="aspect-square min-w-[50px] min-h-[50px]" />;
 
                   const isSelected = selectedSquareIds.has(square.id);
                   const isClaimed = square.status === 'paid' || square.status === 'confirmed';
@@ -208,7 +208,7 @@ export default function PoolGrid({
                       whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
                       title={tooltipText}
                       className={`
-                        aspect-square rounded flex items-center justify-center transition-all duration-100
+                        aspect-square min-w-[50px] min-h-[50px] rounded-md flex items-center justify-center transition-all duration-100
                         ${isSelected ? 'bg-[#d4af37] border-2 border-[#c49b2f] text-[#232842] shadow-lg font-bold cursor-pointer' : ''}
                         ${isAvailable && !disabled && !isSelected && 'bg-emerald-50 border-2 border-emerald-300 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-400 cursor-pointer font-bold'}
                         ${isAvailable && disabled && !isSelected && 'bg-gray-100 border-2 border-gray-200 text-gray-400 cursor-not-allowed'}
@@ -216,11 +216,11 @@ export default function PoolGrid({
                         ${isWinner && !isSelected && 'bg-[#d4af37] border-2 border-[#c49b2f] text-white shadow-lg animate-pulse font-bold'}
                       `}
                     >
-                      {isWinner && <span className="text-sm">★</span>}
-                      {isSelected && !isWinner && <span className="text-sm font-bold">{boxNum}</span>}
-                      {isAvailable && !isSelected && <span className="text-sm font-bold">{boxNum}</span>}
+                      {isWinner && <span className="text-xl">★</span>}
+                      {isSelected && !isWinner && <span className="text-base font-bold">{boxNum}</span>}
+                      {isAvailable && !isSelected && <span className="text-base font-bold">{boxNum}</span>}
                       {isClaimed && !isSelected && !isWinner && (
-                        <span className="text-xs font-bold leading-tight text-center truncate px-0.5">
+                        <span className="text-sm font-bold leading-tight text-center truncate px-1">
                           {getFirstName(square.user_name ?? null)}
                         </span>
                       )}
