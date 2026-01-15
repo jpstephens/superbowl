@@ -3,10 +3,9 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { Payment, Profile } from '@/lib/supabase/types';
-import { DollarSign, CreditCard, Users } from 'lucide-react';
+import { DollarSign, CreditCard } from 'lucide-react';
 
 interface ExtendedPayment extends Payment {
   profile: Profile;
@@ -40,33 +39,21 @@ export default function AdminPaymentsPage() {
   const stats = useMemo(() => {
     const completed = payments.filter(p => p.status === 'completed');
     const totalRevenue = completed.reduce((sum, p) => sum + Number(p.amount || 0), 0);
-    const stripePayments = completed.filter(p => p.method === 'stripe').length;
-    const venmoPayments = completed.filter(p => p.method === 'venmo').length;
 
     return {
       totalRevenue,
       paymentCount: completed.length,
-      stripePayments,
-      venmoPayments,
     };
   }, [payments]);
 
-
   const getStatusBadge = (status: string) => {
     if (status === 'completed') {
-      return <Badge className="bg-[#cda33b]/20 text-[#cda33b] border-[#cda33b]/30">Paid</Badge>;
+      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Paid</Badge>;
     }
     if (status === 'pending') {
       return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pending</Badge>;
     }
     return <Badge className="bg-white/10 text-white/60 border-white/20">{status}</Badge>;
-  };
-
-  const getMethodBadge = (method: string) => {
-    if (method === 'stripe') {
-      return <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/30">Stripe</Badge>;
-    }
-    return <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30">Venmo</Badge>;
   };
 
   if (loading) {
@@ -82,11 +69,11 @@ export default function AdminPaymentsPage() {
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Payments</h1>
-        <p className="text-white/60">View and manage payment records</p>
+        <p className="text-white/60">View payment records</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-4 mb-8">
         <Card className="p-5 bg-white/5 border-white/10">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-green-500/20">
@@ -101,36 +88,12 @@ export default function AdminPaymentsPage() {
 
         <Card className="p-5 bg-white/5 border-white/10">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-blue-500/20">
-              <Users className="w-6 h-6 text-blue-400" />
+            <div className="p-3 rounded-xl bg-[#cda33b]/20">
+              <CreditCard className="w-6 h-6 text-[#cda33b]" />
             </div>
             <div>
               <p className="text-2xl font-bold text-white">{stats.paymentCount}</p>
               <p className="text-sm text-white/60">Payments</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-purple-500/20">
-              <CreditCard className="w-6 h-6 text-purple-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats.stripePayments}</p>
-              <p className="text-sm text-white/60">Stripe</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-cyan-500/20">
-              <CreditCard className="w-6 h-6 text-cyan-400" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{stats.venmoPayments}</p>
-              <p className="text-sm text-white/60">Venmo</p>
             </div>
           </div>
         </Card>
@@ -144,7 +107,6 @@ export default function AdminPaymentsPage() {
               <tr className="border-b border-white/10 bg-white/5">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">User</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Amount</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Method</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Date</th>
               </tr>
@@ -161,7 +123,6 @@ export default function AdminPaymentsPage() {
                   <td className="px-4 py-4">
                     <span className="text-white font-semibold">${Number(payment.amount).toFixed(2)}</span>
                   </td>
-                  <td className="px-4 py-4">{getMethodBadge(payment.method)}</td>
                   <td className="px-4 py-4">{getStatusBadge(payment.status)}</td>
                   <td className="px-4 py-4 text-sm text-white/60">
                     {new Date(payment.created_at).toLocaleDateString()}
