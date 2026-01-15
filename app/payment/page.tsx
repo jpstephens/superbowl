@@ -103,10 +103,10 @@ export default function PaymentPage() {
       <Header />
 
       <main className="max-w-2xl mx-auto px-4 py-8">
-        {/* Back Link */}
+        {/* Back Button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#232842] mb-6 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-[15px] font-medium text-[#232842] bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to grid
@@ -146,12 +146,18 @@ export default function PaymentPage() {
             </div>
 
             {/* Pricing */}
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              {/* Price breakdown table */}
-              <div className="space-y-4">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+              {/* Header Row */}
+              <div className="flex justify-between items-center px-5 py-3 bg-gray-50 border-b border-gray-200">
+                <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Description</span>
+                <span className="text-[13px] font-semibold text-gray-500 uppercase tracking-wide">Amount</span>
+              </div>
+
+              {/* Price breakdown */}
+              <div className="p-5 space-y-4">
                 {/* Subtotal Row */}
                 <div className="flex justify-between items-baseline">
-                  <span className="text-[15px] text-gray-600">
+                  <span className="text-[15px] text-gray-700">
                     {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
                   </span>
                   <span className="text-[17px] font-semibold text-[#232842] tabular-nums">
@@ -174,7 +180,7 @@ export default function PaymentPage() {
                       </div>
                     </div>
                     <div>
-                      <span className="text-[15px] text-[#232842] font-medium">Cover processing fee</span>
+                      <span className="text-[15px] text-gray-700 font-medium">Cover processing fee</span>
                       <p className="text-[13px] text-gray-500">100% goes to the scholarship fund</p>
                     </div>
                   </label>
@@ -184,9 +190,9 @@ export default function PaymentPage() {
                 </div>
 
                 {/* Total Row */}
-                <div className="flex justify-between items-baseline border-t-2 border-gray-200 pt-4">
-                  <span className="text-[17px] font-semibold text-[#232842]">Total</span>
-                  <span className="text-[28px] font-bold text-[#232842] tabular-nums">
+                <div className="flex justify-between items-baseline border-t-2 border-[#232842]/20 pt-4 mt-4">
+                  <span className="text-[17px] font-bold text-[#232842]">Total</span>
+                  <span className="text-[26px] font-bold text-[#232842] tabular-nums">
                     ${totalAmount.toFixed(2)}
                   </span>
                 </div>

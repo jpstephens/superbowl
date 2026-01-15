@@ -61,10 +61,10 @@ export default function ResetPasswordPage() {
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md">
-          {/* Back Link */}
+          {/* Back Button */}
           <Link
             href="/auth/login"
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-[15px] font-medium text-[#232842] bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to login

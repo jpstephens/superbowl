@@ -99,7 +99,7 @@ export default function MySquaresPage() {
       <main className="flex-1 py-8">
         <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           {/* Back Button */}
-          <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <Link href="/dashboard" className="inline-flex items-center gap-2 px-4 py-2 mb-6 text-[15px] font-medium text-[#232842] bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
             <ArrowLeft className="w-4 h-4" />
             Back to dashboard
           </Link>
