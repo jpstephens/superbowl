@@ -165,16 +165,16 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <div className="border-2 border-gray-400 inline-block leading-[0]">
+        <div className="border-2 border-gray-400 inline-flex flex-col">
           {/* Header Row - Blue */}
-          <div className="flex leading-normal">
+          <div className="flex">
             {/* Empty corner cell */}
-            <div className={`${rowHeaderSize} bg-white border-r border-b border-gray-300`} />
+            <div className={`${rowHeaderSize} bg-white border-r border-b border-gray-300 box-border`} />
             {/* Column headers */}
             {numbers.map((col) => (
               <div
                 key={`col-${col}`}
-                className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 flex items-center justify-center last:border-r-0`}
+                className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 flex items-center justify-center last:border-r-0 box-border`}
               >
                 <span className="text-xl sm:text-2xl font-bold text-white">
                   {tournamentLaunched ? colScores.get(col) ?? '' : ''}
@@ -185,9 +185,9 @@ export default function PoolGrid({
 
           {/* Data Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex leading-normal">
+            <div key={`row-${row}`} className="flex">
               {/* Row header - Red */}
-              <div className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 flex items-center justify-center last:border-b-0`}>
+              <div className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 flex items-center justify-center last:border-b-0 box-border`}>
                 <span className="text-xl sm:text-2xl font-bold text-white">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
