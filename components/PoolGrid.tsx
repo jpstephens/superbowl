@@ -223,12 +223,12 @@ export default function PoolGrid({
           <thead>
             <tr>
               {/* Empty corner cell */}
-              <th className={`${rowHeaderSize} bg-[#232842] border-r border-b border-[#232842]/30`} />
+              <th className={`${rowHeaderSize} bg-[#232842] border-r border-b border-white/10`} />
               {/* Column headers */}
               {numbers.map((col, idx) => (
                 <th
                   key={`col-${col}`}
-                  className={`${headerSize} bg-[#232842] border-r border-b border-[#232842]/30 ${idx === 9 ? 'border-r-0' : ''}`}
+                  className={`${headerSize} bg-[#232842] border-r border-b border-white/10 ${idx === 9 ? 'border-r-0' : ''}`}
                 >
                   <span className="text-xl sm:text-2xl font-bold text-white">
                     {tournamentLaunched ? colScores.get(col) ?? '' : ''}
@@ -243,7 +243,7 @@ export default function PoolGrid({
           {numbers.map((row) => (
             <tr key={`row-${row}`}>
               {/* Row header */}
-              <td className={`${rowHeaderSize} bg-[#232842] border-r border-b border-[#232842]/30 text-center ${row === 9 ? 'border-b-0' : ''}`}>
+              <td className={`${rowHeaderSize} bg-[#232842] border-r border-b border-white/10 text-center ${row === 9 ? 'border-b-0' : ''}`}>
                 <span className="text-xl sm:text-2xl font-bold text-white">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
