@@ -2,16 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Grid3x3, LogOut, Settings, Search, Download, Edit2, X, Check,
-  ArrowLeft, Filter
-} from 'lucide-react';
-import Link from 'next/link';
-import Logo from '@/components/Logo';
+import { Search, Download, Edit2, X, Check } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -52,12 +46,9 @@ interface Profile {
 }
 
 export default function AdminSquaresPage() {
-  const router = useRouter();
   const [squares, setSquares] = useState<GridSquareWithProfile[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editingSquare, setEditingSquare] = useState<GridSquareWithProfile | null>(null);
@@ -66,58 +57,22 @@ export default function AdminSquaresPage() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    checkAuth();
+    loadData();
   }, []);
-
-  const checkAuth = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) {
-        router.push('/admin/login');
-        return;
-      }
-
-      const { data: adminUser } = await supabase
-        .from('admin_users')
-        .select('id, role')
-        .eq('email', user.email)
-        .single();
-
-      if (!adminUser) {
-        await supabase.auth.signOut();
-        router.push('/admin/login');
-        return;
-      }
-
-      setIsAdmin(true);
-      setAuthChecked(true);
-      loadData();
-    } catch (error) {
-      console.error('Auth check error:', error);
-      router.push('/admin/login');
-    }
-  };
 
   const loadData = async () => {
     try {
       const supabase = createClient();
 
-      // Load squares with profiles
       const { data: squaresData, error: squaresError } = await supabase
         .from('grid_squares')
-        .select(`
-          *,
-          profiles:user_id (id, name, email, phone)
-        `)
+        .select(`*, profiles:user_id (id, name, email, phone)`)
         .order('row_number', { ascending: true })
         .order('col_number', { ascending: true });
 
       if (squaresError) throw squaresError;
       setSquares(squaresData || []);
 
-      // Load all profiles for dropdown
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('id, name, email, phone')
@@ -160,7 +115,6 @@ export default function AdminSquaresPage() {
         return;
       }
 
-      // Reload data
       await loadData();
       setEditingSquare(null);
     } catch (error) {
@@ -171,14 +125,8 @@ export default function AdminSquaresPage() {
     }
   };
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push('/admin/login');
-  };
-
   const exportToCSV = () => {
-    const headers = ['Square #', 'Row', 'Col', 'Row Score', 'Col Score', 'Owner Name', 'Email', 'Phone', 'Status'];
+    const headers = ['Square #', 'Row', 'Col', 'Row Score', 'Col Score', 'Owner', 'Email', 'Phone', 'Status'];
     const rows = filteredSquares.map(sq => [
       getSquareNumber(sq.row_number, sq.col_number),
       sq.row_number,
@@ -207,296 +155,193 @@ export default function AdminSquaresPage() {
   const getSquareNumber = (row: number, col: number) => row * 10 + col + 1;
 
   const filteredSquares = squares.filter(sq => {
-    // Status filter
     if (statusFilter !== 'all' && sq.status !== statusFilter) return false;
-
-    // Search filter
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       const squareNum = getSquareNumber(sq.row_number, sq.col_number).toString();
       const ownerName = sq.profiles?.name?.toLowerCase() || '';
       const ownerEmail = sq.profiles?.email?.toLowerCase() || '';
-
       if (!squareNum.includes(search) && !ownerName.includes(search) && !ownerEmail.includes(search)) {
         return false;
       }
     }
-
     return true;
   });
 
   const stats = {
-    total: squares.length,
     available: squares.filter(s => s.status === 'available').length,
-    claimed: squares.filter(s => s.status === 'claimed').length,
     paid: squares.filter(s => s.status === 'paid').length,
     confirmed: squares.filter(s => s.status === 'confirmed').length,
   };
 
-  if (loading || !authChecked) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
+      <div className="flex items-center justify-center h-96">
+        <div className="w-10 h-10 border-3 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!isAdmin) {
-    return null;
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      {/* Header */}
-      <header className="border-b border-gray-700 bg-gray-900/80 backdrop-blur sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Logo size="small" />
-              <div>
-                <h1 className="text-sm font-bold text-white leading-tight">
-                  Square Management
-                </h1>
-                <p className="text-xs text-gray-400">Admin Dashboard</p>
-              </div>
-            </div>
+    <div className="p-6 lg:p-8">
+      {/* Page Title */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">Squares</h1>
+        <p className="text-white/60">Manage square ownership and status</p>
+      </div>
 
-            <div className="flex items-center gap-3">
-              <Link href="/admin/dashboard">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-800">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Dashboard
-                </Button>
-              </Link>
-              <Link href="/admin/settings">
-                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-800">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
-              </Link>
-              <Button
-                onClick={handleSignOut}
-                variant="ghost"
-                size="sm"
-                className="text-gray-300 hover:text-white hover:bg-gray-800"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <Card className="p-4 bg-white/5 border-white/10">
+          <p className="text-2xl font-bold text-green-400">{stats.available}</p>
+          <p className="text-sm text-white/60">Available</p>
+        </Card>
+        <Card className="p-4 bg-white/5 border-white/10">
+          <p className="text-2xl font-bold text-yellow-400">{stats.paid}</p>
+          <p className="text-sm text-white/60">Paid</p>
+        </Card>
+        <Card className="p-4 bg-white/5 border-white/10">
+          <p className="text-2xl font-bold text-blue-400">{stats.confirmed}</p>
+          <p className="text-sm text-white/60">Confirmed</p>
+        </Card>
+      </div>
+
+      {/* Filters */}
+      <Card className="p-4 bg-white/5 border-white/10 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 flex-1">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Input
+                placeholder="Search by #, name, email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
+              />
             </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-36 bg-white/5 border-white/10 text-white">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1a1f35] border-white/10">
+                <SelectItem value="all" className="text-white">All</SelectItem>
+                <SelectItem value="available" className="text-green-400">Available</SelectItem>
+                <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
+                <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+          <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
         </div>
-      </header>
+      </Card>
 
-      <main className="py-8">
-        <div className="container mx-auto px-4 sm:px-6">
-          {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
-            <Card className="p-4 bg-gray-800 border-gray-700">
-              <div className="text-2xl font-bold text-white">{stats.total}</div>
-              <div className="text-sm text-gray-400">Total Squares</div>
-            </Card>
-            <Card className="p-4 bg-gray-800 border-gray-700">
-              <div className="text-2xl font-bold text-green-400">{stats.available}</div>
-              <div className="text-sm text-gray-400">Available</div>
-            </Card>
-            <Card className="p-4 bg-gray-800 border-gray-700">
-              <div className="text-2xl font-bold text-orange-400">{stats.claimed}</div>
-              <div className="text-sm text-gray-400">Claimed</div>
-            </Card>
-            <Card className="p-4 bg-gray-800 border-gray-700">
-              <div className="text-2xl font-bold text-yellow-400">{stats.paid}</div>
-              <div className="text-sm text-gray-400">Paid</div>
-            </Card>
-            <Card className="p-4 bg-gray-800 border-gray-700">
-              <div className="text-2xl font-bold text-blue-400">{stats.confirmed}</div>
-              <div className="text-sm text-gray-400">Confirmed</div>
-            </Card>
+      {/* Table */}
+      <Card className="bg-white/5 border-white/10 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10 bg-white/5">
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">#</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Position</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Numbers</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Owner</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Contact</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase">Status</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-white/60 uppercase">Edit</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {filteredSquares.map((square) => (
+                <tr key={square.id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-3">
+                    <span className="text-lg font-bold text-white">
+                      {getSquareNumber(square.row_number, square.col_number)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-white/70 text-sm">
+                    R{square.row_number} C{square.col_number}
+                  </td>
+                  <td className="px-4 py-3">
+                    {square.row_score !== null && square.col_score !== null ? (
+                      <span className="font-mono text-[#cda33b] font-bold">
+                        {square.row_score}-{square.col_score}
+                      </span>
+                    ) : (
+                      <span className="text-white/30">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="text-white font-medium">
+                      {square.profiles?.name || <span className="text-white/30">—</span>}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    {square.profiles?.email ? (
+                      <a href={`mailto:${square.profiles.email}`} className="text-blue-400 hover:underline text-sm">
+                        {square.profiles.email}
+                      </a>
+                    ) : (
+                      <span className="text-white/30">—</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      square.status === 'available' ? 'bg-green-500/20 text-green-400' :
+                      square.status === 'paid' ? 'bg-yellow-500/20 text-yellow-400' :
+                      square.status === 'confirmed' ? 'bg-blue-500/20 text-blue-400' :
+                      'bg-white/10 text-white/60'
+                    }`}>
+                      {square.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <Button
+                      onClick={() => handleEditClick(square)}
+                      size="sm"
+                      variant="ghost"
+                      className="text-white/60 hover:text-white hover:bg-white/10"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {filteredSquares.length === 0 && (
+          <div className="p-8 text-center text-white/50">
+            No squares match your search.
           </div>
-
-          {/* Filters and Actions */}
-          <Card className="p-4 bg-gray-800 border-gray-700 mb-6">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 flex-1">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    placeholder="Search by square #, name, or email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                  />
-                </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40 bg-gray-700 border-gray-600 text-white">
-                    <Filter className="w-4 h-4 mr-2" />
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-700 border-gray-600">
-                    <SelectItem value="all" className="text-white">All Status</SelectItem>
-                    <SelectItem value="available" className="text-green-400">Available</SelectItem>
-                    <SelectItem value="claimed" className="text-orange-400">Claimed</SelectItem>
-                    <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
-                    <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
-            </div>
-          </Card>
-
-          {/* Squares Table */}
-          <Card className="bg-gray-800 border-gray-700 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-gray-700 bg-gray-900/50">
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Square #
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Position
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Scores
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Owner
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700">
-                  {filteredSquares.map((square) => (
-                    <tr key={square.id} className="hover:bg-gray-700/50 transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="text-lg font-bold text-white">
-                          {getSquareNumber(square.row_number, square.col_number)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-300">
-                        Row {square.row_number}, Col {square.col_number}
-                      </td>
-                      <td className="px-4 py-3 text-gray-300">
-                        {square.row_score !== null && square.col_score !== null ? (
-                          <span className="font-mono text-amber-400">
-                            {square.row_score}-{square.col_score}
-                          </span>
-                        ) : (
-                          <span className="text-gray-500">Not assigned</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {square.profiles?.name ? (
-                          <span className="text-white font-medium">{square.profiles.name}</span>
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {square.profiles?.email ? (
-                          <a
-                            href={`mailto:${square.profiles.email}`}
-                            className="text-blue-400 hover:underline"
-                          >
-                            {square.profiles.email}
-                          </a>
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {square.profiles?.phone ? (
-                          <a
-                            href={`tel:${square.profiles.phone}`}
-                            className="text-blue-400 hover:underline"
-                          >
-                            {square.profiles.phone}
-                          </a>
-                        ) : (
-                          <span className="text-gray-500">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            square.status === 'available'
-                              ? 'bg-green-500/20 text-green-400'
-                              : square.status === 'claimed'
-                              ? 'bg-orange-500/20 text-orange-400'
-                              : square.status === 'paid'
-                              ? 'bg-yellow-500/20 text-yellow-400'
-                              : square.status === 'confirmed'
-                              ? 'bg-blue-500/20 text-blue-400'
-                              : 'bg-gray-500/20 text-gray-400'
-                          }`}
-                        >
-                          {square.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button
-                          onClick={() => handleEditClick(square)}
-                          size="sm"
-                          variant="ghost"
-                          className="text-gray-400 hover:text-white hover:bg-gray-700"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {filteredSquares.length === 0 && (
-              <div className="p-8 text-center text-gray-400">
-                No squares match your search criteria.
-              </div>
-            )}
-          </Card>
-        </div>
-      </main>
+        )}
+      </Card>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingSquare} onOpenChange={(open) => !open && setEditingSquare(null)}>
-        <DialogContent className="bg-gray-800 border-gray-700">
+        <DialogContent className="bg-[#1a1f35] border-white/10">
           <DialogHeader>
             <DialogTitle className="text-white">
               Edit Square #{editingSquare && getSquareNumber(editingSquare.row_number, editingSquare.col_number)}
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
-              Reassign this square to a different user or make it available.
+            <DialogDescription className="text-white/60">
+              Change ownership or status for this square.
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Assign to User
-              </label>
+              <label className="block text-sm font-medium text-white/80 mb-2">Owner</label>
               <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Select a user" />
+                <SelectTrigger className="w-full bg-white/5 border-white/10 text-white">
+                  <SelectValue placeholder="Select user" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600 max-h-60">
+                <SelectContent className="bg-[#1a1f35] border-white/10 max-h-60">
                   <SelectItem value="available" className="text-green-400">
-                    Make Available (No Owner)
+                    Make Available
                   </SelectItem>
                   {profiles.map((profile) => (
                     <SelectItem key={profile.id} value={profile.id} className="text-white">
@@ -508,35 +353,22 @@ export default function AdminSquaresPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Status
-              </label>
+              <label className="block text-sm font-medium text-white/80 mb-2">Status</label>
               <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
+                <SelectTrigger className="w-full bg-white/5 border-white/10 text-white">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="available" className="text-green-400">
-                    Available
-                  </SelectItem>
-                  <SelectItem value="claimed" className="text-orange-400">
-                    Claimed (Pending Payment)
-                  </SelectItem>
-                  <SelectItem value="paid" className="text-yellow-400">
-                    Paid (Awaiting Confirmation)
-                  </SelectItem>
-                  <SelectItem value="confirmed" className="text-blue-400">
-                    Confirmed
-                  </SelectItem>
+                <SelectContent className="bg-[#1a1f35] border-white/10">
+                  <SelectItem value="available" className="text-green-400">Available</SelectItem>
+                  <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
+                  <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {editingSquare?.profiles && (
-              <div className="p-3 bg-gray-700/50 rounded-lg">
-                <p className="text-sm text-gray-400">Current Owner:</p>
-                <p className="text-white font-medium">{editingSquare.profiles.name}</p>
-                <p className="text-gray-400 text-sm">{editingSquare.profiles.email}</p>
+              <div className="p-3 bg-white/5 rounded-lg">
+                <p className="text-sm text-white/60">Current: <span className="text-white">{editingSquare.profiles.name}</span></p>
               </div>
             )}
           </div>
@@ -545,7 +377,7 @@ export default function AdminSquaresPage() {
             <Button
               variant="outline"
               onClick={() => setEditingSquare(null)}
-              className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600"
+              className="border-white/20 text-white hover:bg-white/10"
             >
               <X className="w-4 h-4 mr-2" />
               Cancel
@@ -553,10 +385,10 @@ export default function AdminSquaresPage() {
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-amber-600 hover:bg-amber-700"
+              className="bg-[#cda33b] hover:bg-[#b8922f]"
             >
               <Check className="w-4 h-4 mr-2" />
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
         </DialogContent>
