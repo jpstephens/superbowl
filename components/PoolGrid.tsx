@@ -29,6 +29,7 @@ export default function PoolGrid({
 }: PoolGridProps) {
   const [squares, setSquares] = useState<GridSquare[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [tournamentLaunched, setTournamentLaunched] = useState(false);
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function PoolGrid({
 
       if (!data || data.length === 0) {
         console.error('No grid squares found in database');
+        setError('No grid squares found');
         setSquares([]);
         return;
       }
@@ -106,8 +108,9 @@ export default function PoolGrid({
 
       console.log(`Loaded ${processedSquares.length} squares`);
       setSquares(processedSquares);
-    } catch (error) {
-      console.error('Error loading grid:', error);
+    } catch (err) {
+      console.error('Error loading grid:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load grid');
     } finally {
       setLoading(false);
     }
@@ -118,8 +121,14 @@ export default function PoolGrid({
     const rowScores = new Map<number, number>();
     const colScores = new Map<number, number>();
 
-    squares.forEach((square) => {
-      gridMap.set(`${square.row_number}-${square.col_number}`, square);
+    console.log(`Building gridMap from ${squares.length} squares`);
+
+    squares.forEach((square, idx) => {
+      const key = `${square.row_number}-${square.col_number}`;
+      gridMap.set(key, square);
+      if (idx === 0) {
+        console.log(`First square: row=${square.row_number} (${typeof square.row_number}), col=${square.col_number} (${typeof square.col_number}), key=${key}`);
+      }
       if (tournamentLaunched && square.row_score !== null) {
         rowScores.set(square.row_number, square.row_score);
       }
@@ -128,6 +137,7 @@ export default function PoolGrid({
       }
     });
 
+    console.log(`GridMap has ${gridMap.size} entries`);
     return { gridMap, rowScores, colScores };
   }, [squares, tournamentLaunched]);
 
@@ -157,6 +167,34 @@ export default function PoolGrid({
       <div className="w-full flex flex-col items-center justify-center py-16 gap-4">
         <div className="w-10 h-10 border-3 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
         <p className="text-gray-500 text-sm font-medium animate-pulse">Loading grid...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center py-16 gap-4">
+        <p className="text-red-500 font-medium">Error: {error}</p>
+        <button
+          onClick={() => { setError(null); setLoading(true); loadGrid(); }}
+          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (squares.length === 0) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center py-16 gap-4">
+        <p className="text-gray-500 font-medium">No squares loaded. Check console for errors.</p>
+        <button
+          onClick={() => { setLoading(true); loadGrid(); }}
+          className="px-4 py-2 bg-emerald-500 text-white rounded hover:bg-emerald-600"
+        >
+          Reload Grid
+        </button>
       </div>
     );
   }
