@@ -140,10 +140,10 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
-  // Cell size
-  const cellSize = 'w-[58px] h-[58px] sm:w-[65px] sm:h-[65px] md:w-[72px] md:h-[72px]';
-  const headerSize = 'w-[58px] h-[50px] sm:w-[65px] sm:h-[55px] md:w-[72px] md:h-[60px]';
-  const rowHeaderSize = 'w-[50px] h-[58px] sm:w-[55px] sm:h-[65px] md:w-[60px] md:h-[72px]';
+  // Cell size - larger for desktop
+  const cellSize = 'w-[52px] h-[52px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] lg:w-[82px] lg:h-[82px]';
+  const headerSize = 'w-[52px] h-[44px] sm:w-[62px] sm:h-[50px] md:w-[72px] md:h-[56px] lg:w-[82px] lg:h-[60px]';
+  const rowHeaderSize = 'w-[44px] h-[52px] sm:w-[50px] sm:h-[62px] md:w-[56px] md:h-[72px] lg:w-[60px] lg:h-[82px]';
 
   return (
     <div className="w-full flex flex-col items-center overflow-x-auto">

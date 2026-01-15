@@ -198,10 +198,9 @@ export default function GridPage() {
         </div>
       )}
 
-      {/* Main Content - Grid Focused Layout */}
-      <main className="flex-1 px-2 sm:px-4 py-4">
-        {/* Grid takes full width */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 overflow-x-auto">
+      {/* Main Content - Grid Focused */}
+      <main className="flex-1 px-2 py-2 pb-24">
+        <div className="flex justify-center">
           <PoolGrid
             onSquareSelect={handleSquareSelect}
             selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
@@ -216,110 +215,58 @@ export default function GridPage() {
               isLive: gameState.is_live,
             } : null}
           />
-
-          {/* Legend */}
-          <div className="flex justify-center gap-6 mt-6 pt-4 border-t border-gray-200 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded bg-emerald-50 border-2 border-emerald-300" />
-              <span>Available</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded bg-[#d4af37] border-2 border-[#c49b2f]" />
-              <span>Selected</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-5 h-5 rounded bg-slate-100 border-2 border-slate-200" />
-              <span>Taken</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Bar - Prize Info + Selection + Checkout */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Prizes */}
-          <div className="bg-[#232842] rounded-xl p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-gray-400 text-xs mb-1">PRIZE POOL</div>
-                <div className="text-2xl font-bold text-[#d4af37]">${totalPrizePool.toLocaleString()}</div>
-              </div>
-              <div className="flex gap-2 text-center text-xs">
-                <div className="bg-white/10 rounded px-2 py-1.5">
-                  <div className="text-gray-400">Q1</div>
-                  <div className="text-white font-semibold">${prizes.q1}</div>
-                </div>
-                <div className="bg-white/10 rounded px-2 py-1.5">
-                  <div className="text-gray-400">Q2</div>
-                  <div className="text-white font-semibold">${prizes.q2}</div>
-                </div>
-                <div className="bg-white/10 rounded px-2 py-1.5">
-                  <div className="text-gray-400">Q3</div>
-                  <div className="text-white font-semibold">${prizes.q3}</div>
-                </div>
-                <div className="bg-[#d4af37]/20 rounded px-2 py-1.5">
-                  <div className="text-[#d4af37]">Q4</div>
-                  <div className="text-[#d4af37] font-semibold">${prizes.q4}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Selection */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-semibold text-[#232842] text-sm">Your Selection</div>
-                {selectedSquares.length === 0 ? (
-                  <div className="text-gray-400 text-sm">Click squares to select</div>
-                ) : (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {selectedSquares.slice(0, 8).map((square) => {
-                      const boxNum = square.row_number * 10 + square.col_number + 1;
-                      return (
-                        <span key={square.id} className="w-7 h-7 bg-[#d4af37] rounded text-[#232842] font-bold text-xs flex items-center justify-center">
-                          {boxNum}
-                        </span>
-                      );
-                    })}
-                    {selectedSquares.length > 8 && (
-                      <span className="text-gray-500 text-xs self-center ml-1">+{selectedSquares.length - 8}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-              {selectedSquares.length > 0 && (
-                <div className="text-right">
-                  <div className="text-gray-500 text-xs">{selectedSquares.length} × ${squarePrice}</div>
-                  <div className="text-xl font-bold text-[#232842]">${selectionTotal}</div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Checkout */}
-          <div className="flex items-center">
-            <Link
-              href={selectedSquares.length > 0 ? "/payment" : "#"}
-              onClick={(e) => {
-                if (selectedSquares.length === 0) { e.preventDefault(); return; }
-                sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
-              }}
-              className={`w-full py-4 rounded-xl font-bold text-lg text-center block transition-colors ${
-                selectedSquares.length > 0
-                  ? 'bg-[#d4af37] text-[#232842] hover:bg-[#c49b2f] shadow-lg'
-                  : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {selectedSquares.length > 0 ? `Checkout - $${selectionTotal}` : 'Select squares to continue'}
-            </Link>
-          </div>
-        </div>
-
-        {/* Charity Note */}
-        <div className="text-center text-sm text-gray-500 mt-4">
-          100% of proceeds benefit the Michael Williams Memorial Scholarship Fund
         </div>
       </main>
+
+      {/* Sticky Checkout Footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          {/* Selection Info */}
+          <div className="flex items-center gap-3">
+            {selectedSquares.length === 0 ? (
+              <span className="text-gray-500">Click squares to select</span>
+            ) : (
+              <>
+                <div className="flex gap-1">
+                  {selectedSquares.slice(0, 6).map((square) => {
+                    const boxNum = square.row_number * 10 + square.col_number + 1;
+                    return (
+                      <span key={square.id} className="w-8 h-8 bg-[#d4af37] rounded text-[#232842] font-bold text-sm flex items-center justify-center">
+                        {boxNum}
+                      </span>
+                    );
+                  })}
+                  {selectedSquares.length > 6 && (
+                    <span className="w-8 h-8 bg-gray-200 rounded text-gray-600 font-bold text-xs flex items-center justify-center">
+                      +{selectedSquares.length - 6}
+                    </span>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-xs text-gray-500">{selectedSquares.length} × ${squarePrice}</div>
+                  <div className="text-xl font-bold text-[#232842]">${selectionTotal}</div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Checkout Button */}
+          <Link
+            href={selectedSquares.length > 0 ? "/payment" : "#"}
+            onClick={(e) => {
+              if (selectedSquares.length === 0) { e.preventDefault(); return; }
+              sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares.map(s => s.id)));
+            }}
+            className={`px-8 py-3 rounded-xl font-bold text-lg transition-colors ${
+              selectedSquares.length > 0
+                ? 'bg-[#d4af37] text-[#232842] hover:bg-[#c49b2f]'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {selectedSquares.length > 0 ? `Checkout - $${selectionTotal}` : 'Select squares'}
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }
