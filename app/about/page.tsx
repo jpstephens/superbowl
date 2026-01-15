@@ -123,7 +123,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-3 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -157,7 +157,7 @@ export default function Home() {
                 </div>
                 <span className="text-gray-600">:</span>
                 <div className="flex items-center gap-1">
-                  <span className="text-xl font-black text-[#d4af37] tabular-nums">{String(countdown.secs).padStart(2, '0')}</span>
+                  <span className="text-xl font-black text-[#cda33b] tabular-nums">{String(countdown.secs).padStart(2, '0')}</span>
                   <span className="text-xs text-gray-500 uppercase">s</span>
                 </div>
               </div>
@@ -170,12 +170,12 @@ export default function Home() {
       {/* ===== HERO ===== */}
       <section className="relative pt-12 pb-16">
         {/* Decorative circular elements inspired by logo */}
-        <div className="absolute top-20 right-10 w-64 h-64 rounded-full border-2 border-[#d4af37]/10 opacity-50" />
-        <div className="absolute top-28 right-18 w-48 h-48 rounded-full border border-[#d4af37]/5" />
-        <div className="absolute bottom-10 left-10 w-40 h-40 rounded-full border-2 border-[#d4af37]/10 opacity-30" />
+        <div className="absolute top-20 right-10 w-64 h-64 rounded-full border-2 border-[#cda33b]/10 opacity-50" />
+        <div className="absolute top-28 right-18 w-48 h-48 rounded-full border border-[#cda33b]/5" />
+        <div className="absolute bottom-10 left-10 w-40 h-40 rounded-full border-2 border-[#cda33b]/10 opacity-30" />
 
         {/* Subtle background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#d4af37]/3 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#cda33b]/3 via-transparent to-transparent" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -211,7 +211,7 @@ export default function Home() {
 
                   <Link
                     href="/grid"
-                    className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg w-full justify-center"
+                    className="group inline-flex items-center gap-3 px-8 py-4 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg w-full justify-center"
                   >
                     Check Your Squares
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -238,9 +238,9 @@ export default function Home() {
                   {/* Headline */}
                   <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.9] tracking-tight mb-6 text-[#232842]">
                     {tournamentLaunched ? (
-                      <>View Your <span className="text-[#d4af37]">Numbers</span></>
+                      <>View Your <span className="text-[#cda33b]">Numbers</span></>
                     ) : (
-                      <>Pick Your <span className="text-[#d4af37]">Squares</span></>
+                      <>Pick Your <span className="text-[#cda33b]">Squares</span></>
                     )}
                   </h1>
 
@@ -257,7 +257,7 @@ export default function Home() {
                   <div className="flex flex-wrap gap-4 mb-8">
                     <Link
                       href="/grid"
-                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                      className="group inline-flex items-center gap-3 px-8 py-4 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                     >
                       {tournamentLaunched ? 'View Grid' : 'Pick Your Squares'}
                       <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -269,7 +269,7 @@ export default function Home() {
                   {/* Prize + Stats Row */}
                   <div className="flex items-center gap-6 flex-wrap">
                     <div className="flex items-center gap-2 px-4 py-2 bg-[#232842] rounded-xl">
-                      <span className="text-[#d4af37] font-black text-xl">$2,500</span>
+                      <span className="text-[#cda33b] font-black text-xl">$2,500</span>
                       <span className="text-gray-400 text-sm">in prizes</span>
                     </div>
                     {!tournamentLaunched && (
@@ -297,7 +297,7 @@ export default function Home() {
               className="relative"
             >
               {/* Subtle glow */}
-              <div className="absolute -inset-10 bg-[#d4af37]/10 blur-3xl rounded-full" />
+              <div className="absolute -inset-10 bg-[#cda33b]/10 blur-3xl rounded-full" />
 
               {/* The Grid */}
               <div className="relative bg-white rounded-2xl p-6 border border-gray-200 shadow-xl">
@@ -306,7 +306,7 @@ export default function Home() {
                   <span className="text-base font-bold text-[#232842]">
                     {isLive ? 'LIVE GAME' : tournamentLaunched ? 'NUMBERS ASSIGNED' : 'LIVE GRID'}
                   </span>
-                  <span className={`text-base font-bold ${isLive ? 'text-red-600' : 'text-[#d4af37]'}`}>
+                  <span className={`text-base font-bold ${isLive ? 'text-red-600' : 'text-[#cda33b]'}`}>
                     {isLive ? `Q${gameState?.quarter || 1}` : tournamentLaunched ? 'READY' : `$${stats.price}/square`}
                   </span>
                 </div>
@@ -321,7 +321,7 @@ export default function Home() {
                       transition={{ delay: idx * 0.005 }}
                       className={`aspect-square rounded-sm transition-all ${
                         sold
-                          ? 'bg-[#d4af37]'
+                          ? 'bg-[#cda33b]'
                           : 'bg-[#30d158]/20 hover:bg-[#30d158]/40 cursor-pointer border border-[#30d158]/30'
                       }`}
                     />
@@ -336,11 +336,11 @@ export default function Home() {
                       <span className="text-gray-600 font-medium">Available</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 bg-[#d4af37] rounded-sm" />
+                      <div className="w-3 h-3 bg-[#cda33b] rounded-sm" />
                       <span className="text-gray-600 font-medium">Taken</span>
                     </div>
                   </div>
-                  <Link href="/grid" className="text-[#d4af37] font-bold hover:underline">
+                  <Link href="/grid" className="text-[#cda33b] font-bold hover:underline">
                     View Full Grid →
                   </Link>
                 </div>
@@ -354,7 +354,7 @@ export default function Home() {
       {/* ===== HOW IT WORKS ===== */}
       <section className="py-24 bg-white relative overflow-hidden">
         {/* Decorative circle */}
-        <div className="absolute -right-40 top-20 w-96 h-96 rounded-full border border-[#d4af37]/20" />
+        <div className="absolute -right-40 top-20 w-96 h-96 rounded-full border border-[#cda33b]/20" />
 
         <div className="relative max-w-6xl mx-auto px-6">
           <motion.div
@@ -396,7 +396,7 @@ export default function Home() {
                 className="relative p-8 bg-white border border-gray-200 rounded-2xl shadow-lg"
               >
                 {/* Circular badge step number */}
-                <div className="absolute -top-5 left-8 w-10 h-10 rounded-full bg-[#d4af37] flex items-center justify-center border-4 border-white shadow-md">
+                <div className="absolute -top-5 left-8 w-10 h-10 rounded-full bg-[#cda33b] flex items-center justify-center border-4 border-white shadow-md">
                   <span className="text-lg font-black text-white">{item.step}</span>
                 </div>
                 <h3 className="text-xl font-bold mb-3 mt-2 text-[#232842]">{item.title}</h3>
@@ -442,7 +442,7 @@ export default function Home() {
               <Link
                 href="https://michaelwilliamsscholarship.com"
                 target="_blank"
-                className="inline-flex items-center gap-2 text-[#d4af37] font-bold text-lg hover:underline"
+                className="inline-flex items-center gap-2 text-[#cda33b] font-bold text-lg hover:underline"
               >
                 Learn more about the scholarship
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -458,8 +458,8 @@ export default function Home() {
               viewport={{ once: true }}
               className="grid grid-cols-2 gap-4"
             >
-              <div className="col-span-2 p-8 bg-gradient-to-br from-[#d4af37]/20 to-[#d4af37]/10 border-2 border-[#d4af37]/30 rounded-2xl">
-                <div className="text-5xl font-black text-[#d4af37] mb-2">${stats.raised.toLocaleString()}</div>
+              <div className="col-span-2 p-8 bg-gradient-to-br from-[#cda33b]/20 to-[#cda33b]/10 border-2 border-[#cda33b]/30 rounded-2xl">
+                <div className="text-5xl font-black text-[#cda33b] mb-2">${stats.raised.toLocaleString()}</div>
                 <div className="text-gray-600 text-lg font-medium">Raised This Year</div>
               </div>
               <div className="p-6 bg-white border-2 border-gray-200 rounded-2xl shadow-md">
@@ -478,8 +478,8 @@ export default function Home() {
       {/* ===== FINAL CTA - State aware ===== */}
       <section className={`py-24 relative overflow-hidden ${isLive ? 'bg-red-700' : 'bg-[#232842]'}`}>
         {/* Decorative circles */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#d4af37]/20" />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#d4af37]/10" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full border border-[#cda33b]/20" />
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-[#cda33b]/10" />
 
         <div className="relative max-w-4xl mx-auto px-6 text-center">
           <motion.div
@@ -491,9 +491,9 @@ export default function Home() {
               {isLive ? (
                 <>The Game is <span className="text-white animate-pulse">LIVE</span>!</>
               ) : tournamentLaunched ? (
-                <>Check Your <span className="text-[#d4af37]">Numbers</span></>
+                <>Check Your <span className="text-[#cda33b]">Numbers</span></>
               ) : (
-                <>Ready to <span className="text-[#d4af37]">Play</span>?</>
+                <>Ready to <span className="text-[#cda33b]">Play</span>?</>
               )}
             </h2>
             <p className="text-xl text-gray-300 mb-10 max-w-lg mx-auto">
@@ -509,7 +509,7 @@ export default function Home() {
                 <>
                   <Link
                     href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
+                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     Check Winners
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -527,7 +527,7 @@ export default function Home() {
                 <>
                   <Link
                     href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
+                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     View Your Numbers
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -545,7 +545,7 @@ export default function Home() {
                 <>
                   <Link
                     href="/grid"
-                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#d4af37] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
+                    className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     Pick Your Squares
                     <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

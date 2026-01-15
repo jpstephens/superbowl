@@ -142,7 +142,7 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
               </div>
 
@@ -153,12 +153,12 @@ function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
               </div>
 
               <div className="text-right">
-                <Link href="/auth/reset-password" className="text-xs text-[#d4af37] hover:underline">
+                <Link href="/auth/reset-password" className="text-xs text-[#cda33b] hover:underline">
                   Forgot password?
                 </Link>
               </div>
@@ -175,7 +175,7 @@ function LoginForm() {
             {/* Register Link */}
             <p className="mt-6 text-center text-sm text-gray-500">
               Don't have an account?{' '}
-              <Link href="/register" className="text-[#d4af37] font-semibold hover:underline">
+              <Link href="/register" className="text-[#cda33b] font-semibold hover:underline">
                 Create one
               </Link>
             </p>

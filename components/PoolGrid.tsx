@@ -215,15 +215,20 @@ export default function PoolGrid({
                     whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.02 } : {}}
                     whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.98 } : {}}
                     title={tooltipText}
+                    aria-label={`Square ${boxNum}. ${
+                      isClaimed ? `Owned by ${square.user_name || 'Unknown'}` : 'Available for purchase'
+                    }${isSelected ? '. Currently selected' : ''}${isWinner ? '. Current winner!' : ''}`}
+                    aria-pressed={isSelected}
+                    role="gridcell"
                     className={`
                       ${cellSize} border-r border-b border-gray-300 flex items-center justify-center transition-all duration-100
                       ${row === 9 ? 'border-b-0' : ''}
                       ${col === 9 ? 'border-r-0' : ''}
-                      ${isSelected ? 'bg-[#d4af37] text-[#232842] font-bold cursor-pointer z-10 relative shadow-md' : ''}
+                      ${isSelected ? 'bg-[#cda33b] text-[#232842] font-bold cursor-pointer z-10 relative shadow-md' : ''}
                       ${isAvailable && !disabled && !isSelected && 'bg-white text-gray-700 hover:bg-emerald-50 cursor-pointer font-medium'}
                       ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
                       ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-600'}
-                      ${isWinner && !isSelected && 'bg-[#d4af37] text-white font-bold animate-pulse'}
+                      ${isWinner && !isSelected && 'bg-[#cda33b] text-white font-bold animate-pulse'}
                     `}
                   >
                     {isWinner && <span className="text-xl">★</span>}
@@ -247,7 +252,7 @@ export default function PoolGrid({
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-lg text-center"
+          className="mt-4 p-3 bg-[#cda33b]/10 border border-[#cda33b]/30 rounded-lg text-center"
         >
           <span className="text-[#232842] font-semibold">
             ★ {currentWinner.user_name} is winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})

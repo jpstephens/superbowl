@@ -27,8 +27,8 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
   return (
     <section id="prizes" className={`py-24 bg-white relative overflow-hidden ${className}`}>
       {/* Decorative elements */}
-      <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-[#d4af37]/20" />
-      <div className="absolute -right-20 top-1/3 w-48 h-48 rounded-full border border-[#d4af37]/10" />
+      <div className="absolute -left-20 top-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-[#cda33b]/20" />
+      <div className="absolute -right-20 top-1/3 w-48 h-48 rounded-full border border-[#cda33b]/10" />
 
       <div className="relative max-w-6xl mx-auto px-6">
         <motion.div
@@ -38,8 +38,8 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
           className="text-center mb-12"
         >
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-full mb-6">
-            <Trophy className="w-5 h-5 text-[#d4af37]" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#cda33b]/10 border border-[#cda33b]/30 rounded-full mb-6">
+            <Trophy className="w-5 h-5 text-[#cda33b]" />
             <span className="text-base font-bold text-[#232842]">Prize Breakdown</span>
           </div>
 
@@ -62,7 +62,7 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
               transition={{ delay: idx * 0.1 }}
               className={`relative p-6 rounded-2xl border-2 transition-all hover:scale-105 ${
                 prize.label === 'Q4'
-                  ? 'bg-gradient-to-br from-[#d4af37]/20 to-[#d4af37]/5 border-[#d4af37]'
+                  ? 'bg-gradient-to-br from-[#cda33b]/20 to-[#cda33b]/5 border-[#cda33b]'
                   : 'bg-white border-gray-200 shadow-md'
               }`}
             >
@@ -70,7 +70,7 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
               <div
                 className={`inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${
                   prize.label === 'Q4'
-                    ? 'bg-[#d4af37] text-white'
+                    ? 'bg-[#cda33b] text-white'
                     : 'bg-[#232842] text-white'
                 }`}
               >
@@ -80,7 +80,7 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
               {/* Prize Amount */}
               <div className="mb-2">
                 <span className={`text-3xl sm:text-4xl font-black ${
-                  prize.label === 'Q4' ? 'text-[#d4af37]' : 'text-[#232842]'
+                  prize.label === 'Q4' ? 'text-[#cda33b]' : 'text-[#232842]'
                 }`}>
                   ${prize.amount.toLocaleString()}
                 </span>
@@ -100,7 +100,7 @@ export default function PrizeBreakdown({ className = '' }: PrizeBreakdownProps) 
           className="bg-[#232842] rounded-2xl p-8 text-center"
         >
           <div className="flex items-center justify-center gap-3 mb-4">
-            <DollarSign className="w-8 h-8 text-[#d4af37]" />
+            <DollarSign className="w-8 h-8 text-[#cda33b]" />
             <span className="text-5xl sm:text-6xl font-black text-white">
               ${PRIZES.total.toLocaleString()}
             </span>

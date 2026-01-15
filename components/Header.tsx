@@ -55,32 +55,39 @@ export default function Header() {
               <h1 className="text-xl font-bold text-white leading-tight">
                 Super Bowl Pool
               </h1>
-              <p className="text-sm text-[#d4af37] font-medium">
+              <p className="text-sm text-[#cda33b] font-medium">
                 Michael Williams Memorial Scholarship
               </p>
             </div>
           </Link>
 
           {/* Auth */}
-          <div className="flex items-center gap-3">
-            {/* Auth Button */}
+          <div className="flex items-center gap-2">
             {!loading && (
               <>
                 {user ? (
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
-                  >
-                    <UserIcon className="w-4 h-4" />
-                    <span className="hidden sm:inline">Sign Out</span>
-                    <LogOut className="w-4 h-4 sm:hidden" />
-                  </button>
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="hidden sm:flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                    >
+                      <UserIcon className="w-5 h-5" />
+                      <span className="hidden sm:inline">Sign Out</span>
+                      <LogOut className="w-5 h-5 sm:hidden" />
+                    </button>
+                  </>
                 ) : (
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                    className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
                   >
-                    <LogIn className="w-4 h-4" />
+                    <LogIn className="w-5 h-5" />
                     <span className="hidden sm:inline">Sign In</span>
                   </Link>
                 )}

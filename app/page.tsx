@@ -174,7 +174,7 @@ export default function GridPage() {
                 <div className="text-xs text-gray-500">squares left</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-[#d4af37]">${squarePrice}</div>
+                <div className="text-2xl font-bold text-[#cda33b]">${squarePrice}</div>
                 <div className="text-xs text-gray-500">per square</div>
               </div>
             </div>
@@ -231,7 +231,7 @@ export default function GridPage() {
                   {selectedSquares.slice(0, 6).map((square) => {
                     const boxNum = square.row_number * 10 + square.col_number + 1;
                     return (
-                      <span key={square.id} className="w-8 h-8 bg-[#d4af37] rounded text-[#232842] font-bold text-sm flex items-center justify-center">
+                      <span key={square.id} className="w-8 h-8 bg-[#cda33b] rounded text-[#232842] font-bold text-sm flex items-center justify-center">
                         {boxNum}
                       </span>
                     );
@@ -259,7 +259,7 @@ export default function GridPage() {
             }}
             className={`px-8 py-3 rounded-xl font-bold text-lg transition-colors ${
               selectedSquares.length > 0
-                ? 'bg-[#d4af37] text-[#232842] hover:bg-[#c49b2f]'
+                ? 'bg-[#cda33b] text-[#232842] hover:bg-[#c49b2f]'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >

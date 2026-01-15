@@ -99,14 +99,14 @@ export default function PaymentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#232842]">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Back Link */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-[#232842] mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to grid
@@ -114,29 +114,29 @@ export default function PaymentPage() {
 
         {loading ? (
           <div className="py-16 text-center">
-            <Loader2 className="w-10 h-10 animate-spin text-[#d4af37] mx-auto mb-4" />
-            <p className="text-gray-400">Loading...</p>
+            <Loader2 className="w-10 h-10 animate-spin text-[#cda33b] mx-auto mb-4" />
+            <p className="text-gray-500">Loading...</p>
           </div>
         ) : (
           <div className="space-y-4">
             {/* Header */}
             <div className="text-center mb-6">
-              <h1 className="text-3xl font-bold text-white mb-2">Complete Your Purchase</h1>
-              <p className="text-gray-400">
+              <h1 className="text-3xl font-bold text-[#232842] mb-2">Complete Your Purchase</h1>
+              <p className="text-gray-500">
                 {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} selected
               </p>
             </div>
 
             {/* Selected Squares Display */}
-            <div className="bg-white/5 rounded-xl p-5">
-              <div className="text-sm text-gray-400 mb-3">Your Squares</div>
+            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+              <div className="text-sm text-gray-500 mb-3">Your Squares</div>
               <div className="flex flex-wrap gap-2">
                 {selectedSquares.map((square) => {
                   const boxNum = square.row_number * 10 + square.col_number + 1;
                   return (
                     <div
                       key={square.id}
-                      className="w-12 h-12 bg-[#d4af37] rounded-lg flex items-center justify-center text-[#232842] font-bold text-lg"
+                      className="w-12 h-12 bg-[#cda33b] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm"
                     >
                       {boxNum}
                     </div>
@@ -146,13 +146,13 @@ export default function PaymentPage() {
             </div>
 
             {/* Pricing */}
-            <div className="bg-white rounded-xl p-6">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
               {/* Subtotal */}
               <div className="flex justify-between items-center py-3">
                 <span className="text-gray-600">
                   {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
                 </span>
-                <span className="text-xl font-semibold text-gray-900">${baseAmount.toFixed(2)}</span>
+                <span className="text-xl font-semibold text-[#232842]">${baseAmount.toFixed(2)}</span>
               </div>
 
               {/* Fee Option */}
@@ -166,12 +166,12 @@ export default function PaymentPage() {
                         onChange={(e) => setCoversFee(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-6 h-6 rounded-md border-2 border-gray-300 peer-checked:border-[#d4af37] peer-checked:bg-[#d4af37] transition-colors flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-md border-2 border-gray-300 peer-checked:border-[#cda33b] peer-checked:bg-[#cda33b] transition-colors flex items-center justify-center">
                         {coversFee && <Check className="w-4 h-4 text-white" />}
                       </div>
                     </div>
                     <div>
-                      <span className="text-gray-900 font-medium">Cover processing fee</span>
+                      <span className="text-[#232842] font-medium">Cover processing fee</span>
                       <p className="text-xs text-gray-500">100% goes to the scholarship fund</p>
                     </div>
                   </div>
@@ -182,17 +182,17 @@ export default function PaymentPage() {
               {/* Total */}
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-gray-900">Total</span>
+                  <span className="text-lg font-semibold text-[#232842]">Total</span>
                   <span className="text-3xl font-bold text-[#232842]">${totalAmount.toFixed(2)}</span>
                 </div>
               </div>
             </div>
 
             {/* Charity Note */}
-            <div className="bg-[#d4af37]/10 border border-[#d4af37]/30 rounded-xl p-4 flex items-center gap-3">
-              <Heart className="w-6 h-6 text-[#d4af37] flex-shrink-0" fill="currentColor" />
-              <p className="text-sm text-gray-300">
-                Supporting the <strong className="text-white">Michael Williams Memorial Scholarship Fund</strong>
+            <div className="bg-[#cda33b]/10 border border-[#cda33b]/30 rounded-xl p-4 flex items-center gap-3">
+              <Heart className="w-6 h-6 text-[#cda33b] flex-shrink-0" fill="currentColor" />
+              <p className="text-sm text-gray-700">
+                Supporting the <strong className="text-[#232842]">Michael Williams Memorial Scholarship Fund</strong>
               </p>
             </div>
 
@@ -200,7 +200,7 @@ export default function PaymentPage() {
             <button
               onClick={redirectToStripe}
               disabled={redirecting}
-              className="w-full bg-[#d4af37] text-[#232842] py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#c49b2f] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-[#cda33b] text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#c39931] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
             >
               {redirecting ? (
                 <>
@@ -214,7 +214,7 @@ export default function PaymentPage() {
 
             {/* Security */}
             <p className="text-xs text-gray-500 text-center">
-              🔒 Secure payment powered by Stripe
+              Secure payment powered by Stripe
             </p>
           </div>
         )}

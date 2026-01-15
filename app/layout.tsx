@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#cda33b", // Gold - matching charity brand
+  themeColor: "#cda33b", // Gold - matching michaelwilliamsscholarship.com brand
   width: "device-width",
   initialScale: 1,
   // Allow users to zoom for accessibility - do NOT set userScalable: false

@@ -24,20 +24,20 @@ export default function Footer() {
             <Link
               href="https://michaelwilliamsscholarship.com"
               target="_blank"
-              className="text-base font-medium text-gray-600 hover:text-[#d4af37] transition-colors"
+              className="text-base font-medium text-gray-600 hover:text-[#cda33b] transition-colors"
             >
               Main Website
             </Link>
             <Link
               href="/disclaimer"
-              className="flex items-center gap-2 text-base font-medium text-gray-600 hover:text-[#d4af37] transition-colors"
+              className="flex items-center gap-2 text-base font-medium text-gray-600 hover:text-[#cda33b] transition-colors"
             >
               <FileText className="h-4 w-4" />
               <span>Terms</span>
             </Link>
             <Link
               href="/admin"
-              className="text-base font-medium text-gray-600 hover:text-[#d4af37] transition-colors"
+              className="text-base font-medium text-gray-600 hover:text-[#cda33b] transition-colors"
             >
               Admin
             </Link>

@@ -171,7 +171,7 @@ export default function RegisterPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
               </div>
 
@@ -182,7 +182,7 @@ export default function RegisterPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
               </div>
 
@@ -193,7 +193,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
                 <p className="text-xs text-gray-400 mt-1 ml-1">At least 8 characters</p>
               </div>
@@ -205,7 +205,7 @@ export default function RegisterPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d4af37] focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
                 />
               </div>
 
@@ -221,7 +221,7 @@ export default function RegisterPage() {
             {/* Login Link */}
             <p className="mt-6 text-center text-sm text-gray-500">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-[#d4af37] font-semibold hover:underline">
+              <Link href="/auth/login" className="text-[#cda33b] font-semibold hover:underline">
                 Sign in
               </Link>
             </p>

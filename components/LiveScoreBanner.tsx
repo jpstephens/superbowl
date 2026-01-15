@@ -78,7 +78,7 @@ export default function LiveScoreBanner({
     return (
       <div className="bg-white border-2 border-gray-200 rounded-lg px-4 py-3 shadow-md">
         <div className="flex items-center justify-center gap-2 text-gray-500 text-base">
-          <div className="w-5 h-5 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin" />
+          <div className="w-5 h-5 border-2 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
           <span className="font-medium">Loading score...</span>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function LiveScoreBanner({
             <span className="text-sm text-gray-500 uppercase hidden sm:inline font-semibold">{score.afcTeam}</span>
             <motion.span
               key={score.afcScore}
-              initial={{ scale: 1.2, color: '#d4af37' }}
+              initial={{ scale: 1.2, color: '#cda33b' }}
               animate={{ scale: 1, color: '#232842' }}
               className="text-3xl font-black tabular-nums"
             >
@@ -143,7 +143,7 @@ export default function LiveScoreBanner({
           <div className="flex items-center gap-2">
             <motion.span
               key={score.nfcScore}
-              initial={{ scale: 1.2, color: '#d4af37' }}
+              initial={{ scale: 1.2, color: '#cda33b' }}
               animate={{ scale: 1, color: '#232842' }}
               className="text-3xl font-black tabular-nums"
             >
@@ -157,10 +157,10 @@ export default function LiveScoreBanner({
         {winningNumbers && (score.isLive || score.isFinal) && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500 hidden sm:inline font-medium">Numbers:</span>
-            <div className="flex items-center gap-1 px-3 py-1 bg-[#d4af37]/15 border-2 border-[#d4af37]/30 rounded">
-              <span className="text-base font-bold text-[#d4af37]">{winningNumbers.afc}</span>
+            <div className="flex items-center gap-1 px-3 py-1 bg-[#cda33b]/15 border-2 border-[#cda33b]/30 rounded">
+              <span className="text-base font-bold text-[#cda33b]">{winningNumbers.afc}</span>
               <span className="text-gray-400 font-bold">-</span>
-              <span className="text-base font-bold text-[#d4af37]">{winningNumbers.nfc}</span>
+              <span className="text-base font-bold text-[#cda33b]">{winningNumbers.nfc}</span>
             </div>
           </div>
         )}
