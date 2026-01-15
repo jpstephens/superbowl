@@ -66,19 +66,45 @@ export default function PoolGrid({
 
       setTournamentLaunched(settingsData?.value === 'true');
 
+      // Fetch grid squares without the join first (more reliable)
       const { data, error } = await supabase
         .from('grid_squares')
-        .select(`*, profiles:user_id (name)`)
+        .select('*')
         .order('row_number', { ascending: true })
         .order('col_number', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching grid squares:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.error('No grid squares found in database');
+        setSquares([]);
+        return;
+      }
+
+      // Fetch profile names separately for claimed squares
+      const claimedUserIds = data
+        .filter(sq => sq.user_id)
+        .map(sq => sq.user_id);
+
+      let profileMap = new Map<string, string>();
+      if (claimedUserIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('id, name')
+          .in('id', claimedUserIds);
+
+        profiles?.forEach(p => profileMap.set(p.id, p.name || ''));
+      }
 
       const processedSquares = data.map((square) => ({
         ...square,
-        user_name: square.profiles?.name || null,
+        user_name: square.user_id ? profileMap.get(square.user_id) || null : null,
       }));
 
+      console.log(`Loaded ${processedSquares.length} squares`);
       setSquares(processedSquares);
     } catch (error) {
       console.error('Error loading grid:', error);
