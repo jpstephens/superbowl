@@ -49,6 +49,15 @@ export async function POST(request: Request) {
         ? JSON.parse(session.metadata.selected_squares)
         : [];
 
+      // Extract fee donation data from metadata
+      const baseAmount = session.metadata?.base_amount
+        ? parseFloat(session.metadata.base_amount)
+        : amount;
+      const feeDonation = session.metadata?.fee_donation
+        ? parseFloat(session.metadata.fee_donation)
+        : 0;
+      const coversFee = session.metadata?.covers_fee === 'true';
+
       if (!registrationData.email) {
         console.error('No email found in session metadata');
         return NextResponse.json(
@@ -85,13 +94,16 @@ export async function POST(request: Request) {
 
         const profileId = registerData.profileId;
 
-        // Create payment record
+        // Create payment record with fee donation data
         if (profileId) {
           const { data: payment, error: paymentError } = await supabase
             .from('payments')
             .insert({
               user_id: profileId,
               amount: amount,
+              base_amount: baseAmount,
+              fee_donation: feeDonation,
+              covers_fee: coversFee,
               method: 'stripe',
               status: 'completed',
               stripe_payment_intent_id: session.payment_intent as string,
@@ -103,8 +115,24 @@ export async function POST(request: Request) {
             console.error('Error creating payment:', paymentError);
           }
 
-          // Update squares are already handled in auto-register
-          console.log(`Payment completed and user registered: ${registrationData.email}`);
+          // Link squares to payment via purchase_squares junction table
+          if (payment && selectedSquareIds.length > 0) {
+            const purchaseSquaresData = selectedSquareIds.map((squareId: string) => ({
+              payment_id: payment.id,
+              square_id: squareId,
+            }));
+
+            const { error: linkError } = await supabase
+              .from('purchase_squares')
+              .insert(purchaseSquaresData);
+
+            if (linkError) {
+              console.error('Error linking squares to payment:', linkError);
+            }
+          }
+
+          // Log success with fee info
+          console.log(`Payment completed: ${registrationData.email}, base: $${baseAmount}, fee donation: $${feeDonation}`);
         }
       } catch (error) {
         console.error('Error in auto-registration:', error);

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import {
   Users, DollarSign, Grid3x3, Trophy, Rocket,
   Settings, CreditCard, LogOut, AlertCircle, Shield,
-  TrendingUp, CheckCircle2, Download, Mail, Loader2
+  TrendingUp, CheckCircle2, Download, Mail, Loader2, Heart
 } from 'lucide-react';
 import Link from 'next/link';
 import Logo from '@/components/Logo';
@@ -26,6 +26,9 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalRevenue: 0,
+    baseRevenue: 0,
+    totalDonations: 0,
+    donationCount: 0,
     soldSquares: 0,
     availableSquares: 100,
   });
@@ -104,7 +107,7 @@ export default function AdminDashboardPage() {
       const [profilesResult, squaresResult, paymentsResult] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
         supabase.from('grid_squares').select('status'),
-        supabase.from('payments').select('amount, status'),
+        supabase.from('payments').select('amount, base_amount, fee_donation, status'),
       ]);
 
       const { data: profiles } = profilesResult;
@@ -115,13 +118,20 @@ export default function AdminDashboardPage() {
         s.status === 'paid' || s.status === 'confirmed'
       ).length || 0;
 
-      const totalRevenue = payments
-        ?.filter(p => p.status === 'completed')
-        .reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+      // Calculate revenue breakdown
+      const completedPayments = payments?.filter(p => p.status === 'completed' || p.status === 'confirmed') || [];
+
+      const totalRevenue = completedPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      const totalDonations = completedPayments.reduce((sum, p) => sum + Number(p.fee_donation || 0), 0);
+      const baseRevenue = completedPayments.reduce((sum, p) => sum + Number(p.base_amount || p.amount || 0), 0);
+      const donationCount = completedPayments.filter(p => Number(p.fee_donation || 0) > 0).length;
 
       setStats({
         totalUsers: profiles?.length || 0,
         totalRevenue,
+        baseRevenue,
+        totalDonations,
+        donationCount,
         soldSquares,
         availableSquares: 100 - soldSquares,
       });
@@ -252,7 +262,7 @@ export default function AdminDashboardPage() {
       <main className="py-8">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
             <Card className="p-6 bg-gray-800 border-gray-700">
               <div className="flex items-center justify-between mb-2">
                 <Users className="w-8 h-8 text-blue-400" />
@@ -267,6 +277,15 @@ export default function AdminDashboardPage() {
                 <span className="text-3xl font-bold text-white">${stats.totalRevenue.toFixed(0)}</span>
               </div>
               <p className="text-sm text-gray-400">Total Revenue</p>
+            </Card>
+
+            <Card className="p-6 bg-gray-800 border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <Heart className="w-8 h-8 text-pink-400" />
+                <span className="text-3xl font-bold text-white">${stats.totalDonations.toFixed(2)}</span>
+              </div>
+              <p className="text-sm text-gray-400">Fee Donations</p>
+              <p className="text-xs text-gray-500 mt-1">{stats.donationCount} donors covered fees</p>
             </Card>
 
             <Card className="p-6 bg-gray-800 border-gray-700">
@@ -395,14 +414,6 @@ export default function AdminDashboardPage() {
                 <Rocket className="w-8 h-8 text-red-400 mb-3 group-hover:scale-110 transition-transform" />
                 <h3 className="text-lg font-bold text-white mb-1">Live Game Control</h3>
                 <p className="text-sm text-gray-400">Manage scores during the game</p>
-              </Card>
-            </Link>
-
-            <Link href="/admin/props">
-              <Card className="p-6 bg-gray-800 border-gray-700 hover:border-yellow-600 transition-all cursor-pointer group">
-                <Trophy className="w-8 h-8 text-yellow-400 mb-3 group-hover:scale-110 transition-transform" />
-                <h3 className="text-lg font-bold text-white mb-1">Prop Bets</h3>
-                <p className="text-sm text-gray-400">Create and manage prop bets</p>
               </Card>
             </Link>
 

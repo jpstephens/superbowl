@@ -62,6 +62,7 @@ export default function AdminSquaresPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [editingSquare, setEditingSquare] = useState<GridSquareWithProfile | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -134,6 +135,7 @@ export default function AdminSquaresPage() {
   const handleEditClick = (square: GridSquareWithProfile) => {
     setEditingSquare(square);
     setSelectedUserId(square.user_id || 'available');
+    setSelectedStatus(square.status);
   };
 
   const handleSave = async () => {
@@ -147,6 +149,7 @@ export default function AdminSquaresPage() {
         body: JSON.stringify({
           squareId: editingSquare.id,
           userId: selectedUserId === 'available' ? null : selectedUserId,
+          status: selectedStatus,
         }),
       });
 
@@ -225,6 +228,7 @@ export default function AdminSquaresPage() {
   const stats = {
     total: squares.length,
     available: squares.filter(s => s.status === 'available').length,
+    claimed: squares.filter(s => s.status === 'claimed').length,
     paid: squares.filter(s => s.status === 'paid').length,
     confirmed: squares.filter(s => s.status === 'confirmed').length,
   };
@@ -287,7 +291,7 @@ export default function AdminSquaresPage() {
       <main className="py-8">
         <div className="container mx-auto px-4 sm:px-6">
           {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
             <Card className="p-4 bg-gray-800 border-gray-700">
               <div className="text-2xl font-bold text-white">{stats.total}</div>
               <div className="text-sm text-gray-400">Total Squares</div>
@@ -295,6 +299,10 @@ export default function AdminSquaresPage() {
             <Card className="p-4 bg-gray-800 border-gray-700">
               <div className="text-2xl font-bold text-green-400">{stats.available}</div>
               <div className="text-sm text-gray-400">Available</div>
+            </Card>
+            <Card className="p-4 bg-gray-800 border-gray-700">
+              <div className="text-2xl font-bold text-orange-400">{stats.claimed}</div>
+              <div className="text-sm text-gray-400">Claimed</div>
             </Card>
             <Card className="p-4 bg-gray-800 border-gray-700">
               <div className="text-2xl font-bold text-yellow-400">{stats.paid}</div>
@@ -326,9 +334,10 @@ export default function AdminSquaresPage() {
                   </SelectTrigger>
                   <SelectContent className="bg-gray-700 border-gray-600">
                     <SelectItem value="all" className="text-white">All Status</SelectItem>
-                    <SelectItem value="available" className="text-white">Available</SelectItem>
-                    <SelectItem value="paid" className="text-white">Paid</SelectItem>
-                    <SelectItem value="confirmed" className="text-white">Confirmed</SelectItem>
+                    <SelectItem value="available" className="text-green-400">Available</SelectItem>
+                    <SelectItem value="claimed" className="text-orange-400">Claimed</SelectItem>
+                    <SelectItem value="paid" className="text-yellow-400">Paid</SelectItem>
+                    <SelectItem value="confirmed" className="text-blue-400">Confirmed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -427,6 +436,8 @@ export default function AdminSquaresPage() {
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                             square.status === 'available'
                               ? 'bg-green-500/20 text-green-400'
+                              : square.status === 'claimed'
+                              ? 'bg-orange-500/20 text-orange-400'
                               : square.status === 'paid'
                               ? 'bg-yellow-500/20 text-yellow-400'
                               : square.status === 'confirmed'
@@ -474,28 +485,55 @@ export default function AdminSquaresPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Assign to User
-            </label>
-            <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
-                <SelectValue placeholder="Select a user" />
-              </SelectTrigger>
-              <SelectContent className="bg-gray-700 border-gray-600 max-h-60">
-                <SelectItem value="available" className="text-green-400">
-                  Make Available (No Owner)
-                </SelectItem>
-                {profiles.map((profile) => (
-                  <SelectItem key={profile.id} value={profile.id} className="text-white">
-                    {profile.name} ({profile.email})
+          <div className="py-4 space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Assign to User
+              </label>
+              <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Select a user" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600 max-h-60">
+                  <SelectItem value="available" className="text-green-400">
+                    Make Available (No Owner)
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                  {profiles.map((profile) => (
+                    <SelectItem key={profile.id} value={profile.id} className="text-white">
+                      {profile.name} ({profile.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Status
+              </label>
+              <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <SelectTrigger className="w-full bg-gray-700 border-gray-600 text-white">
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent className="bg-gray-700 border-gray-600">
+                  <SelectItem value="available" className="text-green-400">
+                    Available
+                  </SelectItem>
+                  <SelectItem value="claimed" className="text-orange-400">
+                    Claimed (Pending Payment)
+                  </SelectItem>
+                  <SelectItem value="paid" className="text-yellow-400">
+                    Paid (Awaiting Confirmation)
+                  </SelectItem>
+                  <SelectItem value="confirmed" className="text-blue-400">
+                    Confirmed
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             {editingSquare?.profiles && (
-              <div className="mt-4 p-3 bg-gray-700/50 rounded-lg">
+              <div className="p-3 bg-gray-700/50 rounded-lg">
                 <p className="text-sm text-gray-400">Current Owner:</p>
                 <p className="text-white font-medium">{editingSquare.profiles.name}</p>
                 <p className="text-gray-400 text-sm">{editingSquare.profiles.email}</p>

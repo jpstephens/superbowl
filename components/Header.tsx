@@ -3,16 +3,13 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
 import { LogIn, LogOut, User as UserIcon } from 'lucide-react';
 
 export default function Header() {
-  const pathname = usePathname();
   const router = useRouter();
-  const isPropsPage = pathname === '/props';
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,37 +61,8 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Navigation & Auth */}
+          {/* Auth */}
           <div className="flex items-center gap-3">
-            {/* Nav Buttons - Hidden on mobile */}
-            <div className="hidden sm:flex items-center gap-2">
-              <Link
-                href="/"
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-bold transition-all",
-                  isPropsPage
-                    ? "bg-white/10 text-white hover:bg-white/20"
-                    : "bg-[#d4af37] text-[#232842] hover:bg-[#e5c65c]"
-                )}
-              >
-                Super Bowl Pool
-              </Link>
-              <Link
-                href="/props"
-                className={cn(
-                  "px-4 py-2 rounded-full text-sm font-bold transition-all",
-                  isPropsPage
-                    ? "bg-[#d4af37] text-[#232842] hover:bg-[#e5c65c]"
-                    : "bg-white/10 text-white hover:bg-white/20"
-                )}
-              >
-                Prop Bets
-              </Link>
-            </div>
-
-            {/* Divider */}
-            <div className="hidden sm:block w-px h-8 bg-white/20" />
-
             {/* Auth Button */}
             {!loading && (
               <>

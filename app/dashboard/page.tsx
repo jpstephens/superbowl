@@ -4,11 +4,31 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import type { GridSquare, PropAnswer, PropBet, GameState, QuarterWinner } from '@/lib/supabase/types';
 import { motion } from 'framer-motion';
-import { 
-  Grid3x3, Trophy, Target, TrendingUp, DollarSign, 
-  ArrowRight, Clock, CheckCircle2, XCircle, Activity
+import {
+  Grid3x3, Trophy, Target, TrendingUp, DollarSign,
+  ArrowRight, Clock, CheckCircle2, XCircle, Activity, CreditCard, Receipt
 } from 'lucide-react';
 import Link from 'next/link';
+
+// Type for purchase history with joined squares
+interface PurchaseWithSquares {
+  id: string;
+  amount: number;
+  base_amount: number | null;
+  fee_donation: number | null;
+  method: 'stripe' | 'venmo';
+  status: string;
+  created_at: string;
+  purchase_squares: {
+    square: {
+      id: string;
+      row_number: number;
+      col_number: number;
+      row_score: number | null;
+      col_score: number | null;
+    };
+  }[];
+}
 
 /**
  * User Dashboard - Personal Hub
@@ -19,6 +39,7 @@ export default function DashboardPage() {
   const [myPropAnswers, setMyPropAnswers] = useState<(PropAnswer & { prop?: PropBet })[]>([]);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [quarterWinners, setQuarterWinners] = useState<QuarterWinner[]>([]);
+  const [purchaseHistory, setPurchaseHistory] = useState<PurchaseWithSquares[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -55,8 +76,34 @@ export default function DashboardPage() {
           .from('prop_answers')
           .select('*, prop:prop_bets(*)')
           .eq('user_id', profile.id);
-        
+
         if (answers) setMyPropAnswers(answers);
+
+        // Load purchase history with squares
+        const { data: purchases } = await supabase
+          .from('payments')
+          .select(`
+            id,
+            amount,
+            base_amount,
+            fee_donation,
+            method,
+            status,
+            created_at,
+            purchase_squares (
+              square:grid_squares (
+                id,
+                row_number,
+                col_number,
+                row_score,
+                col_score
+              )
+            )
+          `)
+          .eq('user_id', profile.id)
+          .order('created_at', { ascending: false });
+
+        if (purchases) setPurchaseHistory(purchases as PurchaseWithSquares[]);
       }
 
       // Load game state
@@ -269,6 +316,94 @@ export default function DashboardPage() {
                       View all {myPropAnswers.length} prop bets →
                     </Link>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Purchase History */}
+            <div className="bg-white rounded-xl border-2 border-gray-200 p-6 shadow-md mt-6">
+              <div className="flex items-center gap-2 mb-6">
+                <Receipt className="w-6 h-6 text-[#d4af37]" />
+                <h2 className="text-2xl font-bold text-[#232842]">Purchase History</h2>
+              </div>
+
+              {purchaseHistory.length === 0 ? (
+                <div className="text-center py-8">
+                  <CreditCard className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500">No purchases yet</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {purchaseHistory.map((purchase) => (
+                    <div
+                      key={purchase.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:border-[#d4af37]/50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <div className="font-semibold text-[#232842]">
+                            {new Date(purchase.created_at).toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </div>
+                          <div className="text-sm text-gray-500 flex items-center gap-2 mt-1">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              purchase.method === 'stripe'
+                                ? 'bg-blue-100 text-blue-700'
+                                : 'bg-teal-100 text-teal-700'
+                            }`}>
+                              {purchase.method === 'stripe' ? 'Card' : 'Venmo'}
+                            </span>
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                              purchase.status === 'confirmed'
+                                ? 'bg-green-100 text-green-700'
+                                : purchase.status === 'completed'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : 'bg-gray-100 text-gray-600'
+                            }`}>
+                              {purchase.status}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-bold text-lg text-[#232842]">
+                            ${Number(purchase.amount).toFixed(2)}
+                          </div>
+                          {purchase.fee_donation && Number(purchase.fee_donation) > 0 && (
+                            <div className="text-xs text-green-600">
+                              +${Number(purchase.fee_donation).toFixed(2)} fee covered
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Squares in this purchase */}
+                      {purchase.purchase_squares && purchase.purchase_squares.length > 0 && (
+                        <div className="pt-3 border-t border-gray-100">
+                          <div className="text-xs text-gray-500 mb-2">
+                            {purchase.purchase_squares.length} square{purchase.purchase_squares.length !== 1 ? 's' : ''} purchased
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {purchase.purchase_squares.map(({ square }) => (
+                              <div
+                                key={square.id}
+                                className="px-2 py-1 bg-[#d4af37]/10 text-[#d4af37] rounded text-xs font-medium"
+                              >
+                                [{square.row_number},{square.col_number}]
+                                {square.row_score !== null && (
+                                  <span className="text-gray-500 ml-1">
+                                    ({square.row_score}-{square.col_score})
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { squareId, userId } = body;
+    const { squareId, userId, status } = body;
 
     if (!squareId) {
       return NextResponse.json(
@@ -39,28 +39,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine the new status based on userId
-    let newStatus: string;
-    let updateData: Record<string, unknown>;
+    // Valid statuses
+    const validStatuses = ['available', 'claimed', 'paid', 'confirmed'];
 
+    // Build update data based on provided parameters
+    const updateData: Record<string, unknown> = {};
+
+    // Handle user assignment
     if (userId === null || userId === undefined) {
       // Make available - clear ownership
-      newStatus = 'available';
-      updateData = {
-        user_id: null,
-        status: newStatus,
-        paid_at: null,
-        payment_method: null,
-        payment_id: null,
-      };
+      updateData.user_id = null;
+      updateData.paid_at = null;
+      updateData.payment_method = null;
+      updateData.payment_id = null;
+      // Default to available status if not specified
+      if (!status) {
+        updateData.status = 'available';
+      }
     } else {
-      // Assign to user - mark as confirmed
-      newStatus = 'confirmed';
-      updateData = {
-        user_id: userId,
-        status: newStatus,
-        paid_at: new Date().toISOString(),
-      };
+      // Assign to user
+      updateData.user_id = userId;
+      // Only set paid_at if status is paid or confirmed
+      if (status === 'paid' || status === 'confirmed') {
+        updateData.paid_at = new Date().toISOString();
+      }
+    }
+
+    // Handle status if explicitly provided
+    if (status) {
+      if (!validStatuses.includes(status)) {
+        return NextResponse.json(
+          { error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },
+          { status: 400 }
+        );
+      }
+      updateData.status = status;
+
+      // If setting to available, also clear ownership fields
+      if (status === 'available') {
+        updateData.user_id = null;
+        updateData.paid_at = null;
+        updateData.payment_method = null;
+        updateData.payment_id = null;
+      }
     }
 
     // Update the square

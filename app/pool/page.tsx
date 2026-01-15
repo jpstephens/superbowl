@@ -10,7 +10,7 @@ import PoolGrid from '@/components/PoolGrid';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
 import type { GridSquare, GameState } from '@/lib/supabase/types';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Grid3x3, Trophy, Target } from 'lucide-react';
+import { Grid3x3, Trophy } from 'lucide-react';
 
 interface UserSquare {
   id: string;
@@ -325,7 +325,7 @@ export default function PoolPage() {
 
           {/* Tabs for different views */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full max-w-md mx-auto grid-cols-3 mb-8">
+            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
               <TabsTrigger value="overview" className="gap-2">
                 <Trophy className="w-4 h-4" />
                 <span className="hidden sm:inline">Overview</span>
@@ -333,10 +333,6 @@ export default function PoolPage() {
               <TabsTrigger value="grid" className="gap-2">
                 <Grid3x3 className="w-4 h-4" />
                 <span className="hidden sm:inline">Grid</span>
-              </TabsTrigger>
-              <TabsTrigger value="props" className="gap-2">
-                <Target className="w-4 h-4" />
-                <span className="hidden sm:inline">Props</span>
               </TabsTrigger>
             </TabsList>
 
@@ -381,24 +377,6 @@ export default function PoolPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="props">
-              <div className="text-center py-12">
-                <Target className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-foreground mb-2">
-                  Prop Bets
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Make predictions on game events for extra fun!
-                </p>
-                <a
-                  href="/props"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                >
-                  <Target className="w-5 h-5" />
-                  View Prop Bets
-                </a>
-              </div>
-            </TabsContent>
           </Tabs>
         </div>
       </main>

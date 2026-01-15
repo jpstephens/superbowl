@@ -146,8 +146,8 @@ export default function GridPage() {
       <div className="bg-gray-100 border-b border-gray-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-            {/* Countdown */}
-            {countdown && (
+            {/* Countdown - hidden when game is live */}
+            {countdown && !isLive && (
               <div className="flex items-center gap-3">
                 <span className="text-gray-500 font-medium">Kickoff in</span>
                 <div className="flex items-center gap-2">
@@ -315,17 +315,6 @@ export default function GridPage() {
                   {selectedSquares.length > 0 ? 'Checkout' : 'Select squares'}
                 </Link>
               </div>
-
-              {/* Prop Bets */}
-              <Link href="/props" className="block bg-gradient-to-r from-[#232842] to-[#2d3454] rounded-xl p-3 hover:from-[#2d3454] hover:to-[#373f5c] transition-all">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-medium text-white text-sm">Want more action?</div>
-                    <div className="text-gray-300 text-xs">Place side bets for extra chances to win</div>
-                  </div>
-                  <span className="text-[#d4af37] text-lg">→</span>
-                </div>
-              </Link>
 
               {/* Charity */}
               <div className="text-center text-xs text-gray-400 px-2">

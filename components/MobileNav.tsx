@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Grid3x3, Target } from 'lucide-react';
+import { Grid3x3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -13,7 +13,6 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { href: '/', label: 'Super Bowl Pool', icon: Grid3x3 },
-  { href: '/props', label: 'Prop Bets', icon: Target },
 ];
 
 export default function MobileNav() {
