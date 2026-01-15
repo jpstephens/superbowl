@@ -24,7 +24,7 @@ const colors = {
  * Base email wrapper with premium header and footer
  */
 export function emailWrapper(content: string, options?: { hideFooter?: boolean }): string {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://superbowlpool.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://superbowl.michaelwilliamsscholarship.com';
   const logoUrl = `${baseUrl}/logo.png`;
 
   return `
