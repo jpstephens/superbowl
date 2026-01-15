@@ -165,38 +165,41 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <div className="border-2 border-gray-400 inline-flex flex-col">
+        <table className="border-2 border-gray-400 border-collapse">
           {/* Header Row - Blue */}
-          <div className="flex">
-            {/* Empty corner cell */}
-            <div className={`${rowHeaderSize} bg-white border-r border-b border-gray-300 box-border`} />
-            {/* Column headers */}
-            {numbers.map((col) => (
-              <div
-                key={`col-${col}`}
-                className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 flex items-center justify-center last:border-r-0 box-border`}
-              >
-                <span className="text-xl sm:text-2xl font-bold text-white">
-                  {tournamentLaunched ? colScores.get(col) ?? '' : ''}
-                </span>
-              </div>
-            ))}
-          </div>
+          <thead>
+            <tr>
+              {/* Empty corner cell */}
+              <th className={`${rowHeaderSize} bg-white border-r border-b border-gray-300`} />
+              {/* Column headers */}
+              {numbers.map((col, idx) => (
+                <th
+                  key={`col-${col}`}
+                  className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 ${idx === 9 ? 'border-r-0' : ''}`}
+                >
+                  <span className="text-xl sm:text-2xl font-bold text-white">
+                    {tournamentLaunched ? colScores.get(col) ?? '' : ''}
+                  </span>
+                </th>
+              ))}
+            </tr>
+          </thead>
 
           {/* Data Rows */}
+          <tbody>
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex">
+            <tr key={`row-${row}`}>
               {/* Row header - Red */}
-              <div className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 flex items-center justify-center last:border-b-0 box-border`}>
+              <td className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 text-center ${row === 9 ? 'border-b-0' : ''}`}>
                 <span className="text-xl sm:text-2xl font-bold text-white">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
-              </div>
+              </td>
 
               {/* Cells */}
               {numbers.map((col) => {
                 const square = gridMap.get(`${row}-${col}`);
-                if (!square) return <div key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-gray-300`} />;
+                if (!square) return <td key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-gray-300 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`} />;
 
                 const isSelected = selectedSquareIds.has(square.id);
                 const isClaimed = square.status === 'paid' || square.status === 'confirmed';
@@ -209,43 +212,45 @@ export default function PoolGrid({
                   : `#${boxNum} · Available`;
 
                 return (
-                  <motion.button
+                  <td
                     key={`cell-${row}-${col}`}
-                    onClick={() => handleSquareClick(square)}
-                    disabled={!isAvailable || tournamentLaunched || disabled}
-                    whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05, zIndex: 20 } : {}}
-                    whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
-                    title={tooltipText}
-                    aria-label={`Square ${boxNum}. ${
-                      isClaimed ? `Owned by ${square.user_name || 'Unknown'}` : 'Available for purchase'
-                    }${isSelected ? '. Currently selected' : ''}${isWinner ? '. Current winner!' : ''}`}
-                    aria-pressed={isSelected}
-                    role="gridcell"
-                    className={`
-                      ${cellSize} border-r border-b border-gray-300 flex items-center justify-center transition-all duration-150 relative
-                      ${row === 9 ? 'border-b-0' : ''}
-                      ${col === 9 ? 'border-r-0' : ''}
-                      ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
-                      ${isAvailable && !disabled && !isSelected && 'bg-gradient-to-br from-emerald-50 to-white text-gray-700 hover:from-emerald-100 hover:to-emerald-50 hover:shadow-md hover:border-emerald-300 cursor-pointer font-medium'}
-                      ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
-                      ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-500'}
-                      ${isWinner && !isSelected && 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50'}
-                    `}
+                    className={`${cellSize} p-0 border-r border-b border-gray-300 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`}
                   >
-                    {isWinner && <span className="text-xl drop-shadow-sm">★</span>}
-                    {isSelected && !isWinner && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
-                    {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
-                    {isClaimed && !isSelected && !isWinner && (
-                      <span className="text-xs sm:text-sm font-medium leading-tight text-center truncate px-0.5">
-                        {getFirstName(square.user_name ?? null)}
-                      </span>
-                    )}
-                  </motion.button>
+                    <motion.button
+                      onClick={() => handleSquareClick(square)}
+                      disabled={!isAvailable || tournamentLaunched || disabled}
+                      whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05, zIndex: 20 } : {}}
+                      whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
+                      title={tooltipText}
+                      aria-label={`Square ${boxNum}. ${
+                        isClaimed ? `Owned by ${square.user_name || 'Unknown'}` : 'Available for purchase'
+                      }${isSelected ? '. Currently selected' : ''}${isWinner ? '. Current winner!' : ''}`}
+                      aria-pressed={isSelected}
+                      className={`
+                        w-full h-full flex items-center justify-center transition-all duration-150 relative
+                        ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
+                        ${isAvailable && !disabled && !isSelected && 'bg-gradient-to-br from-emerald-50 to-white text-gray-700 hover:from-emerald-100 hover:to-emerald-50 hover:shadow-md cursor-pointer font-medium'}
+                        ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
+                        ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-500'}
+                        ${isWinner && !isSelected && 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50'}
+                      `}
+                    >
+                      {isWinner && <span className="text-xl drop-shadow-sm">★</span>}
+                      {isSelected && !isWinner && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
+                      {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
+                      {isClaimed && !isSelected && !isWinner && (
+                        <span className="text-xs sm:text-sm font-medium leading-tight text-center truncate px-0.5">
+                          {getFirstName(square.user_name ?? null)}
+                        </span>
+                      )}
+                    </motion.button>
+                  </td>
                 );
               })}
-            </div>
+            </tr>
           ))}
-        </div>
+          </tbody>
+        </table>
       </div>
 
       {/* Winner Banner */}

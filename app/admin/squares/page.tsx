@@ -170,8 +170,7 @@ export default function AdminSquaresPage() {
 
   const stats = {
     available: squares.filter(s => s.status === 'available').length,
-    paid: squares.filter(s => s.status === 'paid').length,
-    confirmed: squares.filter(s => s.status === 'confirmed').length,
+    paid: squares.filter(s => s.status === 'paid' || s.status === 'confirmed').length,
   };
 
   if (loading) {
@@ -191,18 +190,14 @@ export default function AdminSquaresPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <Card className="p-4 bg-white/5 border-white/10">
           <p className="text-2xl font-bold text-green-400">{stats.available}</p>
           <p className="text-sm text-white/60">Available</p>
         </Card>
         <Card className="p-4 bg-white/5 border-white/10">
-          <p className="text-2xl font-bold text-yellow-400">{stats.paid}</p>
-          <p className="text-sm text-white/60">Paid</p>
-        </Card>
-        <Card className="p-4 bg-white/5 border-white/10">
-          <p className="text-2xl font-bold text-blue-400">{stats.confirmed}</p>
-          <p className="text-sm text-white/60">Confirmed</p>
+          <p className="text-2xl font-bold text-[#cda33b]">{stats.paid}</p>
+          <p className="text-sm text-white/60">Sold</p>
         </Card>
       </div>
 
