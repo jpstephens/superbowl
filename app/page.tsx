@@ -219,10 +219,10 @@ export default function GridPage() {
 
       {/* Main Content - Two Column Layout */}
       <main className="flex-1 pb-28 lg:pb-4">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4">
-          <div className="flex flex-col lg:flex-row gap-6">
+        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-4">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Left Column - Grid */}
-            <div className="flex-shrink-0 flex justify-center lg:justify-start">
+            <div className="flex-1 flex justify-center lg:justify-end">
               <PoolGrid
                 onSquareSelect={handleSquareSelect}
                 selectedSquareIds={new Set(selectedSquares.map(s => s.id))}
@@ -240,7 +240,7 @@ export default function GridPage() {
             </div>
 
             {/* Right Column - Info Cards */}
-            <div className="flex-1 space-y-3 min-w-0 lg:max-w-[340px]">
+            <div className="w-full lg:w-[320px] lg:flex-shrink-0 space-y-3">
 
               {/* Desktop Checkout - Primary CTA at top */}
               {!isLive && !isFinal && (
@@ -257,12 +257,12 @@ export default function GridPage() {
                   <div className="p-4">
                     {selectedSquares.length === 0 ? (
                       <div className="text-center py-4">
-                        <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                           </svg>
                         </div>
-                        <p className="text-gray-500 text-sm">Click squares on the grid to add them</p>
+                        <p className="text-gray-600 text-[15px]">Click squares on the grid to add them</p>
                       </div>
                     ) : (
                       <>
@@ -290,10 +290,10 @@ export default function GridPage() {
                         if (selectedSquares.length === 0) { e.preventDefault(); return; }
                         sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
                       }}
-                      className={`block w-full py-3.5 rounded-xl font-bold text-center transition-all duration-200 ${
+                      className={`block w-full py-3.5 rounded-xl font-semibold text-center transition-all duration-200 ${
                         selectedSquares.length > 0
                           ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                       }`}
                     >
                       {selectedSquares.length > 0 ? `Checkout · $${selectionTotal}` : 'Select Squares to Begin'}
@@ -405,33 +405,33 @@ export default function GridPage() {
                     </div>
                     <span className="font-semibold text-white">How to Play</span>
                   </div>
-                  <div className="px-4 py-4 space-y-3 text-sm">
+                  <div className="px-4 py-4 space-y-4">
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
                       <div>
-                        <p className="font-medium text-white">Pick your squares</p>
-                        <p className="text-white/60 text-xs">Click any available square on the grid</p>
+                        <p className="font-semibold text-white text-[15px]">Pick your squares</p>
+                        <p className="text-white/80 text-[13px]">Click any available square on the grid</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
                       <div>
-                        <p className="font-medium text-white">Pay ${squarePrice} per square</p>
-                        <p className="text-white/60 text-xs">Credit card accepted</p>
+                        <p className="font-semibold text-white text-[15px]">Pay ${squarePrice} per square</p>
+                        <p className="text-white/80 text-[13px]">Credit card accepted</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
                       <div>
-                        <p className="font-medium text-white">Numbers revealed</p>
-                        <p className="text-white/60 text-xs">Random 0-9 assigned before kickoff</p>
+                        <p className="font-semibold text-white text-[15px]">Numbers revealed</p>
+                        <p className="text-white/80 text-[13px]">Random 0-9 assigned before kickoff</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                      <span className="flex-shrink-0 w-7 h-7 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
                       <div>
-                        <p className="font-medium text-[#cda33b]">Win prizes!</p>
-                        <p className="text-white/60 text-xs">Match last digit of each team&apos;s score</p>
+                        <p className="font-semibold text-[#cda33b] text-[15px]">Win prizes!</p>
+                        <p className="text-white/80 text-[13px]">Match last digit of each team&apos;s score</p>
                       </div>
                     </div>
                   </div>

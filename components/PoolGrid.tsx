@@ -194,23 +194,25 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
-  // Cell size - all cells same size including headers
-  const cellSize = 'w-[52px] h-[52px] sm:w-[62px] sm:h-[62px] md:w-[72px] md:h-[72px] lg:w-[82px] lg:h-[82px]';
+  // Cell size - responsive grid
+  // Mobile: fills available width (no horizontal scroll)
+  // sm+: fixed sizes for consistent appearance
+  const cellSize = 'w-[8vw] h-[8vw] min-w-[30px] min-h-[30px] sm:w-[58px] sm:h-[58px] md:w-[70px] md:h-[70px] lg:w-[90px] lg:h-[90px]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
   return (
-    <div className="w-full flex flex-col items-center overflow-x-auto">
+    <div className="w-full flex flex-col items-center px-1 sm:px-0">
       {/* Team Label - Top */}
       <div className="text-center mb-2">
-        <span className="text-2xl sm:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
+        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
       </div>
 
-      <div className="flex">
+      <div className="flex w-full sm:w-auto justify-center">
         {/* Team Label - Left (rotated) */}
-        <div className="flex items-center justify-center mr-2">
+        <div className="flex items-center justify-center mr-1 sm:mr-2">
           <span
-            className="text-2xl sm:text-3xl font-bold text-[#232842]"
+            className="text-xl sm:text-2xl md:text-3xl font-bold text-[#232842]"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
@@ -218,7 +220,7 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <table className="border-2 border-[#232842]/30 border-collapse rounded-lg overflow-hidden shadow-lg">
+        <table className="border-2 border-[#232842]/30 border-collapse rounded-lg overflow-hidden shadow-lg flex-1 sm:flex-none">
           {/* Header Row */}
           <thead>
             <tr>
@@ -230,7 +232,7 @@ export default function PoolGrid({
                   key={`col-${col}`}
                   className={`${headerSize} bg-[#232842] border-r border-b border-white/10 ${idx === 9 ? 'border-r-0' : ''}`}
                 >
-                  <span className="text-xl sm:text-2xl font-bold text-white">
+                  <span className="text-[12px] sm:text-xl md:text-2xl font-bold text-white">
                     {tournamentLaunched ? colScores.get(col) ?? '' : ''}
                   </span>
                 </th>
@@ -244,7 +246,7 @@ export default function PoolGrid({
             <tr key={`row-${row}`}>
               {/* Row header */}
               <td className={`${rowHeaderSize} bg-[#232842] border-r border-b border-white/10 text-center ${row === 9 ? 'border-b-0' : ''}`}>
-                <span className="text-xl sm:text-2xl font-bold text-white">
+                <span className="text-[12px] sm:text-xl md:text-2xl font-bold text-white">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
               </td>
@@ -285,10 +287,10 @@ export default function PoolGrid({
                         ${isClaimed && !isSelected ? 'bg-[#232842]/10 text-[#232842]/70' : ''}
                       `}
                     >
-                      {isSelected && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
-                      {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
+                      {isSelected && <span className="text-[11px] sm:text-base md:text-lg font-bold drop-shadow-sm">{boxNum}</span>}
+                      {isAvailable && !isSelected && <span className="text-[11px] sm:text-base md:text-lg">{boxNum}</span>}
                       {isClaimed && !isSelected && (
-                        <span className="text-xs sm:text-sm font-medium leading-tight text-center truncate px-0.5">
+                        <span className="text-[9px] sm:text-xs md:text-sm font-medium leading-tight text-center truncate px-0.5">
                           {getFirstName(square.user_name ?? null)}
                         </span>
                       )}
