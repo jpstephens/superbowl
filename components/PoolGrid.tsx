@@ -203,14 +203,14 @@ export default function PoolGrid({
     <div className="w-full flex flex-col items-center overflow-x-auto">
       {/* Team Label - Top */}
       <div className="text-center mb-2">
-        <span className="text-2xl sm:text-3xl font-bold text-blue-600">{nfcTeam}</span>
+        <span className="text-2xl sm:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
       </div>
 
       <div className="flex">
         {/* Team Label - Left (rotated) */}
         <div className="flex items-center justify-center mr-2">
           <span
-            className="text-2xl sm:text-3xl font-bold text-red-600"
+            className="text-2xl sm:text-3xl font-bold text-[#232842]"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
@@ -218,17 +218,17 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <table className="border-2 border-gray-400 border-collapse">
-          {/* Header Row - Blue */}
+        <table className="border-2 border-[#232842]/30 border-collapse rounded-lg overflow-hidden shadow-lg">
+          {/* Header Row */}
           <thead>
             <tr>
               {/* Empty corner cell */}
-              <th className={`${rowHeaderSize} bg-white border-r border-b border-gray-300`} />
+              <th className={`${rowHeaderSize} bg-[#232842] border-r border-b border-[#232842]/30`} />
               {/* Column headers */}
               {numbers.map((col, idx) => (
                 <th
                   key={`col-${col}`}
-                  className={`${headerSize} bg-blue-500 border-r border-b border-gray-300 ${idx === 9 ? 'border-r-0' : ''}`}
+                  className={`${headerSize} bg-[#232842] border-r border-b border-[#232842]/30 ${idx === 9 ? 'border-r-0' : ''}`}
                 >
                   <span className="text-xl sm:text-2xl font-bold text-white">
                     {tournamentLaunched ? colScores.get(col) ?? '' : ''}
@@ -242,8 +242,8 @@ export default function PoolGrid({
           <tbody>
           {numbers.map((row) => (
             <tr key={`row-${row}`}>
-              {/* Row header - Red */}
-              <td className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 text-center ${row === 9 ? 'border-b-0' : ''}`}>
+              {/* Row header */}
+              <td className={`${rowHeaderSize} bg-[#232842] border-r border-b border-[#232842]/30 text-center ${row === 9 ? 'border-b-0' : ''}`}>
                 <span className="text-xl sm:text-2xl font-bold text-white">
                   {tournamentLaunched ? rowScores.get(row) ?? '' : ''}
                 </span>
@@ -252,7 +252,7 @@ export default function PoolGrid({
               {/* Cells */}
               {numbers.map((col) => {
                 const square = gridMap.get(`${row}-${col}`);
-                if (!square) return <td key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-gray-300 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`} />;
+                if (!square) return <td key={`cell-${row}-${col}`} className={`${cellSize} border-r border-b border-[#232842]/20 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`} />;
 
                 const isSelected = selectedSquareIds.has(square.id);
                 const isClaimed = square.status === 'paid';
@@ -266,7 +266,7 @@ export default function PoolGrid({
                 return (
                   <td
                     key={`cell-${row}-${col}`}
-                    className={`${cellSize} p-0 border-r border-b border-gray-300 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`}
+                    className={`${cellSize} p-0 border-r border-b border-[#232842]/20 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`}
                   >
                     <motion.button
                       onClick={() => handleSquareClick(square)}
@@ -281,8 +281,8 @@ export default function PoolGrid({
                       className={`
                         w-full h-full flex items-center justify-center transition-all duration-150 relative
                         ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
-                        ${isAvailable && !isSelected ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 hover:shadow-md cursor-pointer font-semibold' : ''}
-                        ${isClaimed && !isSelected ? 'bg-gray-200 text-gray-700' : ''}
+                        ${isAvailable && !isSelected ? 'bg-[#cda33b]/10 text-[#232842] hover:bg-[#cda33b]/25 hover:shadow-md cursor-pointer font-semibold' : ''}
+                        ${isClaimed && !isSelected ? 'bg-[#232842]/10 text-[#232842]/70' : ''}
                       `}
                     >
                       {isSelected && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}

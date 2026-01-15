@@ -410,7 +410,7 @@ export default function GridPage() {
                       <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
                       <div>
                         <p className="font-medium text-white">Pick your squares</p>
-                        <p className="text-white/60 text-xs">Click any green square on the grid</p>
+                        <p className="text-white/60 text-xs">Click any available square on the grid</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
