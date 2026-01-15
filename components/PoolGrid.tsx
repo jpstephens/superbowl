@@ -165,9 +165,9 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <div className="border-2 border-gray-400 inline-block">
+        <div className="border-2 border-gray-400 inline-block leading-[0]">
           {/* Header Row - Blue */}
-          <div className="flex">
+          <div className="flex leading-normal">
             {/* Empty corner cell */}
             <div className={`${rowHeaderSize} bg-white border-r border-b border-gray-300`} />
             {/* Column headers */}
@@ -185,7 +185,7 @@ export default function PoolGrid({
 
           {/* Data Rows */}
           {numbers.map((row) => (
-            <div key={`row-${row}`} className="flex">
+            <div key={`row-${row}`} className="flex leading-normal">
               {/* Row header - Red */}
               <div className={`${rowHeaderSize} bg-red-500 border-r border-b border-gray-300 flex items-center justify-center last:border-b-0`}>
                 <span className="text-xl sm:text-2xl font-bold text-white">
