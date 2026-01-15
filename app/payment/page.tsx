@@ -154,7 +154,7 @@ export default function PaymentPage() {
               </div>
 
               {/* Price breakdown */}
-              <div className="p-5 space-y-4">
+              <div className="p-5">
                 {/* Subtotal Row */}
                 <div className="flex justify-between items-baseline">
                   <span className="text-[15px] text-gray-700">
@@ -164,35 +164,42 @@ export default function PaymentPage() {
                     ${baseAmount.toFixed(2)}
                   </span>
                 </div>
+              </div>
+            </div>
 
-                {/* Fee Option Row */}
-                <label className="grid grid-cols-[1fr_auto] items-center gap-4 border-t border-gray-100 pt-4 cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex-shrink-0">
-                      <input
-                        type="checkbox"
-                        checked={coversFee}
-                        onChange={(e) => setCoversFee(e.target.checked)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-5 h-5 rounded-md border-2 border-gray-300 peer-checked:border-[#cda33b] peer-checked:bg-[#cda33b] transition-colors flex items-center justify-center">
-                        {coversFee && <Check className="w-3.5 h-3.5 text-white" />}
-                      </div>
+            {/* Cover Fee Election */}
+            <label className={`block rounded-xl border-2 p-4 cursor-pointer transition-all ${coversFee ? 'bg-[#cda33b]/10 border-[#cda33b]' : 'bg-gray-50 border-gray-200 hover:border-gray-300'}`}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={coversFee}
+                      onChange={(e) => setCoversFee(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${coversFee ? 'border-[#cda33b] bg-[#cda33b]' : 'border-gray-300 bg-white'}`}>
+                      {coversFee && <Check className="w-4 h-4 text-white" />}
                     </div>
-                    <span className="text-[15px] text-gray-700">Cover processing fee</span>
                   </div>
-                  <span className={`text-[17px] tabular-nums text-right ${coversFee ? 'font-semibold text-[#232842]' : 'text-gray-400'}`}>
-                    +${processingFee.toFixed(2)}
-                  </span>
-                </label>
-
-                {/* Total Row */}
-                <div className="flex justify-between items-baseline border-t-2 border-[#232842]/20 pt-4 mt-4">
-                  <span className="text-[17px] font-bold text-[#232842]">Total</span>
-                  <span className="text-[26px] font-bold text-[#232842] tabular-nums">
-                    ${totalAmount.toFixed(2)}
-                  </span>
+                  <div>
+                    <div className="text-[15px] font-semibold text-[#232842]">Cover processing fee</div>
+                    <div className="text-[13px] text-gray-500">100% of your purchase supports the scholarship</div>
+                  </div>
                 </div>
+                <span className={`text-[17px] font-semibold tabular-nums ${coversFee ? 'text-[#232842]' : 'text-gray-400'}`}>
+                  +${processingFee.toFixed(2)}
+                </span>
+              </div>
+            </label>
+
+            {/* Total */}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+              <div className="flex justify-between items-baseline">
+                <span className="text-[17px] font-bold text-[#232842]">Total</span>
+                <span className="text-[28px] font-bold text-[#232842] tabular-nums">
+                  ${totalAmount.toFixed(2)}
+                </span>
               </div>
             </div>
 
