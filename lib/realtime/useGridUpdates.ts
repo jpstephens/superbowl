@@ -80,11 +80,8 @@ export function useGridUpdates() {
             prev.map((s) => (s.id === updatedSquare.id ? updatedSquare : s))
           );
 
-          // Trigger recent purchase animation if newly claimed/paid
-          if (
-            updatedSquare.status === 'paid' ||
-            updatedSquare.status === 'confirmed'
-          ) {
+          // Trigger recent purchase animation if newly paid
+          if (updatedSquare.status === 'paid') {
             setRecentPurchase(updatedSquare);
             setTimeout(() => setRecentPurchase(null), 5000);
           }
@@ -133,7 +130,7 @@ export function useWinningSquare(
       (s) =>
         s.row_score === afcLast &&
         s.col_score === nfcLast &&
-        (s.status === 'paid' || s.status === 'confirmed')
+        s.status === 'paid'
     );
 
     setWinningSquare(winner || null);
