@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { Resend } from 'resend';
 import crypto from 'crypto';
-
-// Initialize Resend only if API key is available (avoids build errors)
-const getResend = () => {
-  if (process.env.RESEND_API_KEY) {
-    return new Resend(process.env.RESEND_API_KEY);
-  }
-  return null;
-};
+import { sendEmailSafe } from '@/lib/email/send';
+import {
+  emailWrapper,
+  contentCard,
+  sectionTitle,
+  paragraph,
+  highlight,
+  goldButton,
+} from '@/lib/email/templates';
 
 /**
  * Auto-registers a user after payment
@@ -145,51 +145,36 @@ export async function POST(request: Request) {
 
     // Send welcome email with password reset link
     const resetLink = resetData?.properties?.action_link;
-    const resend = getResend();
 
-    if (resetLink && resend) {
-      try {
-        await resend.emails.send({
-          from: 'Super Bowl Pool <noreply@michaelwilliamsscholarship.com>',
-          to: email,
-          subject: 'Welcome to the Super Bowl Pool! Set Your Password',
-          html: `
-            <div style="font-family: 'Poppins', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-              <div style="text-align: center; margin-bottom: 30px;">
-                <h1 style="color: #232842; margin-bottom: 10px;">Welcome to the Super Bowl Pool!</h1>
-                <p style="color: #666; font-size: 16px;">Michael Williams Memorial Scholarship Fund</p>
-              </div>
+    if (resetLink) {
+      const welcomeHtml = emailWrapper(`
+        ${sectionTitle('Welcome!', '🏈')}
 
-              <div style="background: #f9f9f9; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
-                <p style="color: #333; font-size: 16px; line-height: 1.6;">
-                  Hi <strong>${name}</strong>,
-                </p>
-                <p style="color: #333; font-size: 16px; line-height: 1.6;">
-                  Thank you for participating in our Super Bowl Pool! Your squares have been reserved.
-                </p>
-                <p style="color: #333; font-size: 16px; line-height: 1.6;">
-                  To view your squares and track the game, please set your password by clicking the button below:
-                </p>
-              </div>
+        ${contentCard(`
+          ${paragraph(`Hi ${highlight(name)}! 👋`)}
 
-              <div style="text-align: center; margin: 32px 0;">
-                <a href="${resetLink}" style="display: inline-block; background: #cda33b; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px;">
-                  Set Your Password
-                </a>
-              </div>
+          ${paragraph(`Thank you for joining the Super Bowl Pool! Your squares have been reserved.`)}
 
-              <div style="border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px;">
-                <p style="color: #888; font-size: 14px; text-align: center;">
-                  Good luck! All proceeds support the Michael Williams Memorial Scholarship Fund.
-                </p>
-              </div>
-            </div>
-          `,
-        });
-      } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
-        // Don't fail the request if email fails - user is still registered
-      }
+          ${paragraph(`To view your squares and track the game on Super Bowl Sunday, please set your password:`)}
+        `)}
+
+        ${goldButton('Set Your Password', resetLink)}
+
+        ${contentCard(`
+          <p style="color: rgba(255, 255, 255, 0.6); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0;">
+            What's Next?
+          </p>
+          ${paragraph(`<strong>1.</strong> Set your password using the button above`, { muted: true })}
+          ${paragraph(`<strong>2.</strong> Check back before the game - numbers will be randomly assigned`, { muted: true })}
+          ${paragraph(`<strong>3.</strong> Watch live during the Super Bowl to see if you win!`, { muted: true })}
+        `)}
+      `);
+
+      await sendEmailSafe({
+        to: email,
+        subject: 'Welcome to the Super Bowl Pool! Set Your Password',
+        html: welcomeHtml,
+      });
     }
 
     return NextResponse.json({

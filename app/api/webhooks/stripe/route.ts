@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
+import { sendEmailSafe, sendToAdmins } from '@/lib/email/send';
+import { purchaseConfirmationEmail } from '@/lib/email/templates/purchase-confirmation';
+import { adminPurchaseAlertEmail } from '@/lib/email/templates/admin-purchase-alert';
+import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
 
 // Initialize Stripe lazily to avoid build-time errors
 function getStripe() {
@@ -137,6 +141,101 @@ export async function POST(request: Request) {
 
           // Log success with fee info
           console.log(`Payment completed: ${registrationData.email}, base: $${baseAmount}, fee donation: $${feeDonation}`);
+
+          // Get square coordinates for confirmation email
+          const { data: purchasedSquares } = await supabase
+            .from('grid_squares')
+            .select('row_number, col_number')
+            .in('id', selectedSquareIds);
+
+          const squareCoords = purchasedSquares?.map(sq => ({
+            row: sq.row_number,
+            col: sq.col_number,
+          })) || [];
+
+          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://superbowlpool.com';
+
+          // Send purchase confirmation email to user
+          if (registrationData.email) {
+            const confirmationHtml = purchaseConfirmationEmail({
+              name: registrationData.name,
+              squareCount: selectedSquareIds.length,
+              totalAmount: amount,
+              squares: squareCoords,
+              baseUrl,
+            });
+
+            await sendEmailSafe({
+              to: registrationData.email,
+              subject: '🏈 Thanks for joining the Super Bowl Pool!',
+              html: confirmationHtml,
+            });
+          }
+
+          // Get current pool stats for admin email
+          const { count: soldCount } = await supabase
+            .from('grid_squares')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'paid');
+
+          const { data: revenueData } = await supabase
+            .from('payments')
+            .select('amount')
+            .eq('status', 'completed');
+
+          const totalRevenue = revenueData?.reduce((sum, p) => sum + Number(p.amount || 0), 0) || 0;
+
+          // Send admin purchase alert
+          const adminAlertHtml = adminPurchaseAlertEmail({
+            buyerName: registrationData.name,
+            buyerEmail: registrationData.email,
+            squareCount: selectedSquareIds.length,
+            amount,
+            poolStats: {
+              soldCount: soldCount || 0,
+              totalRevenue,
+            },
+            adminUrl: `${baseUrl}/admin/dashboard`,
+          });
+
+          await sendToAdmins(
+            `💰 New Purchase: ${registrationData.name} bought ${selectedSquareIds.length} square${selectedSquareIds.length > 1 ? 's' : ''}`,
+            adminAlertHtml
+          );
+
+          // Check for milestones
+          const milestones = [25, 50, 75, 100] as const;
+          const currentPercent = Math.floor(((soldCount || 0) / 100) * 100);
+          const previousPercent = Math.floor((((soldCount || 0) - selectedSquareIds.length) / 100) * 100);
+
+          for (const milestone of milestones) {
+            if (currentPercent >= milestone && previousPercent < milestone) {
+              // Load square price for milestone email
+              const { data: priceSettings } = await supabase
+                .from('settings')
+                .select('value')
+                .eq('key', 'square_price')
+                .single();
+
+              const squarePrice = parseInt(priceSettings?.value || '50');
+
+              const milestoneHtml = adminMilestoneEmail({
+                milestone,
+                poolStats: {
+                  soldCount: soldCount || 0,
+                  totalRevenue,
+                  squarePrice,
+                },
+                adminUrl: `${baseUrl}/admin/dashboard`,
+              });
+
+              await sendToAdmins(
+                `🎯 Pool Milestone: ${milestone}% Sold!`,
+                milestoneHtml
+              );
+              break; // Only send one milestone notification
+            }
+          }
         }
       } catch (error) {
         console.error('Error in auto-registration:', error);
