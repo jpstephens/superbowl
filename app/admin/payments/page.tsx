@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import type { Payment, Profile } from '@/lib/supabase/types';
 import { DollarSign, CreditCard } from 'lucide-react';
 
@@ -45,16 +44,6 @@ export default function AdminPaymentsPage() {
       paymentCount: completed.length,
     };
   }, [payments]);
-
-  const getStatusBadge = (status: string) => {
-    if (status === 'completed') {
-      return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Paid</Badge>;
-    }
-    if (status === 'pending') {
-      return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Pending</Badge>;
-    }
-    return <Badge className="bg-white/10 text-white/60 border-white/20">{status}</Badge>;
-  };
 
   if (loading) {
     return (
@@ -107,7 +96,6 @@ export default function AdminPaymentsPage() {
               <tr className="border-b border-white/10 bg-white/5">
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">User</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Amount</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-white/60 uppercase tracking-wider">Date</th>
               </tr>
             </thead>
@@ -123,7 +111,6 @@ export default function AdminPaymentsPage() {
                   <td className="px-4 py-4">
                     <span className="text-white font-semibold">${Number(payment.amount).toFixed(2)}</span>
                   </td>
-                  <td className="px-4 py-4">{getStatusBadge(payment.status)}</td>
                   <td className="px-4 py-4 text-sm text-white/60">
                     {new Date(payment.created_at).toLocaleDateString()}
                   </td>

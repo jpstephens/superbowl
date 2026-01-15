@@ -11,7 +11,6 @@ import {
   Grid3x3,
   CreditCard,
   Settings,
-  Tv,
   LogOut,
   ExternalLink,
   Menu,
@@ -104,7 +103,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/squares', icon: Grid3x3, label: 'Squares' },
     { href: '/admin/payments', icon: CreditCard, label: 'Payments' },
-    { href: '/admin/live', icon: Tv, label: 'Live Game' },
     { href: '/admin/settings', icon: Settings, label: 'Settings' },
   ];
 
