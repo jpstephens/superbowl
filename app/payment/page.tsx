@@ -147,43 +147,48 @@ export default function PaymentPage() {
 
             {/* Pricing */}
             <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              {/* Subtotal */}
-              <div className="flex justify-between items-center py-3">
-                <span className="text-gray-600">
-                  {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
-                </span>
-                <span className="text-xl font-semibold text-[#232842]">${baseAmount.toFixed(2)}</span>
-              </div>
+              {/* Price breakdown table */}
+              <div className="space-y-4">
+                {/* Subtotal Row */}
+                <div className="flex justify-between items-baseline">
+                  <span className="text-[15px] text-gray-600">
+                    {selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''} × ${squarePrice}
+                  </span>
+                  <span className="text-[17px] font-semibold text-[#232842] tabular-nums">
+                    ${baseAmount.toFixed(2)}
+                  </span>
+                </div>
 
-              {/* Fee Option */}
-              <div className="border-t border-gray-100 py-4">
-                <label className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
+                {/* Fee Option Row */}
+                <div className="flex justify-between items-start border-t border-gray-100 pt-4">
+                  <label className="flex items-start gap-3 cursor-pointer flex-1">
+                    <div className="relative mt-0.5">
                       <input
                         type="checkbox"
                         checked={coversFee}
                         onChange={(e) => setCoversFee(e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-6 h-6 rounded-md border-2 border-gray-300 peer-checked:border-[#cda33b] peer-checked:bg-[#cda33b] transition-colors flex items-center justify-center">
-                        {coversFee && <Check className="w-4 h-4 text-white" />}
+                      <div className="w-5 h-5 rounded-md border-2 border-gray-300 peer-checked:border-[#cda33b] peer-checked:bg-[#cda33b] transition-colors flex items-center justify-center">
+                        {coversFee && <Check className="w-3.5 h-3.5 text-white" />}
                       </div>
                     </div>
                     <div>
-                      <span className="text-[#232842] font-medium">Cover processing fee</span>
-                      <p className="text-xs text-gray-500">100% goes to the scholarship fund</p>
+                      <span className="text-[15px] text-[#232842] font-medium">Cover processing fee</span>
+                      <p className="text-[13px] text-gray-500">100% goes to the scholarship fund</p>
                     </div>
-                  </div>
-                  <span className="text-gray-600 font-medium">+${processingFee.toFixed(2)}</span>
-                </label>
-              </div>
+                  </label>
+                  <span className={`text-[17px] tabular-nums ${coversFee ? 'font-semibold text-[#232842]' : 'text-gray-400'}`}>
+                    +${processingFee.toFixed(2)}
+                  </span>
+                </div>
 
-              {/* Total */}
-              <div className="border-t border-gray-200 pt-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-[#232842]">Total</span>
-                  <span className="text-3xl font-bold text-[#232842]">${totalAmount.toFixed(2)}</span>
+                {/* Total Row */}
+                <div className="flex justify-between items-baseline border-t-2 border-gray-200 pt-4">
+                  <span className="text-[17px] font-semibold text-[#232842]">Total</span>
+                  <span className="text-[28px] font-bold text-[#232842] tabular-nums">
+                    ${totalAmount.toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
