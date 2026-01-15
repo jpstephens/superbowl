@@ -394,51 +394,46 @@ export default function GridPage() {
                 </div>
               </div>
 
-              {/* How to Play - Collapsed by default, hide when game is live */}
+              {/* How to Play - hide when game is live */}
               {!isLive && !isFinal && (
-                <details className="bg-white rounded-2xl shadow-sm border border-gray-100 group">
-                  <summary className="px-4 py-3 cursor-pointer flex items-center justify-between list-none">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                        <span className="text-base">📖</span>
-                      </div>
-                      <span className="font-semibold text-[#232842]">How to Play</span>
+                <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
+                  <div className="px-4 py-3 flex items-center gap-3 border-b border-white/10">
+                    <div className="w-8 h-8 bg-[#cda33b]/20 rounded-lg flex items-center justify-center">
+                      <span className="text-base">📖</span>
                     </div>
-                    <svg className="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </summary>
-                  <div className="px-4 pb-4 pt-1 space-y-3 text-sm border-t border-gray-50 mt-1">
+                    <span className="font-semibold text-white">How to Play</span>
+                  </div>
+                  <div className="px-4 py-4 space-y-3 text-sm">
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
                       <div>
-                        <p className="font-medium text-[#232842]">Pick your squares</p>
-                        <p className="text-gray-500 text-xs">Click any green square on the grid</p>
+                        <p className="font-medium text-white">Pick your squares</p>
+                        <p className="text-white/60 text-xs">Click any green square on the grid</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
                       <div>
-                        <p className="font-medium text-[#232842]">Pay ${squarePrice} per square</p>
-                        <p className="text-gray-500 text-xs">Credit card accepted</p>
+                        <p className="font-medium text-white">Pay ${squarePrice} per square</p>
+                        <p className="text-white/60 text-xs">Credit card accepted</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
-                      <span className="flex-shrink-0 w-6 h-6 bg-[#232842] text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                      <span className="flex-shrink-0 w-6 h-6 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
                       <div>
-                        <p className="font-medium text-[#232842]">Numbers revealed</p>
-                        <p className="text-gray-500 text-xs">Random 0-9 assigned before kickoff</p>
+                        <p className="font-medium text-white">Numbers revealed</p>
+                        <p className="text-white/60 text-xs">Random 0-9 assigned before kickoff</p>
                       </div>
                     </div>
                     <div className="flex gap-3 items-start">
                       <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
                       <div>
-                        <p className="font-medium text-[#232842]">Win prizes!</p>
-                        <p className="text-gray-500 text-xs">Match last digit of each team&apos;s score</p>
+                        <p className="font-medium text-[#cda33b]">Win prizes!</p>
+                        <p className="text-white/60 text-xs">Match last digit of each team&apos;s score</p>
                       </div>
                     </div>
                   </div>
-                </details>
+                </div>
               )}
 
             </div>

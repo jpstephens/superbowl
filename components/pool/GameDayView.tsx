@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -9,11 +8,8 @@ import {
   Trophy,
   Target,
   Grid3x3,
-  TrendingUp,
   CheckCircle,
-  Circle,
   ArrowRight,
-  Sparkles,
 } from 'lucide-react';
 
 interface GameScore {
@@ -66,34 +62,6 @@ export default function GameDayView({
   isLoggedIn,
   userName,
 }: GameDayViewProps) {
-  const [showConfetti, setShowConfetti] = useState(false);
-
-  // Calculate if user is currently winning
-  const currentWinningNumbers = useMemo(() => {
-    if (!gameScore.isLive && !gameScore.isFinal) return null;
-    return {
-      afc: gameScore.afcScore % 10,
-      nfc: gameScore.nfcScore % 10,
-    };
-  }, [gameScore.afcScore, gameScore.nfcScore, gameScore.isLive, gameScore.isFinal]);
-
-  const userIsWinning = useMemo(() => {
-    if (!currentWinningNumbers) return false;
-    return userSquares.some(
-      (sq) =>
-        sq.rowScore === currentWinningNumbers.afc &&
-        sq.colScore === currentWinningNumbers.nfc
-    );
-  }, [currentWinningNumbers, userSquares]);
-
-  // Calculate odds for remaining quarters
-  const calculateOdds = (quarter: number): number => {
-    if (quarter <= gameScore.quarter) return 0;
-    // Each user has squareCount out of 100 chances
-    const squareCount = userSquares.length;
-    return (squareCount / 100) * 100; // Percentage
-  };
-
   // Get user's winning numbers display
   const getUserNumbers = () => {
     if (userSquares.length === 0) return null;
@@ -107,21 +75,6 @@ export default function GameDayView({
   };
 
   const userNumbers = getUserNumbers();
-
-  // Trigger confetti when user wins
-  useEffect(() => {
-    if (userIsWinning) {
-      setShowConfetti(true);
-      const timeout = setTimeout(() => setShowConfetti(false), 5000);
-      return () => clearTimeout(timeout);
-    }
-  }, [userIsWinning]);
-
-  const getQuarterStatus = (quarter: number) => {
-    if (quarter < gameScore.quarter) return 'completed';
-    if (quarter === gameScore.quarter) return 'active';
-    return 'upcoming';
-  };
 
   return (
     <div className="space-y-6">
@@ -195,40 +148,8 @@ export default function GameDayView({
             )}
           </div>
 
-          {/* Current Winning Numbers */}
-          <div className="mt-6 pt-6 border-t border-white/20">
-            <div className="text-sm text-white/60 mb-2">Current Winning Numbers</div>
-            <div className="text-2xl font-bold text-primary">
-              {currentWinningNumbers?.afc ?? '-'} - {currentWinningNumbers?.nfc ?? '-'}
-            </div>
-          </div>
         </div>
       </motion.div>
-
-      {/* User Winning Alert */}
-      <AnimatePresence>
-        {userIsWinning && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border-2 border-primary rounded-xl p-6 text-center"
-          >
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 0.5, repeat: Infinity }}
-            >
-              <Trophy className="w-12 h-12 text-primary mx-auto mb-3" fill="currentColor" />
-            </motion.div>
-            <h3 className="text-2xl font-bold text-foreground mb-2">
-              You're Winning!
-            </h3>
-            <p className="text-muted-foreground">
-              Your square matches the current score. Good luck!
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Your Numbers Section */}
       {isLoggedIn && userSquares.length > 0 && userNumbers && (
@@ -249,11 +170,7 @@ export default function GameDayView({
                 {userNumbers.rows.map((num) => (
                   <span
                     key={num}
-                    className={`px-3 py-1 rounded-lg font-bold text-lg ${
-                      currentWinningNumbers?.afc === num
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card border border-border text-foreground'
-                    }`}
+                    className="px-3 py-1 rounded-lg font-bold text-lg bg-card border border-border text-foreground"
                   >
                     {num}
                   </span>
@@ -269,11 +186,7 @@ export default function GameDayView({
                 {userNumbers.cols.map((num) => (
                   <span
                     key={num}
-                    className={`px-3 py-1 rounded-lg font-bold text-lg ${
-                      currentWinningNumbers?.nfc === num
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card border border-border text-foreground'
-                    }`}
+                    className="px-3 py-1 rounded-lg font-bold text-lg bg-card border border-border text-foreground"
                   >
                     {num}
                   </span>
@@ -291,10 +204,9 @@ export default function GameDayView({
 
       {/* Quarter Progress */}
       <Card className="p-6">
-        <h3 className="text-lg font-semibold text-foreground mb-4">Quarter Progress</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Quarter Results</h3>
         <div className="flex items-center justify-between">
           {[1, 2, 3, 4].map((quarter) => {
-            const status = getQuarterStatus(quarter);
             const winner = quarterWinners.find((w) => w.quarter === quarter);
             const prize = prizes[`q${quarter}` as keyof typeof prizes];
 
@@ -302,22 +214,13 @@ export default function GameDayView({
               <div key={quarter} className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 ${
-                    status === 'completed'
+                    winner
                       ? 'bg-primary text-primary-foreground'
-                      : status === 'active'
-                      ? 'bg-primary/20 text-primary border-2 border-primary'
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
-                  {status === 'completed' ? (
+                  {winner ? (
                     <CheckCircle className="w-6 h-6" />
-                  ) : status === 'active' ? (
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      <Circle className="w-4 h-4 fill-current" />
-                    </motion.div>
                   ) : (
                     <span className="font-bold">Q{quarter}</span>
                   )}
@@ -365,49 +268,6 @@ export default function GameDayView({
               </div>
             ))}
           </div>
-        </Card>
-      )}
-
-      {/* Odds Calculator */}
-      {isLoggedIn && userSquares.length > 0 && !gameScore.isFinal && (
-        <Card className="p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Your Odds</h3>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((quarter) => {
-              const status = getQuarterStatus(quarter);
-              const odds = calculateOdds(quarter);
-
-              return (
-                <div
-                  key={quarter}
-                  className={`text-center p-4 rounded-lg ${
-                    status === 'completed'
-                      ? 'bg-muted/30'
-                      : status === 'active'
-                      ? 'bg-primary/10 border border-primary/30'
-                      : 'bg-muted/50'
-                  }`}
-                >
-                  <div className="text-sm text-muted-foreground mb-1">Q{quarter}</div>
-                  <div
-                    className={`text-xl font-bold ${
-                      status === 'completed'
-                        ? 'text-muted-foreground'
-                        : 'text-foreground'
-                    }`}
-                  >
-                    {status === 'completed' ? 'Done' : `${odds.toFixed(0)}%`}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-4 text-sm text-muted-foreground">
-            Based on your {userSquares.length} square{userSquares.length !== 1 ? 's' : ''} out of 100.
-          </p>
         </Card>
       )}
 

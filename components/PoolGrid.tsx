@@ -141,17 +141,6 @@ export default function PoolGrid({
     return { gridMap, rowScores, colScores };
   }, [squares, tournamentLaunched]);
 
-  const currentWinner = useMemo(() => {
-    if (!gameScore?.isLive || gameScore.afcScore === undefined || gameScore.nfcScore === undefined) {
-      return null;
-    }
-    const afcLast = gameScore.afcScore % 10;
-    const nfcLast = gameScore.nfcScore % 10;
-    return squares.find(
-      (s) => s.row_score === afcLast && s.col_score === nfcLast && s.status === 'paid'
-    ) || null;
-  }, [squares, gameScore?.afcScore, gameScore?.nfcScore, gameScore?.isLive]);
-
   const handleSquareClick = (square: GridSquare) => {
     if (!onSquareSelect || tournamentLaunched || disabled) return;
     if (square.status !== 'available') return;
@@ -268,7 +257,6 @@ export default function PoolGrid({
                 const isSelected = selectedSquareIds.has(square.id);
                 const isClaimed = square.status === 'paid';
                 const isAvailable = square.status === 'available';
-                const isWinner = currentWinner?.id === square.id;
                 const boxNum = row * 10 + col + 1;
 
                 const tooltipText = isClaimed
@@ -288,20 +276,18 @@ export default function PoolGrid({
                       title={tooltipText}
                       aria-label={`Square ${boxNum}. ${
                         isClaimed ? `Owned by ${square.user_name || 'Unknown'}` : 'Available for purchase'
-                      }${isSelected ? '. Currently selected' : ''}${isWinner ? '. Current winner!' : ''}`}
+                      }${isSelected ? '. Currently selected' : ''}`}
                       aria-pressed={isSelected}
                       className={`
                         w-full h-full flex items-center justify-center transition-all duration-150 relative
                         ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
                         ${isAvailable && !isSelected ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 hover:shadow-md cursor-pointer font-semibold' : ''}
-                        ${isClaimed && !isSelected && !isWinner ? 'bg-gray-200 text-gray-700' : ''}
-                        ${isWinner && !isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50' : ''}
+                        ${isClaimed && !isSelected ? 'bg-gray-200 text-gray-700' : ''}
                       `}
                     >
-                      {isWinner && <span className="text-xl drop-shadow-sm">★</span>}
-                      {isSelected && !isWinner && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
+                      {isSelected && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
                       {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
-                      {isClaimed && !isSelected && !isWinner && (
+                      {isClaimed && !isSelected && (
                         <span className="text-xs sm:text-sm font-medium leading-tight text-center truncate px-0.5">
                           {getFirstName(square.user_name ?? null)}
                         </span>
@@ -316,18 +302,6 @@ export default function PoolGrid({
         </table>
       </div>
 
-      {/* Winner Banner */}
-      {currentWinner && currentWinner.user_name && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 p-3 bg-[#cda33b]/10 border border-[#cda33b]/30 rounded-lg text-center"
-        >
-          <span className="text-[#232842] font-semibold">
-            ★ {currentWinner.user_name} is winning! ({gameScore?.afcScore}-{gameScore?.nfcScore})
-          </span>
-        </motion.div>
-      )}
     </div>
   );
 }

@@ -6,229 +6,248 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Play, RotateCcw, Plus, Minus, Trophy, CheckCircle2, RefreshCw,
-} from 'lucide-react';
-import type { GameState, QuarterWinner } from '@/lib/supabase/types';
+import { Trophy, Save, RotateCcw, CheckCircle2 } from 'lucide-react';
+import type { QuarterWinner } from '@/lib/supabase/types';
+
+interface QuarterScore {
+  afcScore: string;
+  nfcScore: string;
+}
 
 export default function AdminLivePage() {
-  const [gameState, setGameState] = useState<GameState | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [quarterWinners, setQuarterWinners] = useState<QuarterWinner[]>([]);
 
-  const [scoreForm, setScoreForm] = useState({
-    afcScore: 0,
-    nfcScore: 0,
-    quarter: 0,
-    timeRemaining: '15:00',
-    playDescription: '',
-  });
   const [afcTeam, setAfcTeam] = useState('');
   const [nfcTeam, setNfcTeam] = useState('');
 
+  const [quarterScores, setQuarterScores] = useState<Record<number, QuarterScore>>({
+    1: { afcScore: '', nfcScore: '' },
+    2: { afcScore: '', nfcScore: '' },
+    3: { afcScore: '', nfcScore: '' },
+    4: { afcScore: '', nfcScore: '' },
+  });
+
   useEffect(() => {
-    loadGameState();
-    loadQuarterWinners();
-
-    const supabase = createClient();
-    const channel = supabase
-      .channel('admin_game_state')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'game_state' },
-        (payload) => {
-          if (payload.new) {
-            setGameState(payload.new as GameState);
-            setScoreForm({
-              afcScore: (payload.new as GameState).afc_score,
-              nfcScore: (payload.new as GameState).nfc_score,
-              quarter: (payload.new as GameState).quarter,
-              timeRemaining: (payload.new as GameState).time_remaining || '15:00',
-              playDescription: '',
-            });
-            setAfcTeam((payload.new as GameState).afc_team || '');
-            setNfcTeam((payload.new as GameState).nfc_team || '');
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    loadData();
   }, []);
 
-  const loadGameState = async () => {
+  const loadData = async () => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
+
+      // Load game state for team names
+      const { data: gameState } = await supabase
         .from('game_state')
         .select('*')
         .single();
 
-      if (error) throw error;
+      if (gameState) {
+        setAfcTeam(gameState.afc_team || '');
+        setNfcTeam(gameState.nfc_team || '');
+      }
 
-      setGameState(data);
-      setScoreForm({
-        afcScore: data.afc_score,
-        nfcScore: data.nfc_score,
-        quarter: data.quarter,
-        timeRemaining: data.time_remaining || '15:00',
-        playDescription: '',
-      });
-      setAfcTeam(data.afc_team || '');
-      setNfcTeam(data.nfc_team || '');
+      // Load quarter winners
+      const { data: winners } = await supabase
+        .from('quarterly_winners')
+        .select(`*, profiles:user_id(name)`)
+        .order('quarter');
+
+      if (winners) {
+        setQuarterWinners(winners);
+
+        // Populate quarter scores from winners
+        const scores: Record<number, QuarterScore> = {
+          1: { afcScore: '', nfcScore: '' },
+          2: { afcScore: '', nfcScore: '' },
+          3: { afcScore: '', nfcScore: '' },
+          4: { afcScore: '', nfcScore: '' },
+        };
+
+        winners.forEach((w) => {
+          if (w.afc_final_score !== null && w.nfc_final_score !== null) {
+            scores[w.quarter] = {
+              afcScore: w.afc_final_score.toString(),
+              nfcScore: w.nfc_final_score.toString(),
+            };
+          }
+        });
+
+        setQuarterScores(scores);
+      }
     } catch (error) {
-      console.error('Error loading game state:', error);
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const loadQuarterWinners = async () => {
-    try {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from('quarterly_winners')
-        .select(`*, profiles:user_id(name)`)
-        .order('quarter');
+  const handleScoreChange = (quarter: number, team: 'afc' | 'nfc', value: string) => {
+    // Only allow numbers
+    if (value !== '' && !/^\d+$/.test(value)) return;
 
-      if (data) setQuarterWinners(data);
-    } catch (error) {
-      console.error('Error loading winners:', error);
-    }
+    setQuarterScores((prev) => ({
+      ...prev,
+      [quarter]: {
+        ...prev[quarter],
+        [team === 'afc' ? 'afcScore' : 'nfcScore']: value,
+      },
+    }));
   };
 
-  const updateGameState = async (updates: Partial<GameState>) => {
+  const saveTeamNames = async () => {
     setSaving(true);
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', user?.email)
-        .single();
-
-      const { error } = await supabase
+      await supabase
         .from('game_state')
         .update({
-          ...updates,
+          afc_team: afcTeam,
+          nfc_team: nfcTeam,
           updated_at: new Date().toISOString(),
-          updated_by: profile?.id,
         })
-        .eq('id', gameState?.id);
+        .not('id', 'is', null);
 
-      if (error) throw error;
-
-      if (updates.afc_score !== undefined || updates.nfc_score !== undefined) {
-        await supabase.from('score_history').insert({
-          afc_score: updates.afc_score ?? gameState?.afc_score,
-          nfc_score: updates.nfc_score ?? gameState?.nfc_score,
-          quarter: updates.quarter ?? gameState?.quarter,
-          time_remaining: updates.time_remaining ?? gameState?.time_remaining,
-          play_description: scoreForm.playDescription || null,
-          scoring_type: 'manual',
-        });
-      }
-
-      await loadGameState();
+      alert('Team names saved!');
     } catch (error) {
-      console.error('Error updating game state:', error);
-      alert('Error updating game state');
+      console.error('Error saving team names:', error);
+      alert('Error saving team names');
     } finally {
       setSaving(false);
     }
   };
 
-  const handleScoreChange = (team: 'afc' | 'nfc', delta: number) => {
-    if (team === 'afc') {
-      setScoreForm((prev) => ({ ...prev, afcScore: Math.max(0, prev.afcScore + delta) }));
-    } else {
-      setScoreForm((prev) => ({ ...prev, nfcScore: Math.max(0, prev.nfcScore + delta) }));
+  const saveQuarterScore = async (quarter: number) => {
+    const scores = quarterScores[quarter];
+
+    if (!scores.afcScore || !scores.nfcScore) {
+      alert('Please enter both scores');
+      return;
     }
-  };
 
-  const handleQuickScore = async (team: 'afc' | 'nfc', points: number, type: string) => {
-    const newScore = team === 'afc'
-      ? { afc_score: (gameState?.afc_score || 0) + points }
-      : { nfc_score: (gameState?.nfc_score || 0) + points };
+    const afcScore = parseInt(scores.afcScore);
+    const nfcScore = parseInt(scores.nfcScore);
 
-    setScoreForm((prev) => ({ ...prev, playDescription: type }));
-    await updateGameState(newScore);
-  };
+    if (isNaN(afcScore) || isNaN(nfcScore)) {
+      alert('Invalid scores');
+      return;
+    }
 
-  const handleEndQuarter = async () => {
-    if (!gameState) return;
+    setSaving(true);
+    try {
+      const supabase = createClient();
 
-    const currentQuarter = gameState.quarter;
-    if (currentQuarter >= 4 && !gameState.is_final) {
-      if (gameState.afc_score === gameState.nfc_score) {
-        await updateGameState({ quarter: 5, time_remaining: '10:00', is_halftime: false });
-        return;
+      // Calculate winning digits (last digit of each score)
+      const afcLast = afcScore % 10;
+      const nfcLast = nfcScore % 10;
+
+      // Find the winning square
+      const { data: winningSquare } = await supabase
+        .from('grid_squares')
+        .select('user_id')
+        .eq('row_score', afcLast)
+        .eq('col_score', nfcLast)
+        .eq('status', 'paid')
+        .single();
+
+      // Get prize amount for this quarter
+      const { data: prizeSetting } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', `payout_q${quarter}`)
+        .single();
+
+      const prizeAmount = prizeSetting?.value ? parseFloat(prizeSetting.value) : null;
+
+      // Save or update the quarter winner
+      await supabase.from('quarterly_winners').upsert({
+        quarter,
+        user_id: winningSquare?.user_id || null,
+        row_score: afcLast,
+        col_score: nfcLast,
+        afc_final_score: afcScore,
+        nfc_final_score: nfcScore,
+        prize_amount: prizeAmount,
+      }, { onConflict: 'quarter' });
+
+      // Update game_state with latest scores
+      const updateData: Record<string, unknown> = {
+        afc_score: afcScore,
+        nfc_score: nfcScore,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (quarter === 4) {
+        updateData.is_final = true;
+        updateData.is_live = false;
       }
+
+      await supabase
+        .from('game_state')
+        .update(updateData)
+        .not('id', 'is', null);
+
+      await loadData();
+      alert(`Q${quarter} score saved!`);
+    } catch (error) {
+      console.error('Error saving quarter score:', error);
+      alert('Error saving score');
+    } finally {
+      setSaving(false);
     }
-
-    const afcLast = gameState.afc_score % 10;
-    const nfcLast = gameState.nfc_score % 10;
-
-    const supabase = createClient();
-
-    const { data: winningSquare } = await supabase
-      .from('grid_squares')
-      .select('user_id')
-      .eq('row_score', afcLast)
-      .eq('col_score', nfcLast)
-      .eq('status', 'paid')
-      .single();
-
-    const { data: prizeSetting } = await supabase
-      .from('settings')
-      .select('value')
-      .eq('key', `prize_q${currentQuarter}`)
-      .single();
-
-    await supabase.from('quarterly_winners').upsert({
-      quarter: currentQuarter,
-      user_id: winningSquare?.user_id || null,
-      row_score: afcLast,
-      col_score: nfcLast,
-      prize_amount: prizeSetting?.value ? parseFloat(prizeSetting.value) : null,
-    }, { onConflict: 'quarter' });
-
-    if (currentQuarter === 2) {
-      await updateGameState({ is_halftime: true, time_remaining: '0:00' });
-    } else if (currentQuarter >= 4) {
-      await updateGameState({ is_final: true, is_live: false, time_remaining: '0:00' });
-    } else {
-      await updateGameState({ quarter: currentQuarter + 1, time_remaining: '15:00', is_halftime: false });
-    }
-
-    await loadQuarterWinners();
-    alert(`Q${currentQuarter} ended! Winner recorded.`);
   };
 
-  const handleStartGame = async () => {
-    await updateGameState({
-      is_live: true, quarter: 1, time_remaining: '15:00', is_halftime: false, is_final: false,
-    });
+  const handleReset = async () => {
+    if (!confirm('Reset all scores and winners? This cannot be undone.')) return;
+
+    setSaving(true);
+    try {
+      const supabase = createClient();
+
+      // Clear quarterly winners
+      await supabase.from('quarterly_winners').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+      // Reset game state
+      await supabase
+        .from('game_state')
+        .update({
+          afc_score: 0,
+          nfc_score: 0,
+          quarter: 0,
+          is_live: false,
+          is_halftime: false,
+          is_final: false,
+          updated_at: new Date().toISOString(),
+        })
+        .not('id', 'is', null);
+
+      // Clear local state
+      setQuarterScores({
+        1: { afcScore: '', nfcScore: '' },
+        2: { afcScore: '', nfcScore: '' },
+        3: { afcScore: '', nfcScore: '' },
+        4: { afcScore: '', nfcScore: '' },
+      });
+
+      await loadData();
+      alert('All scores reset!');
+    } catch (error) {
+      console.error('Error resetting:', error);
+      alert('Error resetting scores');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleResetGame = async () => {
-    if (!confirm('Reset game to pre-game state? This will clear all scores.')) return;
-
-    await updateGameState({
-      afc_score: 0, nfc_score: 0, quarter: 0, time_remaining: '15:00',
-      is_live: false, is_halftime: false, is_final: false,
-      possession: null, down: null, yards_to_go: null, yard_line: null, last_play: null,
-    });
-
-    const supabase = createClient();
-    await supabase.from('quarterly_winners').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('score_history').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-
-    await loadQuarterWinners();
+  const getQuarterLabel = (quarter: number) => {
+    switch (quarter) {
+      case 1: return 'Q1 (End of 1st Quarter)';
+      case 2: return 'Q2 (Halftime)';
+      case 3: return 'Q3 (End of 3rd Quarter)';
+      case 4: return 'Q4 (Final Score)';
+      default: return `Q${quarter}`;
+    }
   };
 
   if (loading) {
@@ -240,11 +259,11 @@ export default function AdminLivePage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-4xl">
+    <div className="p-6 lg:p-8 max-w-3xl">
       {/* Page Title */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Live Game Control</h1>
-        <p className="text-white/60">Manage scores during the Super Bowl</p>
+        <h1 className="text-2xl font-bold text-white">Game Scoring</h1>
+        <p className="text-white/60">Enter final scores for each quarter to determine winners</p>
       </div>
 
       {/* Team Names */}
@@ -252,180 +271,151 @@ export default function AdminLivePage() {
         <h3 className="text-lg font-bold text-white mb-4">Team Names</h3>
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <Label className="text-white/80 mb-2 block">AFC Team (Row Headers)</Label>
-            <div className="flex gap-2">
-              <Input
-                value={afcTeam}
-                onChange={(e) => setAfcTeam(e.target.value)}
-                placeholder="e.g. Chiefs"
-                className="bg-white/5 border-white/10 text-white"
-              />
-            </div>
+            <Label className="text-white/80 mb-2 block">AFC Team</Label>
+            <Input
+              value={afcTeam}
+              onChange={(e) => setAfcTeam(e.target.value)}
+              placeholder="e.g. Chiefs"
+              className="bg-white/5 border-white/10 text-white"
+            />
           </div>
           <div>
-            <Label className="text-white/80 mb-2 block">NFC Team (Column Headers)</Label>
-            <div className="flex gap-2">
-              <Input
-                value={nfcTeam}
-                onChange={(e) => setNfcTeam(e.target.value)}
-                placeholder="e.g. Eagles"
-                className="bg-white/5 border-white/10 text-white"
-              />
-            </div>
+            <Label className="text-white/80 mb-2 block">NFC Team</Label>
+            <Input
+              value={nfcTeam}
+              onChange={(e) => setNfcTeam(e.target.value)}
+              placeholder="e.g. Eagles"
+              className="bg-white/5 border-white/10 text-white"
+            />
           </div>
         </div>
         <Button
-          onClick={() => updateGameState({ afc_team: afcTeam, nfc_team: nfcTeam })}
+          onClick={saveTeamNames}
           disabled={saving}
           className="mt-4 bg-[#cda33b] hover:bg-[#b8922f]"
         >
+          <Save className="w-4 h-4 mr-2" />
           Save Team Names
         </Button>
       </Card>
 
-      {/* Game Status */}
+      {/* Quarter Scores */}
       <Card className="p-6 bg-white/5 border-white/10 mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            {gameState?.is_live ? (
-              <>
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                </span>
-                <span className="text-red-400 font-bold">LIVE</span>
-              </>
-            ) : gameState?.is_final ? (
-              <span className="text-white/60 font-bold">FINAL</span>
-            ) : (
-              <span className="text-white/60 font-bold">PRE-GAME</span>
-            )}
-            <span className="text-white/30">|</span>
-            <span className="text-white/60">Q{gameState?.quarter || 0} • {gameState?.time_remaining || '15:00'}</span>
-          </div>
+        <h3 className="text-lg font-bold text-white mb-6">Quarter Scores</h3>
 
-          <div className="flex items-center gap-2">
-            {!gameState?.is_live && !gameState?.is_final && (
-              <Button onClick={handleStartGame} className="bg-green-600 hover:bg-green-700">
-                <Play className="w-4 h-4 mr-2" />
-                Start
-              </Button>
-            )}
-            {gameState?.is_live && (
-              <Button onClick={handleEndQuarter} className="bg-yellow-600 hover:bg-yellow-700">
-                <CheckCircle2 className="w-4 h-4 mr-2" />
-                End Q{gameState.quarter}
-              </Button>
-            )}
-            <Button onClick={handleResetGame} variant="outline" className="border-red-600/50 text-red-400 hover:bg-red-500/10">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              Reset
-            </Button>
-          </div>
-        </div>
+        <div className="space-y-6">
+          {[1, 2, 3, 4].map((quarter) => {
+            const winner = quarterWinners.find((w) => w.quarter === quarter);
+            const scores = quarterScores[quarter];
+            const hasScore = scores.afcScore && scores.nfcScore;
 
-        {/* Score Display */}
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-white/60 text-sm mb-2">{gameState?.afc_team || 'AFC'}</p>
-            <div className="text-5xl font-black text-white mb-4">{scoreForm.afcScore}</div>
-            <div className="flex items-center justify-center gap-2">
-              <Button onClick={() => handleScoreChange('afc', -1)} size="sm" variant="outline" className="border-white/20 text-white">
-                <Minus className="w-4 h-4" />
-              </Button>
-              <Button onClick={() => handleScoreChange('afc', 1)} size="sm" variant="outline" className="border-white/20 text-white">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <span className="text-3xl text-white/30">-</span>
-            <Button
-              onClick={() => updateGameState({ afc_score: scoreForm.afcScore, nfc_score: scoreForm.nfcScore })}
-              disabled={saving}
-              className="mt-4 bg-[#cda33b] hover:bg-[#b8922f]"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${saving ? 'animate-spin' : ''}`} />
-              Update
-            </Button>
-          </div>
-
-          <div>
-            <p className="text-white/60 text-sm mb-2">{gameState?.nfc_team || 'NFC'}</p>
-            <div className="text-5xl font-black text-white mb-4">{scoreForm.nfcScore}</div>
-            <div className="flex items-center justify-center gap-2">
-              <Button onClick={() => handleScoreChange('nfc', -1)} size="sm" variant="outline" className="border-white/20 text-white">
-                <Minus className="w-4 h-4" />
-              </Button>
-              <Button onClick={() => handleScoreChange('nfc', 1)} size="sm" variant="outline" className="border-white/20 text-white">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <p className="text-white/50 text-sm">
-            Winning Numbers: <span className="font-bold text-[#cda33b]">{scoreForm.afcScore % 10}-{scoreForm.nfcScore % 10}</span>
-          </p>
-        </div>
-      </Card>
-
-      {/* Quick Score */}
-      <Card className="p-6 bg-white/5 border-white/10 mb-6">
-        <h3 className="text-lg font-bold text-white mb-4">Quick Score</h3>
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <p className="text-white/60 text-sm mb-3">{gameState?.afc_team || 'AFC'}</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={() => handleQuickScore('afc', 6, 'TD')} variant="outline" className="border-white/20 text-white">+6 TD</Button>
-              <Button onClick={() => handleQuickScore('afc', 1, 'XP')} variant="outline" className="border-white/20 text-white">+1 XP</Button>
-              <Button onClick={() => handleQuickScore('afc', 2, '2PT')} variant="outline" className="border-white/20 text-white">+2 2PT</Button>
-              <Button onClick={() => handleQuickScore('afc', 3, 'FG')} variant="outline" className="border-white/20 text-white">+3 FG</Button>
-            </div>
-          </div>
-          <div>
-            <p className="text-white/60 text-sm mb-3">{gameState?.nfc_team || 'NFC'}</p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button onClick={() => handleQuickScore('nfc', 6, 'TD')} variant="outline" className="border-white/20 text-white">+6 TD</Button>
-              <Button onClick={() => handleQuickScore('nfc', 1, 'XP')} variant="outline" className="border-white/20 text-white">+1 XP</Button>
-              <Button onClick={() => handleQuickScore('nfc', 2, '2PT')} variant="outline" className="border-white/20 text-white">+2 2PT</Button>
-              <Button onClick={() => handleQuickScore('nfc', 3, 'FG')} variant="outline" className="border-white/20 text-white">+3 FG</Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Quarter Winners */}
-      <Card className="p-6 bg-white/5 border-white/10">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-yellow-500" />
-          <h3 className="text-lg font-bold text-white">Quarter Winners</h3>
-        </div>
-        <div className="grid grid-cols-4 gap-3">
-          {[1, 2, 3, 4].map((q) => {
-            const winner = quarterWinners.find((w) => w.quarter === q);
             return (
-              <div
-                key={q}
-                className={`p-4 rounded-lg text-center ${winner ? 'bg-green-500/10 border border-green-500/30' : 'bg-white/5'}`}
-              >
-                <p className="text-white/50 text-xs mb-1">Q{q}</p>
-                {winner ? (
-                  <>
-                    <p className="font-bold text-white text-sm truncate">{(winner as any).profiles?.name || '—'}</p>
-                    <p className="text-xs text-white/50">{winner.row_score}-{winner.col_score}</p>
-                    {winner.prize_amount && <p className="text-green-400 text-sm font-bold">${winner.prize_amount}</p>}
-                  </>
-                ) : (
-                  <p className="text-white/30 text-sm">—</p>
+              <div key={quarter} className="p-4 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-semibold text-white">{getQuarterLabel(quarter)}</h4>
+                  {winner && (
+                    <span className="flex items-center gap-1 text-green-400 text-sm">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Winner: {(winner as any).profiles?.name || 'No winner'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-end gap-4">
+                  <div className="flex-1">
+                    <Label className="text-white/60 text-sm mb-1 block">
+                      {afcTeam || 'AFC'}
+                    </Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={scores.afcScore}
+                      onChange={(e) => handleScoreChange(quarter, 'afc', e.target.value)}
+                      placeholder="0"
+                      className="bg-white/10 border-white/20 text-white text-center text-xl font-bold"
+                    />
+                  </div>
+
+                  <div className="pb-2 text-white/30 text-2xl font-bold">-</div>
+
+                  <div className="flex-1">
+                    <Label className="text-white/60 text-sm mb-1 block">
+                      {nfcTeam || 'NFC'}
+                    </Label>
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      value={scores.nfcScore}
+                      onChange={(e) => handleScoreChange(quarter, 'nfc', e.target.value)}
+                      placeholder="0"
+                      className="bg-white/10 border-white/20 text-white text-center text-xl font-bold"
+                    />
+                  </div>
+
+                  <Button
+                    onClick={() => saveQuarterScore(quarter)}
+                    disabled={saving || !hasScore}
+                    className="bg-[#cda33b] hover:bg-[#b8922f] disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </div>
+
+                {hasScore && (
+                  <div className="mt-3 text-sm text-white/50">
+                    Winning numbers: <span className="text-[#cda33b] font-bold">{parseInt(scores.afcScore) % 10}-{parseInt(scores.nfcScore) % 10}</span>
+                  </div>
                 )}
               </div>
             );
           })}
         </div>
       </Card>
+
+      {/* Winners Summary */}
+      {quarterWinners.length > 0 && (
+        <Card className="p-6 bg-white/5 border-white/10 mb-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Trophy className="w-5 h-5 text-yellow-500" />
+            <h3 className="text-lg font-bold text-white">Winners</h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[1, 2, 3, 4].map((q) => {
+              const winner = quarterWinners.find((w) => w.quarter === q);
+              return (
+                <div
+                  key={q}
+                  className={`p-4 rounded-lg text-center ${winner ? 'bg-green-500/10 border border-green-500/30' : 'bg-white/5'}`}
+                >
+                  <p className="text-white/50 text-xs mb-1">Q{q}</p>
+                  {winner ? (
+                    <>
+                      <p className="font-bold text-white text-sm truncate">{(winner as any).profiles?.name || '—'}</p>
+                      <p className="text-xs text-white/50">{winner.row_score}-{winner.col_score}</p>
+                      {winner.prize_amount && <p className="text-green-400 text-sm font-bold">${winner.prize_amount}</p>}
+                    </>
+                  ) : (
+                    <p className="text-white/30 text-sm">—</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      {/* Reset Button */}
+      <div className="text-center">
+        <Button
+          onClick={handleReset}
+          variant="outline"
+          className="border-red-600/50 text-red-400 hover:bg-red-500/10"
+        >
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Reset All Scores
+        </Button>
+      </div>
     </div>
   );
 }
