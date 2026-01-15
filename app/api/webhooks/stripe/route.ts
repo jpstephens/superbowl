@@ -2,13 +2,17 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-});
+// Initialize Stripe lazily to avoid build-time errors
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-09-30.clover',
+  });
+}
 
 export async function POST(request: Request) {
   const body = await request.text();
   const signature = request.headers.get('stripe-signature')!;
+  const stripe = getStripe();
 
   try {
     const event = stripe.webhooks.constructEvent(

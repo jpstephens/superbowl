@@ -2,10 +2,14 @@ import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+// Initialize Stripe lazily to avoid build-time errors
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 export async function POST(request: Request) {
   try {
+    const stripe = getStripe();
     const body = await request.json();
     const { selectedSquares, totalAmount, baseAmount, coversFee, feeAmount } = body;
 

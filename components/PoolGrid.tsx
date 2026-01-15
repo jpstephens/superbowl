@@ -128,8 +128,9 @@ export default function PoolGrid({
 
   if (loading) {
     return (
-      <div className="w-full flex items-center justify-center py-20">
-        <div className="w-6 h-6 border-2 border-[#232842] border-t-transparent rounded-full animate-spin" />
+      <div className="w-full flex flex-col items-center justify-center py-16 gap-4">
+        <div className="w-10 h-10 border-3 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
+        <p className="text-gray-500 text-sm font-medium animate-pulse">Loading grid...</p>
       </div>
     );
   }
@@ -212,8 +213,8 @@ export default function PoolGrid({
                     key={`cell-${row}-${col}`}
                     onClick={() => handleSquareClick(square)}
                     disabled={!isAvailable || tournamentLaunched || disabled}
-                    whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.02 } : {}}
-                    whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.98 } : {}}
+                    whileHover={isAvailable && !tournamentLaunched && !disabled ? { scale: 1.05, zIndex: 20 } : {}}
+                    whileTap={isAvailable && !tournamentLaunched && !disabled ? { scale: 0.95 } : {}}
                     title={tooltipText}
                     aria-label={`Square ${boxNum}. ${
                       isClaimed ? `Owned by ${square.user_name || 'Unknown'}` : 'Available for purchase'
@@ -221,21 +222,21 @@ export default function PoolGrid({
                     aria-pressed={isSelected}
                     role="gridcell"
                     className={`
-                      ${cellSize} border-r border-b border-gray-300 flex items-center justify-center transition-all duration-100
+                      ${cellSize} border-r border-b border-gray-300 flex items-center justify-center transition-all duration-150 relative
                       ${row === 9 ? 'border-b-0' : ''}
                       ${col === 9 ? 'border-r-0' : ''}
-                      ${isSelected ? 'bg-[#cda33b] text-[#232842] font-bold cursor-pointer z-10 relative shadow-md' : ''}
-                      ${isAvailable && !disabled && !isSelected && 'bg-white text-gray-700 hover:bg-emerald-50 cursor-pointer font-medium'}
+                      ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
+                      ${isAvailable && !disabled && !isSelected && 'bg-gradient-to-br from-emerald-50 to-white text-gray-700 hover:from-emerald-100 hover:to-emerald-50 hover:shadow-md hover:border-emerald-300 cursor-pointer font-medium'}
                       ${isAvailable && disabled && !isSelected && 'bg-gray-50 text-gray-400 cursor-not-allowed'}
-                      ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-600'}
-                      ${isWinner && !isSelected && 'bg-[#cda33b] text-white font-bold animate-pulse'}
+                      ${isClaimed && !isSelected && !isWinner && 'bg-gray-100 text-gray-500'}
+                      ${isWinner && !isSelected && 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold animate-pulse shadow-lg ring-2 ring-[#cda33b]/50'}
                     `}
                   >
-                    {isWinner && <span className="text-xl">★</span>}
-                    {isSelected && !isWinner && <span className="text-lg font-bold">{boxNum}</span>}
+                    {isWinner && <span className="text-xl drop-shadow-sm">★</span>}
+                    {isSelected && !isWinner && <span className="text-lg font-bold drop-shadow-sm">{boxNum}</span>}
                     {isAvailable && !isSelected && <span className="text-base sm:text-lg">{boxNum}</span>}
                     {isClaimed && !isSelected && !isWinner && (
-                      <span className="text-sm sm:text-base font-medium leading-tight text-center truncate px-1">
+                      <span className="text-xs sm:text-sm font-medium leading-tight text-center truncate px-0.5">
                         {getFirstName(square.user_name ?? null)}
                       </span>
                     )}
