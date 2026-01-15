@@ -88,7 +88,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#232842] flex items-center justify-center">
+      <div className="dark min-h-screen bg-[#232842] flex items-center justify-center">
         <div className="w-10 h-10 border-3 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -107,7 +107,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#232842]">
+    <div className="dark min-h-screen bg-[#232842]">
       {/* Mobile Header */}
       <header className="lg:hidden border-b border-white/10 bg-[#1a1f35] sticky top-0 z-50">
         <div className="flex h-14 items-center justify-between px-4">
