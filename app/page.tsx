@@ -303,33 +303,35 @@ export default function GridPage() {
               )}
 
               {/* Prize Pool / Winners */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl flex items-center justify-center">
-                    <span className="text-xl">🏆</span>
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-[#232842]">
-                      {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
-                    </h2>
-                    <p className="text-2xl font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</p>
+              <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#cda33b]/20 rounded-xl flex items-center justify-center">
+                      <span className="text-xl">🏆</span>
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-medium text-white/70">
+                        {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
+                      </h2>
+                      <p className="text-2xl font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="p-4 space-y-2">
                   {/* Q1 */}
                   {(() => {
                     const winner = getQuarterWinner(1);
                     return (
-                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-50 border border-green-200' : 'border-b border-gray-50'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-gray-500 text-sm">End of Q1</span>
+                          <span className="text-white/60 text-sm">End of Q1</span>
                           {winner && (
-                            <p className="text-green-700 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold ${winner ? 'text-green-600' : 'text-[#232842]'}`}>${prizes.q1.toLocaleString()}</span>
-                          {winner && <p className="text-xs text-green-600">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q1.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -339,16 +341,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(2);
                     return (
-                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-50 border border-green-200' : 'border-b border-gray-50'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-gray-500 text-sm">Halftime</span>
+                          <span className="text-white/60 text-sm">Halftime</span>
                           {winner && (
-                            <p className="text-green-700 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold ${winner ? 'text-green-600' : 'text-[#232842]'}`}>${prizes.q2.toLocaleString()}</span>
-                          {winner && <p className="text-xs text-green-600">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q2.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -358,16 +360,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(3);
                     return (
-                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-50 border border-green-200' : 'border-b border-gray-50'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-gray-500 text-sm">End of Q3</span>
+                          <span className="text-white/60 text-sm">End of Q3</span>
                           {winner && (
-                            <p className="text-green-700 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold ${winner ? 'text-green-600' : 'text-[#232842]'}`}>${prizes.q3.toLocaleString()}</span>
-                          {winner && <p className="text-xs text-green-600">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q3.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -377,16 +379,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(4);
                     return (
-                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-gradient-to-r from-[#cda33b]/20 to-[#cda33b]/10 border border-[#cda33b]/30' : 'bg-gradient-to-r from-[#cda33b]/10 to-transparent'}`}>
+                      <div className={`flex items-center justify-between py-2.5 px-3 rounded-lg ${winner ? 'bg-[#cda33b]/20 border border-[#cda33b]/30' : 'bg-[#cda33b]/10 border border-[#cda33b]/20'}`}>
                         <div>
-                          <span className="font-semibold text-[#232842]">Final Score</span>
+                          <span className="font-semibold text-[#cda33b]">Final Score</span>
                           {winner && (
                             <p className="text-[#cda33b] font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-bold text-lg ${winner ? 'text-[#cda33b]' : 'text-[#cda33b]'}`}>${prizes.q4.toLocaleString()}</span>
-                          {winner && <p className="text-xs text-[#cda33b]">{winner.row_score}-{winner.col_score}</p>}
+                          <span className="font-bold text-lg text-[#cda33b]">${prizes.q4.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-[#cda33b]/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
