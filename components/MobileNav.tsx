@@ -66,8 +66,8 @@ export default function MobileNav() {
                   : 'text-gray-500 hover:text-[#232842]'
               )}
             >
-              <Icon className={cn('w-5 h-5', isActive && 'text-[#cda33b]')} />
-              <span className={cn('text-[10px] font-medium', isActive && 'font-semibold')}>
+              <Icon className={cn('w-6 h-6', isActive && 'text-[#cda33b]')} />
+              <span className={cn('text-[11px] font-medium tracking-[0.01em]', isActive && 'font-semibold')}>
                 {item.label}
               </span>
             </Link>
@@ -84,8 +84,8 @@ export default function MobileNav() {
                 : 'text-gray-500 hover:text-[#232842]'
             )}
           >
-            <User className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Sign In</span>
+            <User className="w-6 h-6" />
+            <span className="text-[11px] font-medium tracking-[0.01em]">Sign In</span>
           </Link>
         )}
       </div>

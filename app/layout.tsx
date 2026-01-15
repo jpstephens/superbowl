@@ -1,17 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import MobileNav from "@/components/MobileNav";
 
 /**
- * Poppins - Matching the Michael Williams Scholarship website
- * Professional, dignified, warm, and community-focused
- * Excellent for headings and body text
+ * Inter - Apple HIG-inspired typography
+ *
+ * Inter is the closest cross-platform match to Apple's SF Pro:
+ * - Designed for screens with excellent readability at all sizes
+ * - Tabular numbers for score displays
+ * - Proper optical sizing characteristics
+ * - Great x-height for small text legibility
  */
-const poppins = Poppins({
+const inter = Inter({
   variable: "--font-sans",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -47,7 +51,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${poppins.variable} antialiased`}>
+      <body className={`${inter.variable} antialiased`}>
         <div className="pb-16 lg:pb-0">
           {children}
         </div>

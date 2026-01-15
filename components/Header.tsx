@@ -52,10 +52,10 @@ export default function Header() {
               />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-white leading-tight">
+              <h1 className="text-[19px] font-semibold text-white leading-tight tracking-[-0.022em]">
                 Super Bowl Pool
               </h1>
-              <p className="text-sm text-[#cda33b] font-medium">
+              <p className="text-[13px] text-[#cda33b] font-medium tracking-[-0.008em]">
                 Michael Williams Memorial Scholarship
               </p>
             </div>
@@ -69,13 +69,13 @@ export default function Header() {
                   <>
                     <Link
                       href="/dashboard"
-                      className="hidden sm:flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                      className="hidden sm:flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
                     >
                       Dashboard
                     </Link>
                     <button
                       onClick={handleSignOut}
-                      className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                      className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
                     >
                       <UserIcon className="w-5 h-5" />
                       <span className="hidden sm:inline">Sign Out</span>
@@ -85,7 +85,7 @@ export default function Header() {
                 ) : (
                   <Link
                     href="/auth/login"
-                    className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                    className="flex items-center gap-2 px-4 py-3 min-h-[44px] rounded-full text-[15px] font-medium tracking-[-0.016em] text-white/80 hover:text-white hover:bg-white/10 transition-all"
                   >
                     <LogIn className="w-5 h-5" />
                     <span className="hidden sm:inline">Sign In</span>
