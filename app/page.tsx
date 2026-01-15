@@ -201,7 +201,7 @@ export default function GridPage() {
       )}
 
       {/* Main Content - Grid Focused */}
-      <main className="flex-1 px-2 py-2 pb-24">
+      <main className="flex-1 px-2 py-4 pb-32">
         <div className="flex justify-center">
           <PoolGrid
             onSquareSelect={handleSquareSelect}
@@ -217,6 +217,64 @@ export default function GridPage() {
               isLive: gameState.is_live,
             } : null}
           />
+        </div>
+
+        {/* Prize Pool & How to Play */}
+        <div className="max-w-4xl mx-auto mt-8 px-4 space-y-6">
+          {/* Prize Pool */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-xl font-bold text-[#232842] mb-4 flex items-center gap-2">
+              <span className="text-2xl">🏆</span> Prize Pool — ${totalPrizePool.toLocaleString()}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="bg-gray-50 rounded-xl p-4 text-center">
+                <div className="text-sm text-gray-500 font-medium mb-1">Q1</div>
+                <div className="text-2xl font-bold text-[#232842]">${prizes.q1}</div>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 text-center">
+                <div className="text-sm text-gray-500 font-medium mb-1">Halftime</div>
+                <div className="text-2xl font-bold text-[#cda33b]">${prizes.q2}</div>
+              </div>
+              <div className="bg-gray-50 rounded-xl p-4 text-center">
+                <div className="text-sm text-gray-500 font-medium mb-1">Q3</div>
+                <div className="text-2xl font-bold text-[#232842]">${prizes.q3}</div>
+              </div>
+              <div className="bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-xl p-4 text-center">
+                <div className="text-sm text-white/80 font-medium mb-1">Final</div>
+                <div className="text-2xl font-bold text-white">${prizes.q4}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* How to Play */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <h2 className="text-xl font-bold text-[#232842] mb-4 flex items-center gap-2">
+              <span className="text-2xl">📋</span> How to Play
+            </h2>
+            <div className="space-y-3 text-gray-600">
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                <p><strong>Pick your squares</strong> — Tap any available square on the grid to select it. You can choose as many as you want.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                <p><strong>Complete payment</strong> — Each square is ${squarePrice}. Pay securely with credit card or Venmo.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                <p><strong>Numbers assigned</strong> — Before kickoff, random numbers (0-9) are assigned to each row and column.</p>
+              </div>
+              <div className="flex gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                <p><strong>Win prizes</strong> — If your square matches the last digit of each team&apos;s score at the end of Q1, halftime, Q3, or the final, you win!</p>
+              </div>
+            </div>
+            <div className="mt-4 p-4 bg-[#232842]/5 rounded-xl">
+              <p className="text-sm text-gray-500">
+                <strong className="text-[#232842]">100% of proceeds</strong> benefit the Michael Williams Memorial Scholarship Fund.
+              </p>
+            </div>
+          </div>
         </div>
       </main>
 
