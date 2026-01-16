@@ -446,57 +446,51 @@ export default function GridPage() {
 
       {/* Sticky Checkout Footer - Mobile Only, hide when game is live */}
       {!isLive && !isFinal && (
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50">
-          <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-            {/* Selection Info */}
-            <div className="flex items-center gap-4">
-              {selectedSquares.length === 0 ? (
-                <div className="flex items-center gap-2 text-gray-400">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                  </svg>
-                  <span className="font-medium">Tap squares to select</span>
-                </div>
-              ) : (
-                <>
-                  <div className="flex gap-1.5">
-                    {selectedSquares.slice(0, 5).map((square) => {
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)] z-50 safe-area-pb">
+          <div className="px-3 py-3">
+            {selectedSquares.length === 0 ? (
+              <div className="flex items-center justify-center gap-2 text-gray-400 py-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+                <span className="font-medium">Tap squares to select</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                {/* Selected squares - scrollable */}
+                <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    {selectedSquares.slice(0, 4).map((square) => {
                       const boxNum = square.row_number * 10 + square.col_number + 1;
                       return (
-                        <span key={square.id} className="w-9 h-9 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-sm flex items-center justify-center shadow-sm">
+                        <span key={square.id} className="w-8 h-8 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
                           {boxNum}
                         </span>
                       );
                     })}
-                    {selectedSquares.length > 5 && (
-                      <span className="w-9 h-9 bg-gray-100 rounded-lg text-gray-600 font-bold text-sm flex items-center justify-center">
-                        +{selectedSquares.length - 5}
+                    {selectedSquares.length > 4 && (
+                      <span className="w-8 h-8 bg-gray-100 rounded-lg text-gray-600 font-bold text-xs flex items-center justify-center flex-shrink-0">
+                        +{selectedSquares.length - 4}
                       </span>
                     )}
                   </div>
-                  <div className="text-right pl-2 border-l border-gray-200">
-                    <div className="text-xs text-gray-500 font-medium">{selectedSquares.length} × ${squarePrice}</div>
-                    <div className="text-2xl font-bold text-[#232842]">${selectionTotal}</div>
+                  {/* Price summary */}
+                  <div className="flex-shrink-0 pl-2 border-l border-gray-200">
+                    <div className="text-[10px] text-gray-500 font-medium">{selectedSquares.length} × ${squarePrice}</div>
+                    <div className="text-lg font-bold text-[#232842]">${selectionTotal}</div>
                   </div>
-                </>
-              )}
-            </div>
+                </div>
 
-            {/* Checkout Button */}
-            <Link
-              href={selectedSquares.length > 0 ? "/payment" : "#"}
-              onClick={(e) => {
-                if (selectedSquares.length === 0) { e.preventDefault(); return; }
-                sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
-              }}
-              className={`px-8 py-3.5 rounded-xl font-bold text-lg transition-all duration-200 ${
-                selectedSquares.length > 0
-                  ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]'
-                  : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {selectedSquares.length > 0 ? `Checkout · $${selectionTotal}` : 'Select squares'}
-            </Link>
+                {/* Checkout Button - fixed width */}
+                <Link
+                  href="/payment"
+                  onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares))}
+                  className="flex-shrink-0 px-5 py-3 rounded-xl font-bold text-base bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg active:scale-[0.98] transition-transform"
+                >
+                  Checkout
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}
