@@ -310,8 +310,8 @@ export default function GridPage() {
 
               {/* Prize Pool / Winners */}
               <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
-                <div className="px-4 py-5 border-b border-white/10 text-center">
-                  <p className="text-sm font-medium text-white/60 uppercase tracking-wide mb-2">
+                <div className="px-4 pt-4 pb-3 border-b border-white/10 text-center">
+                  <p className="text-sm font-medium text-white/60 uppercase tracking-wide mb-1">
                     {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
                   </p>
                   <p className="text-4xl font-bold text-white">${totalPrizePool.toLocaleString()}</p>
