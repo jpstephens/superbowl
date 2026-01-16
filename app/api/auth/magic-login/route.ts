@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       type: 'magiclink',
       email: result.email,
       options: {
-        redirectTo: `${baseUrl}/auth/callback`,
+        redirectTo: `${baseUrl}/auth/magic-callback`,
       },
     });
 
