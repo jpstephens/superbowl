@@ -216,8 +216,8 @@ export default function PoolGrid({
   // Cell size - fully dynamic based on viewport
   // Mobile: (100vw - 28px) / 11 - full width grid
   // Tablet: (100vw - 48px) / 11 - with some padding
-  // Desktop lg+: Fixed sizes that match sidebar height
-  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[calc((100vw-48px)/11)] sm:h-[calc((100vw-48px)/11)] lg:w-[50px] lg:h-[50px] xl:w-[54px] xl:h-[54px] 2xl:w-[58px] 2xl:h-[58px]';
+  // Desktop lg+: Larger fixed sizes for better visibility
+  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[calc((100vw-48px)/11)] sm:h-[calc((100vw-48px)/11)] lg:w-[58px] lg:h-[58px] xl:w-[64px] xl:h-[64px] 2xl:w-[70px] 2xl:h-[70px]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
