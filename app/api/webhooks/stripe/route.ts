@@ -104,16 +104,13 @@ export async function POST(request: Request) {
 
         const profileId = registerData.profileId;
 
-        // Create payment record with fee donation data
+        // Create payment record
         if (profileId) {
           const { data: payment, error: paymentError } = await supabase
             .from('payments')
             .insert({
               user_id: profileId,
               amount: amount,
-              base_amount: baseAmount,
-              fee_donation: feeDonation,
-              covers_fee: coversFee,
               method: 'stripe',
               status: 'completed',
               stripe_payment_intent_id: session.payment_intent as string,
@@ -123,22 +120,6 @@ export async function POST(request: Request) {
 
           if (paymentError) {
             console.error('Error creating payment:', paymentError);
-          }
-
-          // Link squares to payment via purchase_squares junction table
-          if (payment && selectedSquareIds.length > 0) {
-            const purchaseSquaresData = selectedSquareIds.map((squareId: string) => ({
-              payment_id: payment.id,
-              square_id: squareId,
-            }));
-
-            const { error: linkError } = await supabase
-              .from('purchase_squares')
-              .insert(purchaseSquaresData);
-
-            if (linkError) {
-              console.error('Error linking squares to payment:', linkError);
-            }
           }
 
           // Log success with fee info
@@ -246,10 +227,14 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Stripe webhook error:', error);
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
+      {
+        error: 'Webhook handler failed',
+        message: error?.message || 'Unknown error',
+        type: error?.type || error?.name || 'Error',
+      },
       { status: 400 }
     );
   }
