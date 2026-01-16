@@ -207,10 +207,11 @@ export default function PoolGrid({
     );
   }
 
-  // Get first name only for cleaner display
-  const getFirstName = (name: string | null) => {
+  // Get display name - show as-is since profile.name is already formatted correctly
+  // (either custom display_name or "First L." from billing name)
+  const getDisplayName = (name: string | null) => {
     if (!name) return 'Taken';
-    return name.trim().split(' ')[0];
+    return name.trim();
   };
 
   // Cell size - fully dynamic based on viewport
@@ -311,7 +312,7 @@ export default function PoolGrid({
                       {isAvailable && !isSelected && <span className="text-[11px] sm:text-base md:text-lg">{boxNum}</span>}
                       {isClaimed && !isSelected && (
                         <span className="text-[9px] sm:text-xs md:text-sm font-medium leading-tight text-center truncate px-0.5">
-                          {getFirstName(square.user_name ?? null)}
+                          {getDisplayName(square.user_name ?? null)}
                         </span>
                       )}
                     </motion.button>

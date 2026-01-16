@@ -13,6 +13,8 @@ import {
 interface AdminPurchaseAlertParams {
   buyerName: string;
   buyerEmail: string;
+  buyerPhone?: string;
+  displayName?: string | null; // Custom display name for squares, if different from billing
   squareCount: number;
   amount: number;
   poolStats: {
@@ -23,14 +25,17 @@ interface AdminPurchaseAlertParams {
 }
 
 export function adminPurchaseAlertEmail(params: AdminPurchaseAlertParams): string {
-  const { buyerName, buyerEmail, squareCount, amount, poolStats, adminUrl } = params;
+  const { buyerName, buyerEmail, buyerPhone, displayName, squareCount, amount, poolStats, adminUrl } = params;
   const percentSold = Math.round((poolStats.soldCount / 100) * 100);
+
+  // Show display name in header if custom, otherwise show buyer name
+  const headerName = displayName || buyerName;
 
   const content = `
     ${adminBanner('New Purchase!', '💰')}
 
     ${contentCard(`
-      ${paragraph(`${highlight(buyerName)} just bought ${goldText(squareCount.toString())} square${squareCount > 1 ? 's' : ''}.`)}
+      ${paragraph(`${highlight(headerName)} just bought ${goldText(squareCount.toString())} square${squareCount > 1 ? 's' : ''}.`)}
 
       ${divider()}
 
@@ -39,7 +44,9 @@ export function adminPurchaseAlertEmail(params: AdminPurchaseAlertParams): strin
       </p>
 
       ${statRow('Buyer', buyerName)}
+      ${buyerPhone ? statRow('Phone', buyerPhone) : ''}
       ${statRow('Email', buyerEmail)}
+      ${displayName ? statRow('Display Name', displayName) : ''}
       ${statRow('Squares', squareCount.toString())}
       ${statRow('Amount', `$${amount.toLocaleString()}`, { gold: true })}
 

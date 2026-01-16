@@ -56,14 +56,28 @@ export async function POST(request: Request) {
       }
 
       // Get registration data from Stripe's customer_details (collected at checkout)
-      // Use display_name from metadata if provided, otherwise fall back to billing name
+      // Track both billing name (for admin) and display name (for squares)
       const billingName = session.customer_details?.name || 'User';
-      const displayName = session.metadata?.display_name?.trim();
+      const customDisplayName = session.metadata?.display_name?.trim();
+      const buyerPhone = session.customer_details?.phone || session.metadata?.user_phone || '';
+
+      // Format name: use custom display_name as-is, or "First Name + Last Initial" from billing
+      const formatBillingName = (fullName: string): string => {
+        const parts = fullName.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0];
+        const firstName = parts[0];
+        const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+        return `${firstName} ${lastInitial}.`;
+      };
+
+      // Display name for squares: custom name or formatted billing name
+      const displayNameForSquares = customDisplayName || formatBillingName(billingName);
 
       const registrationData = {
         email: session.customer_details?.email || session.customer_email || session.metadata?.user_email,
-        name: displayName || billingName, // Prefer custom display name
-        phone: session.customer_details?.phone || session.metadata?.user_phone || '',
+        name: displayNameForSquares, // This goes on squares
+        phone: buyerPhone,
+        billingName: billingName, // Actual buyer name for admin
       };
 
       const amount = session.amount_total ? session.amount_total / 100 : 0;
@@ -102,6 +116,24 @@ export async function POST(request: Request) {
         if (existingProfile) {
           profileId = existingProfile.id;
           console.log(`Found existing profile for ${registrationData.email}: ${profileId}`);
+
+          // Update profile with new display name and/or phone if provided
+          const updates: { name?: string; phone?: string } = {};
+          if (customDisplayName) updates.name = customDisplayName;
+          if (registrationData.phone) updates.phone = registrationData.phone;
+
+          if (Object.keys(updates).length > 0) {
+            const { error: updateError } = await supabase
+              .from('profiles')
+              .update(updates)
+              .eq('id', profileId);
+
+            if (updateError) {
+              console.error('Error updating profile:', updateError);
+            } else {
+              console.log(`Updated profile: ${JSON.stringify(updates)}`);
+            }
+          }
         } else {
           // Create new profile
           const { data: newProfile, error: profileError } = await supabase
@@ -204,10 +236,12 @@ export async function POST(request: Request) {
 
           const totalRevenue = revenueData?.reduce((sum, p) => sum + Number(p.amount || 0), 0) || 0;
 
-          // Send admin purchase alert
+          // Send admin purchase alert (use billing name for admin, not display name)
           const adminAlertHtml = adminPurchaseAlertEmail({
-            buyerName: registrationData.name,
+            buyerName: registrationData.billingName,
             buyerEmail: registrationData.email,
+            buyerPhone: registrationData.phone,
+            displayName: customDisplayName || null, // Show if different from billing name
             squareCount: selectedSquareIds.length,
             amount,
             poolStats: {
