@@ -22,7 +22,19 @@ export default function AdminVerifyPage() {
     try {
       const supabase = createClient();
 
-      // Handle OAuth callback - check for tokens in URL hash
+      // Handle OAuth callback - check for code in URL (PKCE flow)
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+
+      if (code) {
+        // Exchange code for session
+        const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) {
+          console.error('Code exchange error:', exchangeError);
+        }
+      }
+
+      // Also check for tokens in URL hash (legacy flow)
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const accessToken = hashParams.get('access_token');
       const refreshToken = hashParams.get('refresh_token');
@@ -34,6 +46,9 @@ export default function AdminVerifyPage() {
           refresh_token: refreshToken,
         });
       }
+
+      // Small delay to ensure session is set
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // Get current user
       const { data: { user }, error: authError } = await supabase.auth.getUser();
