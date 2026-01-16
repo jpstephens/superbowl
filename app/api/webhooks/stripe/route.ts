@@ -45,11 +45,11 @@ export async function POST(request: Request) {
         }
       }
 
-      // Get registration data from metadata
+      // Get registration data from Stripe's customer_details (collected at checkout)
       const registrationData = {
-        email: session.metadata?.user_email || session.customer_email,
-        name: session.metadata?.user_name || 'User',
-        phone: session.metadata?.user_phone || '',
+        email: session.customer_details?.email || session.customer_email || session.metadata?.user_email,
+        name: session.customer_details?.name || session.metadata?.user_name || 'User',
+        phone: session.customer_details?.phone || session.metadata?.user_phone || '',
       };
 
       const amount = session.amount_total ? session.amount_total / 100 : 0;
