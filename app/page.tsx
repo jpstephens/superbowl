@@ -306,14 +306,11 @@ export default function GridPage() {
 
               {/* Prize Pool / Winners */}
               <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
-                <div className="px-4 py-4 border-b border-white/10 text-center">
-                  <p className="text-sm font-medium text-white/70 mb-1">
+                <div className="px-4 py-5 border-b border-white/10 text-center">
+                  <p className="text-sm font-medium text-white/60 uppercase tracking-wide mb-2">
                     {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
                   </p>
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl">🏆</span>
-                    <p className="text-3xl font-bold text-white">${totalPrizePool.toLocaleString()}</p>
-                  </div>
+                  <p className="text-4xl font-bold text-white">${totalPrizePool.toLocaleString()}</p>
                 </div>
                 <div className="p-4 space-y-2">
                   {/* Q1 */}
@@ -397,11 +394,8 @@ export default function GridPage() {
               {/* How to Play - hide when game is live */}
               {!isLive && !isFinal && (
                 <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
-                  <div className="px-4 py-3 border-b border-white/10 text-center">
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-lg">📖</span>
-                      <span className="font-semibold text-white">How to Play</span>
-                    </div>
+                  <div className="px-4 py-4 border-b border-white/10 text-center">
+                    <p className="text-sm font-semibold text-white uppercase tracking-wide">How to Play</p>
                   </div>
                   <div className="px-4 py-4 space-y-4">
                     <div className="flex gap-3 items-start">
