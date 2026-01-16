@@ -16,10 +16,11 @@ interface PurchaseConfirmationParams {
   totalAmount: number;
   squares: Array<{ row: number; col: number }>;
   baseUrl: string;
+  magicLink?: string; // One-click login link to dashboard
 }
 
 export function purchaseConfirmationEmail(params: PurchaseConfirmationParams): string {
-  const { name, squareCount, totalAmount, squares, baseUrl } = params;
+  const { name, squareCount, totalAmount, squares, baseUrl, magicLink } = params;
   const firstName = name.split(' ')[0];
   const purchaseDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -70,7 +71,12 @@ export function purchaseConfirmationEmail(params: PurchaseConfirmationParams): s
       ${paragraph(`<strong>3.</strong> Watch the Super Bowl and check if your numbers match the score!`, { muted: true })}
     `)}
 
-    ${goldButton('View Your Squares', `${baseUrl}/my-squares`)}
+    ${magicLink ? `
+      ${goldButton('View Your Dashboard', magicLink)}
+      ${paragraph(`<em>This is a personal link that logs you in automatically. Don't share it!</em>`, { muted: true, center: true })}
+    ` : `
+      ${goldButton('View Your Squares', `${baseUrl}/my-squares`)}
+    `}
 
     ${paragraph(`Questions? Reply to this email and we'll help you out.`, { muted: true, center: true })}
   `;

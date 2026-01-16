@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { GridSquare, GameState, QuarterWinner } from '@/lib/supabase/types';
 import {
@@ -9,18 +10,22 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import SetPasswordModal from '@/components/SetPasswordModal';
 
 /**
  * User Dashboard - Personal Hub
  * Overview with links to detailed pages
  */
-export default function DashboardPage() {
+function DashboardContent() {
+  const searchParams = useSearchParams();
   const [userSquares, setUserSquares] = useState<GridSquare[]>([]);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [quarterWinners, setQuarterWinners] = useState<QuarterWinner[]>([]);
   const [purchaseHistory, setPurchaseHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('');
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [hasPassword, setHasPassword] = useState(true); // Assume true until loaded
 
   useEffect(() => {
     loadData();
@@ -41,12 +46,24 @@ export default function DashboardPage() {
       // Get the user's profile by their email
       const { data: profile } = await supabase
         .from('profiles')
-        .select('id, name')
+        .select('id, name, has_password')
         .eq('email', user.email)
         .single();
 
       if (profile) {
         setUserName(profile.name || '');
+        setHasPassword(profile.has_password || false);
+
+        // Show password modal if:
+        // 1. User doesn't have a password set
+        // 2. welcome=true query param (from magic link)
+        // 3. Haven't skipped in this session
+        const isWelcome = searchParams.get('welcome') === 'true';
+        const skippedSetup = localStorage.getItem('skippedPasswordSetup') === 'true';
+
+        if (!profile.has_password && isWelcome && !skippedSetup) {
+          setShowPasswordModal(true);
+        }
 
         // Load user squares
         const { data: squares } = await supabase
@@ -280,6 +297,29 @@ export default function DashboardPage() {
           </Link>
         </div>
       </main>
+
+      {/* Password Setup Modal */}
+      <SetPasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={() => {
+          setShowPasswordModal(false);
+          setHasPassword(true);
+        }}
+        userName={userName}
+      />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-[#cda33b] border-t-transparent rounded-full animate-spin" />
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   );
 }

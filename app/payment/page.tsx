@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import type { GridSquare } from '@/lib/supabase/types';
-import { ArrowLeft, Loader2, Heart, Check, FileText } from 'lucide-react';
+import { ArrowLeft, Loader2, Heart, Check, FileText, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -17,6 +17,14 @@ export default function PaymentPage() {
   const [coversFee, setCoversFee] = useState(true); // Default checked
   const [displayName, setDisplayName] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  // Email check state
+  const [email, setEmail] = useState('');
+  const [checkingEmail, setCheckingEmail] = useState(false);
+  const [emailExists, setEmailExists] = useState(false);
+  const [existingUserName, setExistingUserName] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInEmail, setLoggedInEmail] = useState('');
 
   useEffect(() => {
     const saved = sessionStorage.getItem('selectedSquares');
@@ -35,7 +43,42 @@ export default function PaymentPage() {
     }
 
     loadPrice();
+    checkLoginStatus();
   }, [router]);
+
+  const checkLoginStatus = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      setIsLoggedIn(true);
+      setLoggedInEmail(user.email);
+      setEmail(user.email);
+    }
+  };
+
+  const handleEmailBlur = async () => {
+    if (!email || isLoggedIn) return;
+
+    const trimmedEmail = email.toLowerCase().trim();
+    if (!trimmedEmail.includes('@')) return;
+
+    setCheckingEmail(true);
+    try {
+      const response = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail }),
+      });
+
+      const data = await response.json();
+      setEmailExists(data.exists);
+      setExistingUserName(data.name || '');
+    } catch (error) {
+      console.error('Error checking email:', error);
+    } finally {
+      setCheckingEmail(false);
+    }
+  };
 
   const loadPrice = async () => {
     try {
@@ -147,6 +190,76 @@ export default function PaymentPage() {
                 })}
               </div>
             </div>
+
+            {/* Email Input - Check for existing account */}
+            {!isLoggedIn && (
+              <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+                <label htmlFor="email" className="block text-[13px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Your Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setEmailExists(false);
+                    }}
+                    onBlur={handleEmailBlur}
+                    placeholder="you@example.com"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 text-[15px] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
+                  />
+                  {checkingEmail && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 animate-spin" />
+                  )}
+                </div>
+                <p className="mt-2 text-[13px] text-gray-500">
+                  Receipt and purchase confirmation will be sent here.
+                </p>
+
+                {/* Existing account warning */}
+                {emailExists && !isLoggedIn && (
+                  <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-amber-800">
+                          Welcome back{existingUserName ? `, ${existingUserName.split(' ')[0]}` : ''}!
+                        </p>
+                        <p className="text-sm text-amber-700 mt-1">
+                          You've purchased squares before. Sign in to keep all your squares in one account.
+                        </p>
+                        <Link
+                          href={`/auth/login?redirect=/payment`}
+                          className="inline-flex items-center gap-2 mt-3 px-4 py-2 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700 transition-colors"
+                        >
+                          Sign In
+                        </Link>
+                        <button
+                          onClick={() => setEmailExists(false)}
+                          className="ml-3 text-sm text-amber-700 hover:text-amber-800 underline"
+                        >
+                          Continue as new
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Logged in indicator */}
+            {isLoggedIn && (
+              <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+                <div className="flex items-center gap-2">
+                  <Check className="w-5 h-5 text-green-600" />
+                  <span className="text-sm font-medium text-green-800">
+                    Signed in as {loggedInEmail}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Display Name Input */}
             <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">

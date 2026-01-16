@@ -5,6 +5,7 @@ import { sendEmail, sendEmailSafe, sendToAdmins } from '@/lib/email/send';
 import { purchaseConfirmationEmail } from '@/lib/email/templates/purchase-confirmation';
 import { adminPurchaseAlertEmail } from '@/lib/email/templates/admin-purchase-alert';
 import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
+import { createMagicLink } from '@/lib/auth/magic-link';
 
 // Initialize Stripe lazily to avoid build-time errors
 // Uses test keys if STRIPE_TEST_MODE is 'true'
@@ -207,8 +208,12 @@ export async function POST(request: Request) {
           const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superbowl.michaelwilliamsscholarship.com';
 
           // Send purchase confirmation email to user
-          if (registrationData.email) {
+          if (registrationData.email && profileId) {
             console.log(`Sending confirmation email to: ${registrationData.email}`);
+
+            // Generate a magic link for easy dashboard access
+            const magicLink = await createMagicLink(profileId, siteUrl);
+            console.log(`Magic link generated: ${magicLink ? 'success' : 'failed'}`);
 
             const confirmationHtml = purchaseConfirmationEmail({
               name: registrationData.name,
@@ -216,6 +221,7 @@ export async function POST(request: Request) {
               totalAmount: amount,
               squares: squareCoords,
               baseUrl: siteUrl,
+              magicLink: magicLink || undefined,
             });
 
             const emailResult = await sendEmail({
@@ -230,7 +236,7 @@ export async function POST(request: Request) {
               console.error(`Failed to send confirmation email: ${emailResult.error}`);
             }
           } else {
-            console.warn('No email address found for confirmation email');
+            console.warn('No email address or profile ID found for confirmation email');
           }
 
           // Get current pool stats for admin email
