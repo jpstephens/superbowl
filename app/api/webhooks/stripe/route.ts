@@ -8,9 +8,7 @@ import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
 
 // Initialize Stripe lazily to avoid build-time errors
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-09-30.clover',
-  });
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
 export async function POST(request: Request) {
@@ -157,7 +155,7 @@ export async function POST(request: Request) {
             col: sq.col_number,
           })) || [];
 
-          const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://superbowlpool.com';
+          const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://superbowl.michaelwilliamsscholarship.com';
 
           // Send purchase confirmation email to user
           if (registrationData.email) {
@@ -166,7 +164,7 @@ export async function POST(request: Request) {
               squareCount: selectedSquareIds.length,
               totalAmount: amount,
               squares: squareCoords,
-              baseUrl,
+              baseUrl: siteUrl,
             });
 
             await sendEmailSafe({
@@ -199,7 +197,7 @@ export async function POST(request: Request) {
               soldCount: soldCount || 0,
               totalRevenue,
             },
-            adminUrl: `${baseUrl}/admin/dashboard`,
+            adminUrl: `${siteUrl}/admin/dashboard`,
           });
 
           await sendToAdmins(
@@ -230,7 +228,7 @@ export async function POST(request: Request) {
                   totalRevenue,
                   squarePrice,
                 },
-                adminUrl: `${baseUrl}/admin/dashboard`,
+                adminUrl: `${siteUrl}/admin/dashboard`,
               });
 
               await sendToAdmins(
