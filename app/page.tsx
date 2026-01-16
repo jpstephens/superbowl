@@ -6,6 +6,7 @@ import PoolGrid from '@/components/PoolGrid';
 import type { GridSquare, GameState, QuarterWinner } from '@/lib/supabase/types';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import LiveScoreBanner from '@/components/LiveScoreBanner';
 
 interface QuarterWinnerWithProfile extends QuarterWinner {
@@ -154,7 +155,7 @@ export default function GridPage() {
   const isFinal = gameState?.is_final || false;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <Header />
 
       {/* Info Bar - Compact on mobile */}
@@ -443,6 +444,8 @@ export default function GridPage() {
           </div>
         </div>
       </main>
+
+      <Footer />
 
       {/* Sticky Checkout Footer - Mobile Only, hide when game is live */}
       {!isLive && !isFinal && (
