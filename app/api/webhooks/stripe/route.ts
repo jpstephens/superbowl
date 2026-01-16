@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import Stripe from 'stripe';
 import { sendEmailSafe, sendToAdmins } from '@/lib/email/send';
 import { purchaseConfirmationEmail } from '@/lib/email/templates/purchase-confirmation';
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;

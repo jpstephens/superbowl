@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // Lazy-load Resend to avoid build-time errors
 let resendInstance: Resend | null = null;
@@ -76,7 +76,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<SendEmailRes
  */
 export async function sendToAdmins(subject: string, html: string): Promise<void> {
   try {
-    const supabase = await createClient();
+    const supabase = createAdminClient();
 
     // Get all admin emails
     const { data: admins, error } = await supabase

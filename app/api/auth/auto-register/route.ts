@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import crypto from 'crypto';
 import { sendEmailSafe } from '@/lib/email/send';
 import { rateLimitResponse } from '@/lib/rateLimit';
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const supabase = await createClient();
+    const supabase = createAdminClient();
     
     // Generate temporary password
     const tempPassword = crypto.randomBytes(12).toString('base64url');
