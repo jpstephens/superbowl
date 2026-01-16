@@ -176,36 +176,42 @@ export default function MySquaresPage() {
                 )}
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {squares.map((square, index) => (
-                    <div
-                      key={square.id}
-                      className="bg-card rounded-lg border-2 border-primary/20 p-4 hover:border-primary/50 hover:shadow-md transition-all"
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-xs font-semibold text-muted-foreground">
-                          #{index + 1}
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {square.status}
-                        </Badge>
-                      </div>
-
-                      <div className="text-center mb-2">
-                        <div className="text-2xl font-bold text-primary">
-                          [{square.row_number}, {square.col_number}]
+                  {squares.map((square) => {
+                    const squareNumber = (square.row_number * 10) + square.col_number + 1;
+                    return (
+                      <div
+                        key={square.id}
+                        className="bg-card rounded-lg border-2 border-primary/20 p-4 hover:border-primary/50 hover:shadow-md transition-all"
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-muted-foreground">
+                            Square
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {square.status}
+                          </Badge>
                         </div>
-                      </div>
 
-                      {tournamentLaunched && square.row_score !== null && (
-                        <div className="text-center pt-2 border-t border-border">
-                          <div className="text-xs text-muted-foreground mb-1">Numbers</div>
-                          <div className="text-lg font-bold text-foreground">
-                            {square.row_score} - {square.col_score}
+                        <div className="text-center mb-2">
+                          <div className="text-3xl font-bold text-primary">
+                            #{squareNumber}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Row {square.row_number + 1}, Col {square.col_number + 1}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  ))}
+
+                        {tournamentLaunched && square.row_score !== null && (
+                          <div className="text-center pt-2 border-t border-border">
+                            <div className="text-xs text-muted-foreground mb-1">Numbers</div>
+                            <div className="text-lg font-bold text-foreground">
+                              {square.row_score} - {square.col_score}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </Card>
 
