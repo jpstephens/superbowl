@@ -110,17 +110,23 @@ export async function POST(request: Request) {
         // Check if profile already exists
         const { data: existingProfile } = await supabase
           .from('profiles')
-          .select('id')
+          .select('id, name')
           .eq('email', registrationData.email)
           .single();
 
         if (existingProfile) {
           profileId = existingProfile.id;
-          console.log(`Found existing profile for ${registrationData.email}: ${profileId}`);
+          console.log(`Found existing profile for ${registrationData.email}: ${profileId}, current name: ${existingProfile.name}`);
 
           // Update profile with new display name and/or phone if provided
+          // Also update name if it's currently null (backfill from billing name)
           const updates: { name?: string; phone?: string } = {};
-          if (customDisplayName) updates.name = customDisplayName;
+          if (customDisplayName) {
+            updates.name = customDisplayName;
+          } else if (!existingProfile.name) {
+            // Backfill name from billing info if profile has no name
+            updates.name = registrationData.name;
+          }
           if (registrationData.phone) updates.phone = registrationData.phone;
 
           if (Object.keys(updates).length > 0) {

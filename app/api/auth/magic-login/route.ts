@@ -42,11 +42,12 @@ export async function GET(request: Request) {
     }
 
     // Generate a Supabase magic link for this user
+    // Redirect to /auth/callback which will process the tokens and redirect to dashboard
     const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'magiclink',
       email: result.email,
       options: {
-        redirectTo: `${baseUrl}/dashboard?welcome=true`,
+        redirectTo: `${baseUrl}/auth/callback`,
       },
     });
 

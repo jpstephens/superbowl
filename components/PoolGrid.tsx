@@ -105,26 +105,35 @@ export default function PoolGrid({
       }
 
       // Fetch profile names separately for claimed squares
-      const claimedUserIds = data
-        .filter(sq => sq.user_id)
-        .map(sq => sq.user_id);
+      const claimedUserIds = [...new Set(
+        data
+          .filter(sq => sq.user_id)
+          .map(sq => sq.user_id)
+      )];
 
-      let profileMap = new Map<string, string>();
+      let profileMap = new Map<string, string | null>();
       if (claimedUserIds.length > 0) {
-        const { data: profiles } = await supabase
+        const { data: profiles, error: profileError } = await supabase
           .from('profiles')
           .select('id, name')
           .in('id', claimedUserIds);
 
-        profiles?.forEach(p => profileMap.set(p.id, p.name || ''));
+        if (profileError) {
+          console.error('Error fetching profiles:', profileError);
+        }
+
+        console.log(`Fetched ${profiles?.length || 0} profiles for ${claimedUserIds.length} claimed squares`);
+        profiles?.forEach(p => {
+          profileMap.set(p.id, p.name);
+        });
       }
 
       const processedSquares = data.map((square) => ({
         ...square,
-        user_name: square.user_id ? profileMap.get(square.user_id) || null : null,
+        user_name: square.user_id ? (profileMap.get(square.user_id) ?? null) : null,
       }));
 
-      console.log(`Loaded ${processedSquares.length} squares`);
+      console.log(`Loaded ${processedSquares.length} squares, ${claimedUserIds.length} claimed`);
       setSquares(processedSquares);
     } catch (err) {
       console.error('Error loading grid:', err);
