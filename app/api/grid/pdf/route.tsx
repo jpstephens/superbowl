@@ -6,114 +6,132 @@ import { Document, Page, View, Text, StyleSheet, renderToBuffer } from '@react-p
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const CELL_SIZE = 45;
+const HEADER_SIZE = 25;
+
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
+    padding: 30,
     backgroundColor: '#ffffff',
     fontFamily: 'Helvetica',
   },
   header: {
-    marginBottom: 25,
+    marginBottom: 15,
     textAlign: 'center',
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#232842',
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 11,
+    fontSize: 10,
     color: '#666666',
   },
-  gridWrapper: {
+  gridSection: {
     alignItems: 'center',
+    marginBottom: 15,
   },
-  nfcLabel: {
-    textAlign: 'center',
-    marginBottom: 8,
-    fontSize: 12,
+  teamLabelTop: {
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#1d4ed8',
+    marginBottom: 5,
+    textAlign: 'center',
   },
-  gridContainer: {
+  gridWithLabel: {
     flexDirection: 'row',
-  },
-  afcLabel: {
-    width: 25,
-    justifyContent: 'center',
     alignItems: 'center',
   },
-  afcText: {
-    fontSize: 12,
+  teamLabelLeft: {
+    width: 20,
+    marginRight: 5,
+  },
+  teamLabelLeftText: {
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#dc2626',
     transform: 'rotate(-90deg)',
   },
-  grid: {
-    flex: 1,
+  table: {
+    borderWidth: 1,
+    borderColor: '#232842',
   },
-  row: {
+  tableRow: {
     flexDirection: 'row',
   },
   headerCell: {
-    width: 42,
-    height: 20,
+    width: CELL_SIZE,
+    height: HEADER_SIZE,
+    backgroundColor: '#232842',
     justifyContent: 'center',
     alignItems: 'center',
+    borderRightWidth: 1,
+    borderRightColor: '#374151',
   },
-  headerText: {
-    fontSize: 9,
+  headerCellText: {
+    fontSize: 10,
     fontWeight: 'bold',
-    color: '#6b7280',
+    color: '#ffffff',
   },
-  rowLabel: {
-    width: 25,
-    height: 42,
+  rowHeader: {
+    width: HEADER_SIZE,
+    height: CELL_SIZE,
+    backgroundColor: '#232842',
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#374151',
+  },
+  cornerCell: {
+    width: HEADER_SIZE,
+    height: HEADER_SIZE,
+    backgroundColor: '#232842',
   },
   cell: {
-    width: 42,
-    height: 42,
+    width: CELL_SIZE,
+    height: CELL_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
-    border: '1 solid #e5e7eb',
-    margin: 1,
+    borderRightWidth: 1,
+    borderRightColor: '#e5e7eb',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
   },
   cellAvailable: {
-    backgroundColor: '#ecfdf5',
+    backgroundColor: '#f0fdf4',
   },
   cellTaken: {
-    backgroundColor: '#f3f4f6',
-  },
-  cellText: {
-    fontSize: 8,
-    color: '#374151',
-    textAlign: 'center',
+    backgroundColor: '#fef3c7',
   },
   cellNumber: {
-    fontSize: 6,
+    fontSize: 7,
     color: '#9ca3af',
   },
+  cellInitials: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#232842',
+  },
   prizeSection: {
-    marginTop: 25,
-    padding: 15,
+    marginTop: 10,
+    padding: 12,
     backgroundColor: '#f9fafb',
     borderRadius: 4,
   },
   prizeTitle: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
     color: '#232842',
-    marginBottom: 10,
+    marginBottom: 8,
     textAlign: 'center',
   },
   prizeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 4,
-    paddingHorizontal: 20,
+    marginBottom: 3,
+    paddingHorizontal: 15,
   },
   prizeLabel: {
     fontSize: 9,
@@ -125,12 +143,13 @@ const styles = StyleSheet.create({
     color: '#d97706',
   },
   prizeDivider: {
-    borderTop: '1 solid #e5e7eb',
-    marginVertical: 8,
-    marginHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+    marginVertical: 6,
+    marginHorizontal: 15,
   },
   footer: {
-    marginTop: 20,
+    marginTop: 12,
     textAlign: 'center',
   },
   footerText: {
@@ -148,14 +167,20 @@ interface SquareData {
   user_name: string | null;
 }
 
-function createGridPDF(
-  squares: SquareData[],
-  rowScores: Map<number, number>,
-  colScores: Map<number, number>,
-  tournamentLaunched: boolean
-) {
+function GridPDF({
+  squares,
+  rowScores,
+  colScores,
+  tournamentLaunched,
+  prizes,
+}: {
+  squares: SquareData[];
+  rowScores: Map<number, number>;
+  colScores: Map<number, number>;
+  tournamentLaunched: boolean;
+  prizes: { q1: number; q2: number; q3: number; q4: number };
+}) {
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const prizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
   const total = prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4;
 
   const getSquare = (row: number, col: number) =>
@@ -177,44 +202,44 @@ function createGridPDF(
           <Text style={styles.subtitle}>Michael Williams Memorial Scholarship</Text>
         </View>
 
-        {/* Grid */}
-        <View style={styles.gridWrapper}>
-          <Text style={styles.nfcLabel}>← NFC →</Text>
+        {/* Grid Section */}
+        <View style={styles.gridSection}>
+          <Text style={styles.teamLabelTop}>← NFC →</Text>
 
-          <View style={styles.gridContainer}>
+          <View style={styles.gridWithLabel}>
             {/* AFC Label */}
-            <View style={styles.afcLabel}>
-              <Text style={styles.afcText}>AFC</Text>
+            <View style={styles.teamLabelLeft}>
+              <Text style={styles.teamLabelLeftText}>AFC</Text>
             </View>
 
-            {/* Grid Content */}
-            <View style={styles.grid}>
-              {/* Column Headers */}
-              <View style={styles.row}>
-                <View style={styles.rowLabel} />
+            {/* Grid Table */}
+            <View style={styles.table}>
+              {/* Header Row with column scores */}
+              <View style={styles.tableRow}>
+                <View style={styles.cornerCell} />
                 {numbers.map(col => (
-                  <View key={`col-${col}`} style={styles.headerCell}>
-                    <Text style={styles.headerText}>
-                      {tournamentLaunched ? (colScores.get(col) ?? '-') : ''}
+                  <View key={`header-${col}`} style={styles.headerCell}>
+                    <Text style={styles.headerCellText}>
+                      {tournamentLaunched ? (colScores.get(col) ?? '') : col}
                     </Text>
                   </View>
                 ))}
               </View>
 
-              {/* Rows */}
+              {/* Data Rows */}
               {numbers.map(row => (
-                <View key={`row-${row}`} style={styles.row}>
-                  {/* Row Header */}
-                  <View style={styles.rowLabel}>
-                    <Text style={styles.headerText}>
-                      {tournamentLaunched ? (rowScores.get(row) ?? '-') : ''}
+                <View key={`row-${row}`} style={styles.tableRow}>
+                  {/* Row header with score */}
+                  <View style={styles.rowHeader}>
+                    <Text style={styles.headerCellText}>
+                      {tournamentLaunched ? (rowScores.get(row) ?? '') : row}
                     </Text>
                   </View>
 
                   {/* Cells */}
                   {numbers.map(col => {
                     const square = getSquare(row, col);
-                    const isTaken = square?.status === 'paid' || square?.status === 'confirmed';
+                    const isTaken = square?.status === 'paid';
                     const boxNum = row * 10 + col + 1;
 
                     return (
@@ -223,7 +248,7 @@ function createGridPDF(
                         style={[styles.cell, isTaken ? styles.cellTaken : styles.cellAvailable]}
                       >
                         {isTaken ? (
-                          <Text style={styles.cellText}>{getInitials(square?.user_name || null)}</Text>
+                          <Text style={styles.cellInitials}>{getInitials(square?.user_name || null)}</Text>
                         ) : (
                           <Text style={styles.cellNumber}>{boxNum}</Text>
                         )}
@@ -241,24 +266,24 @@ function createGridPDF(
           <Text style={styles.prizeTitle}>Prize Breakdown</Text>
           <View style={styles.prizeRow}>
             <Text style={styles.prizeLabel}>Q1 - End of 1st Quarter</Text>
-            <Text style={styles.prizeAmount}>${prizes.q1}</Text>
+            <Text style={styles.prizeAmount}>${prizes.q1.toLocaleString()}</Text>
           </View>
           <View style={styles.prizeRow}>
             <Text style={styles.prizeLabel}>Q2 - Halftime</Text>
-            <Text style={styles.prizeAmount}>${prizes.q2}</Text>
+            <Text style={styles.prizeAmount}>${prizes.q2.toLocaleString()}</Text>
           </View>
           <View style={styles.prizeRow}>
             <Text style={styles.prizeLabel}>Q3 - End of 3rd Quarter</Text>
-            <Text style={styles.prizeAmount}>${prizes.q3}</Text>
+            <Text style={styles.prizeAmount}>${prizes.q3.toLocaleString()}</Text>
           </View>
           <View style={styles.prizeRow}>
             <Text style={styles.prizeLabel}>Q4 - Final Score</Text>
-            <Text style={styles.prizeAmount}>${prizes.q4}</Text>
+            <Text style={styles.prizeAmount}>${prizes.q4.toLocaleString()}</Text>
           </View>
           <View style={styles.prizeDivider} />
           <View style={styles.prizeRow}>
             <Text style={[styles.prizeLabel, { fontWeight: 'bold' }]}>Total Prize Pool</Text>
-            <Text style={[styles.prizeAmount, { fontSize: 11 }]}>${total}</Text>
+            <Text style={[styles.prizeAmount, { fontSize: 11 }]}>${total.toLocaleString()}</Text>
           </View>
         </View>
 
@@ -294,14 +319,21 @@ export async function GET() {
 
     if (squaresError) throw squaresError;
 
-    // Check tournament status
+    // Check tournament status and get prizes
     const { data: settings } = await supabase
       .from('settings')
-      .select('value')
-      .eq('key', 'tournament_launched')
-      .single();
+      .select('key, value')
+      .in('key', ['tournament_launched', 'payout_q1', 'payout_q2', 'payout_q3', 'payout_q4']);
 
-    const tournamentLaunched = settings?.value === 'true';
+    const settingsMap = new Map(settings?.map(s => [s.key, s.value]) || []);
+    const tournamentLaunched = settingsMap.get('tournament_launched') === 'true';
+
+    const prizes = {
+      q1: parseInt(settingsMap.get('payout_q1') || '1000'),
+      q2: parseInt(settingsMap.get('payout_q2') || '1000'),
+      q3: parseInt(settingsMap.get('payout_q3') || '1000'),
+      q4: parseInt(settingsMap.get('payout_q4') || '2000'),
+    };
 
     // Build score maps and process squares
     const rowScores = new Map<number, number>();
@@ -325,14 +357,22 @@ export async function GET() {
     });
 
     // Generate PDF
-    const pdfDoc = createGridPDF(processedSquares, rowScores, colScores, tournamentLaunched);
+    const pdfDoc = (
+      <GridPDF
+        squares={processedSquares}
+        rowScores={rowScores}
+        colScores={colScores}
+        tournamentLaunched={tournamentLaunched}
+        prizes={prizes}
+      />
+    );
     const pdfBuffer = await renderToBuffer(pdfDoc);
 
     return new Response(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="super-bowl-pool-grid.pdf"',
-        'Cache-Control': 'public, max-age=300, stale-while-revalidate=60', // Cache for 5 minutes
+        'Cache-Control': 'no-cache',
       },
     });
   } catch (error: any) {
