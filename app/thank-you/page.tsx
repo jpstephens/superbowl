@@ -12,8 +12,9 @@ import confetti from 'canvas-confetti';
 
 function ThankYouContent() {
   const searchParams = useSearchParams();
-  const [squareCount, setSquareCount] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [squareCount, setSquareCount] = useState<number | null>(null);
+  const [totalAmount, setTotalAmount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Trigger confetti
@@ -23,12 +24,26 @@ function ThankYouContent() {
       origin: { y: 0.6 }
     });
 
-    // Get square count from URL or session storage
-    const count = searchParams.get('count');
-    const amount = searchParams.get('amount');
-    
-    if (count) setSquareCount(parseInt(count));
-    if (amount) setTotalAmount(parseFloat(amount));
+    // Fetch session data from Stripe
+    const sessionId = searchParams.get('session_id');
+
+    if (sessionId) {
+      fetch(`/api/stripe/session?session_id=${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.squareCount) setSquareCount(data.squareCount);
+          if (data.totalAmount) setTotalAmount(data.totalAmount);
+        })
+        .catch(err => console.error('Error fetching session:', err))
+        .finally(() => setLoading(false));
+    } else {
+      // Fallback to URL params if no session_id
+      const count = searchParams.get('count');
+      const amount = searchParams.get('amount');
+      if (count) setSquareCount(parseInt(count));
+      if (amount) setTotalAmount(parseFloat(amount));
+      setLoading(false);
+    }
 
     // Clear session storage
     sessionStorage.removeItem('selectedSquares');
@@ -59,13 +74,13 @@ function ThankYouContent() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <div className="text-3xl font-bold text-[#cda33b] mb-1">
-                    {squareCount || '—'}
+                    {loading ? '...' : (squareCount ?? '—')}
                   </div>
                   <div className="text-sm text-gray-600">Squares Purchased</div>
                 </div>
                 <div>
                   <div className="text-3xl font-bold text-[#cda33b] mb-1">
-                    ${totalAmount.toFixed(2) || '—'}
+                    {loading ? '...' : (totalAmount !== null ? `$${totalAmount.toFixed(2)}` : '—')}
                   </div>
                   <div className="text-sm text-gray-600">Total Contribution</div>
                 </div>
