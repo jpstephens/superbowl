@@ -314,7 +314,7 @@ export default function PoolGrid({
                         w-full h-full flex items-center justify-center transition-all duration-150 relative
                         ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
                         ${isAvailable && !isSelected ? 'bg-[#cda33b]/10 text-[#232842] hover:bg-[#cda33b]/25 hover:shadow-md cursor-pointer font-semibold' : ''}
-                        ${isClaimed && !isSelected ? 'bg-[#232842]/10 text-[#232842]/70' : ''}
+                        ${isClaimed && !isSelected ? 'bg-[#232842]/90 text-white' : ''}
                       `}
                     >
                       {isSelected && <span className="text-[11px] sm:text-base md:text-lg font-bold drop-shadow-sm">{boxNum}</span>}
