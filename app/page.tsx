@@ -241,46 +241,46 @@ export default function GridPage() {
             </div>
 
             {/* Right Column - Info Cards */}
-            <div className="w-full lg:w-[300px] lg:flex-shrink-0 space-y-2">
+            <div className="w-full lg:w-[320px] lg:flex-shrink-0 space-y-3">
 
               {/* Desktop Checkout - Primary CTA at top */}
               {!isLive && !isFinal && (
-                <div className="hidden lg:block bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
+                <div className="hidden lg:block bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
                   {/* Header */}
-                  <div className="bg-gradient-to-r from-[#232842] to-[#1a1f35] px-3 py-2">
+                  <div className="bg-gradient-to-r from-[#232842] to-[#1a1f35] px-4 py-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-white font-semibold text-sm">Your Squares</span>
-                      <span className="text-white/60 text-xs">${squarePrice} each</span>
+                      <span className="text-white font-semibold">Your Squares</span>
+                      <span className="text-white/60 text-sm">${squarePrice} each</span>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className="p-3">
+                  <div className="p-4">
                     {selectedSquares.length === 0 ? (
-                      <div className="text-center py-2">
-                        <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="text-center py-4">
+                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                           </svg>
                         </div>
-                        <p className="text-gray-600 text-sm">Click squares on the grid to add them</p>
+                        <p className="text-gray-600 text-[15px]">Click squares on the grid to add them</p>
                       </div>
                     ) : (
                       <>
-                        <div className="flex flex-wrap gap-1.5 mb-3">
+                        <div className="flex flex-wrap gap-2 mb-4">
                           {selectedSquares.map((square) => {
                             const boxNum = square.row_number * 10 + square.col_number + 1;
                             return (
-                              <span key={square.id} className="w-8 h-8 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                              <span key={square.id} className="w-10 h-10 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-sm flex items-center justify-center shadow-sm">
                                 {boxNum}
                               </span>
                             );
                           })}
                         </div>
-                        <div className="border-t border-gray-100 pt-2">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-600 text-sm">{selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''}</span>
-                            <span className="text-2xl font-bold text-[#232842]">${selectionTotal}</span>
+                        <div className="border-t border-gray-100 pt-4">
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-gray-600">{selectedSquares.length} square{selectedSquares.length !== 1 ? 's' : ''}</span>
+                            <span className="text-3xl font-bold text-[#232842]">${selectionTotal}</span>
                           </div>
                         </div>
                       </>
@@ -291,7 +291,7 @@ export default function GridPage() {
                         if (selectedSquares.length === 0) { e.preventDefault(); return; }
                         sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares));
                       }}
-                      className={`block w-full py-2.5 rounded-lg font-semibold text-center text-sm transition-all duration-200 ${
+                      className={`block w-full py-3.5 rounded-xl font-semibold text-center transition-all duration-200 ${
                         selectedSquares.length > 0
                           ? 'bg-gradient-to-r from-[#cda33b] to-[#b8960c] text-white shadow-lg hover:shadow-xl hover:scale-[1.01] active:scale-[0.99]'
                           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
@@ -304,35 +304,35 @@ export default function GridPage() {
               )}
 
               {/* Prize Pool / Winners */}
-              <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-xl shadow-lg overflow-hidden">
-                <div className="px-3 py-2 border-b border-white/10">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-[#cda33b]/20 rounded-lg flex items-center justify-center">
-                      <span className="text-base">🏆</span>
+              <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
+                <div className="px-4 py-3 border-b border-white/10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#cda33b]/20 rounded-xl flex items-center justify-center">
+                      <span className="text-xl">🏆</span>
                     </div>
                     <div>
-                      <h2 className="text-xs font-medium text-white/70">
+                      <h2 className="text-sm font-medium text-white/70">
                         {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
                       </h2>
-                      <p className="text-xl font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-[#cda33b]">${totalPrizePool.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
-                <div className="p-3 space-y-1.5">
+                <div className="p-4 space-y-2">
                   {/* Q1 */}
                   {(() => {
                     const winner = getQuarterWinner(1);
                     return (
-                      <div className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-white/60 text-xs">End of Q1</span>
+                          <span className="text-white/60 text-sm">End of Q1</span>
                           {winner && (
-                            <p className="text-green-400 font-semibold text-xs">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold text-sm ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q1.toLocaleString()}</span>
-                          {winner && <p className="text-[10px] text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q1.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -342,16 +342,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(2);
                     return (
-                      <div className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-white/60 text-xs">Halftime</span>
+                          <span className="text-white/60 text-sm">Halftime</span>
                           {winner && (
-                            <p className="text-green-400 font-semibold text-xs">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold text-sm ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q2.toLocaleString()}</span>
-                          {winner && <p className="text-[10px] text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q2.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -361,16 +361,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(3);
                     return (
-                      <div className={`flex items-center justify-between py-1.5 px-2.5 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
+                      <div className={`flex items-center justify-between py-2 px-3 rounded-lg ${winner ? 'bg-green-500/20 border border-green-500/30' : 'bg-white/5'}`}>
                         <div>
-                          <span className="text-white/60 text-xs">End of Q3</span>
+                          <span className="text-white/60 text-sm">End of Q3</span>
                           {winner && (
-                            <p className="text-green-400 font-semibold text-xs">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-green-400 font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className={`font-semibold text-sm ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q3.toLocaleString()}</span>
-                          {winner && <p className="text-[10px] text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
+                          <span className={`font-semibold ${winner ? 'text-green-400' : 'text-white'}`}>${prizes.q3.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-green-400/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -380,16 +380,16 @@ export default function GridPage() {
                   {(() => {
                     const winner = getQuarterWinner(4);
                     return (
-                      <div className={`flex items-center justify-between py-2 px-2.5 rounded-lg ${winner ? 'bg-[#cda33b]/20 border border-[#cda33b]/30' : 'bg-[#cda33b]/10 border border-[#cda33b]/20'}`}>
+                      <div className={`flex items-center justify-between py-2.5 px-3 rounded-lg ${winner ? 'bg-[#cda33b]/20 border border-[#cda33b]/30' : 'bg-[#cda33b]/10 border border-[#cda33b]/20'}`}>
                         <div>
-                          <span className="font-semibold text-[#cda33b] text-sm">Final Score</span>
+                          <span className="font-semibold text-[#cda33b]">Final Score</span>
                           {winner && (
-                            <p className="text-[#cda33b] font-semibold text-xs">{winner.profiles?.name || 'Winner'}</p>
+                            <p className="text-[#cda33b] font-semibold text-sm">{winner.profiles?.name || 'Winner'}</p>
                           )}
                         </div>
                         <div className="text-right">
-                          <span className="font-bold text-[#cda33b]">${prizes.q4.toLocaleString()}</span>
-                          {winner && <p className="text-[10px] text-[#cda33b]/70">{winner.row_score}-{winner.col_score}</p>}
+                          <span className="font-bold text-lg text-[#cda33b]">${prizes.q4.toLocaleString()}</span>
+                          {winner && <p className="text-xs text-[#cda33b]/70">{winner.row_score}-{winner.col_score}</p>}
                         </div>
                       </div>
                     );
@@ -399,40 +399,40 @@ export default function GridPage() {
 
               {/* How to Play - hide when game is live */}
               {!isLive && !isFinal && (
-                <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-xl shadow-lg overflow-hidden">
-                  <div className="px-3 py-2 flex items-center gap-2 border-b border-white/10">
-                    <div className="w-6 h-6 bg-[#cda33b]/20 rounded-md flex items-center justify-center">
-                      <span className="text-sm">📖</span>
+                <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
+                  <div className="px-4 py-3 flex items-center gap-3 border-b border-white/10">
+                    <div className="w-8 h-8 bg-[#cda33b]/20 rounded-lg flex items-center justify-center">
+                      <span className="text-base">📖</span>
                     </div>
-                    <span className="font-semibold text-white text-sm">How to Play</span>
+                    <span className="font-semibold text-white">How to Play</span>
                   </div>
-                  <div className="px-3 py-3 space-y-2.5">
-                    <div className="flex gap-2 items-start">
-                      <span className="flex-shrink-0 w-5 h-5 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                  <div className="px-4 py-4 space-y-4">
+                    <div className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
                       <div>
-                        <p className="font-semibold text-white text-xs">Pick your squares</p>
-                        <p className="text-white/70 text-[11px]">Click any available square on the grid</p>
+                        <p className="font-semibold text-white text-[15px]">Pick your squares</p>
+                        <p className="text-white/80 text-[13px]">Click any available square on the grid</p>
                       </div>
                     </div>
-                    <div className="flex gap-2 items-start">
-                      <span className="flex-shrink-0 w-5 h-5 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <div className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
                       <div>
-                        <p className="font-semibold text-white text-xs">Pay ${squarePrice} per square</p>
-                        <p className="text-white/70 text-[11px]">Credit card accepted</p>
+                        <p className="font-semibold text-white text-[15px]">Pay ${squarePrice} per square</p>
+                        <p className="text-white/80 text-[13px]">Credit card accepted</p>
                       </div>
                     </div>
-                    <div className="flex gap-2 items-start">
-                      <span className="flex-shrink-0 w-5 h-5 bg-white/20 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <div className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-7 h-7 bg-white/20 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
                       <div>
-                        <p className="font-semibold text-white text-xs">Numbers revealed</p>
-                        <p className="text-white/70 text-[11px]">Random 0-9 assigned before kickoff</p>
+                        <p className="font-semibold text-white text-[15px]">Numbers revealed</p>
+                        <p className="text-white/80 text-[13px]">Random 0-9 assigned before kickoff</p>
                       </div>
                     </div>
-                    <div className="flex gap-2 items-start">
-                      <span className="flex-shrink-0 w-5 h-5 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                    <div className="flex gap-3 items-start">
+                      <span className="flex-shrink-0 w-7 h-7 bg-[#cda33b] text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
                       <div>
-                        <p className="font-semibold text-[#cda33b] text-xs">Win prizes!</p>
-                        <p className="text-white/70 text-[11px]">Match last digit of each team&apos;s score</p>
+                        <p className="font-semibold text-[#cda33b] text-[15px]">Win prizes!</p>
+                        <p className="text-white/80 text-[13px]">Match last digit of each team&apos;s score</p>
                       </div>
                     </div>
                   </div>
