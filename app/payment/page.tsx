@@ -15,6 +15,7 @@ export default function PaymentPage() {
   const [redirecting, setRedirecting] = useState(false);
   const [squarePrice, setSquarePrice] = useState(50);
   const [coversFee, setCoversFee] = useState(true); // Default checked
+  const [displayName, setDisplayName] = useState('');
 
   useEffect(() => {
     const saved = sessionStorage.getItem('selectedSquares');
@@ -77,6 +78,7 @@ export default function PaymentPage() {
           baseAmount,
           coversFee,
           feeAmount: coversFee ? processingFee : 0,
+          displayName: displayName.trim() || undefined,
         }),
       });
 
@@ -143,6 +145,25 @@ export default function PaymentPage() {
                   );
                 })}
               </div>
+            </div>
+
+            {/* Display Name Input */}
+            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+              <label htmlFor="displayName" className="block text-[13px] font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                Name on Squares <span className="text-gray-400 font-normal normal-case">(optional)</span>
+              </label>
+              <input
+                type="text"
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="e.g., John S., The Smiths, Go Chiefs!"
+                maxLength={20}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 text-[15px] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#cda33b] focus:border-transparent"
+              />
+              <p className="mt-2 text-[13px] text-gray-500">
+                This is what will show on your squares. Leave blank to use your billing name.
+              </p>
             </div>
 
             {/* Pricing */}

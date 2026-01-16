@@ -46,9 +46,13 @@ export async function POST(request: Request) {
       }
 
       // Get registration data from Stripe's customer_details (collected at checkout)
+      // Use display_name from metadata if provided, otherwise fall back to billing name
+      const billingName = session.customer_details?.name || 'User';
+      const displayName = session.metadata?.display_name?.trim();
+
       const registrationData = {
         email: session.customer_details?.email || session.customer_email || session.metadata?.user_email,
-        name: session.customer_details?.name || session.metadata?.user_name || 'User',
+        name: displayName || billingName, // Prefer custom display name
         phone: session.customer_details?.phone || session.metadata?.user_phone || '',
       };
 

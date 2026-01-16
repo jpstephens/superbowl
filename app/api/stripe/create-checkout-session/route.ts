@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   try {
     const stripe = getStripe();
     const body = await request.json();
-    const { selectedSquares, totalAmount, baseAmount, coversFee, feeAmount } = body;
+    const { selectedSquares, totalAmount, baseAmount, coversFee, feeAmount, displayName } = body;
 
     if (!selectedSquares || !totalAmount) {
       return NextResponse.json(
@@ -100,6 +100,7 @@ export async function POST(request: Request) {
         base_amount: calculatedTotal.toString(),
         fee_donation: feeDonation.toString(),
         covers_fee: coversFee ? 'true' : 'false',
+        display_name: displayName || '',
       },
     });
 
