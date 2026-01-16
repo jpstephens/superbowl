@@ -27,7 +27,7 @@
     {
       "name": "View Grid",
       "short_name": "Grid",
-      "url": "/pool",
+      "url": "/",
       "description": "View the squares grid"
     },
     {

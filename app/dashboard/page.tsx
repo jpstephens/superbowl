@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import type { GridSquare, GameState, QuarterWinner } from '@/lib/supabase/types';
 import {
   Grid3x3, Trophy, DollarSign, ArrowRight,
-  CreditCard, Receipt, TrendingUp, Calendar
+  CreditCard, Receipt
 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
@@ -273,14 +273,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick Actions Footer */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-3">
-          <Link href="/" className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#cda33b] text-white rounded-xl font-semibold hover:bg-[#b8922f] transition-colors">
+        <div className="mt-8">
+          <Link href="/" className="flex items-center justify-center gap-2 px-6 py-3 bg-[#cda33b] text-white rounded-xl font-semibold hover:bg-[#b8922f] transition-colors">
             <Grid3x3 className="w-5 h-5" />
             Buy More Squares
-          </Link>
-          <Link href="/pool" className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#232842] text-white rounded-xl font-semibold hover:bg-[#1a1f35] transition-colors">
-            <TrendingUp className="w-5 h-5" />
-            View Pool Grid
           </Link>
         </div>
       </main>
