@@ -112,8 +112,8 @@ export default function DisclaimerPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Questions?</h2>
                 <p className="text-gray-700">
                   If you have any questions about these terms or the pool operation, please contact us at{' '}
-                  <a href="mailto:support@example.com" className="text-blue-600 hover:text-blue-700 font-semibold">
-                    support@example.com
+                  <a href="mailto:jasonpaulstephens@gmail.com" className="text-blue-600 hover:text-blue-700 font-semibold">
+                    jasonpaulstephens@gmail.com
                   </a>
                 </p>
               </section>

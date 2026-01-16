@@ -114,10 +114,15 @@ export function emailWrapper(content: string, options?: { hideFooter?: boolean }
                     </p>
                     <p style="color: ${colors.textMuted}; font-size: 13px; margin: 0 0 20px 0; line-height: 1.6;">
                       100% of proceeds support the<br>
-                      <span style="color: ${colors.gold}; font-weight: 600;">Michael Williams Memorial Scholarship</span>
+                      <span style="color: ${colors.gold}; font-weight: 600;">Michael Williams Memorial Scholarship Fund</span>
                     </p>
 
-                    <!-- Social/Link Row -->
+                    <!-- 501(c)(3) Disclosure -->
+                    <p style="color: ${colors.textMuted}; font-size: 11px; margin: 0 0 16px 0; line-height: 1.5;">
+                      501(c)(3) Nonprofit Organization · EIN: 88-0683423
+                    </p>
+
+                    <!-- Link Row -->
                     <table role="presentation" cellpadding="0" cellspacing="0">
                       <tr>
                         <td style="padding: 0 12px;">
@@ -125,13 +130,21 @@ export function emailWrapper(content: string, options?: { hideFooter?: boolean }
                         </td>
                         <td style="color: ${colors.border}; font-size: 12px;">|</td>
                         <td style="padding: 0 12px;">
-                          <a href="${baseUrl}/about" style="color: ${colors.textMuted}; font-size: 12px; text-decoration: none; border-bottom: 1px solid ${colors.border};">About the Cause</a>
+                          <a href="https://michaelwilliamsscholarship.com/about-us/" style="color: ${colors.textMuted}; font-size: 12px; text-decoration: none; border-bottom: 1px solid ${colors.border};">About the Scholarship</a>
+                        </td>
+                        <td style="color: ${colors.border}; font-size: 12px;">|</td>
+                        <td style="padding: 0 12px;">
+                          <a href="${baseUrl}/terms" style="color: ${colors.textMuted}; font-size: 12px; text-decoration: none; border-bottom: 1px solid ${colors.border};">Terms</a>
+                        </td>
+                        <td style="color: ${colors.border}; font-size: 12px;">|</td>
+                        <td style="padding: 0 12px;">
+                          <a href="${baseUrl}/privacy" style="color: ${colors.textMuted}; font-size: 12px; text-decoration: none; border-bottom: 1px solid ${colors.border};">Privacy</a>
                         </td>
                       </tr>
                     </table>
 
                     <p style="color: ${colors.textMuted}; font-size: 11px; margin: 24px 0 0 0; opacity: 0.6;">
-                      &copy; ${new Date().getFullYear()} Super Bowl Pool. All proceeds go to charity.
+                      &copy; ${new Date().getFullYear()} Michael Williams Memorial Scholarship Fund
                     </p>
                   </td>
                 </tr>

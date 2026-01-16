@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { User } from '@supabase/supabase-js';
-import { LogIn, LogOut, User as UserIcon, Menu, X, Grid3x3, LayoutDashboard, Grid2X2, FileText, ExternalLink } from 'lucide-react';
+import { LogIn, LogOut, User as UserIcon, Menu, X, Grid3x3, LayoutDashboard, Grid2X2, FileText, Shield, Trophy, Heart } from 'lucide-react';
 
 export default function Header() {
   const router = useRouter();
@@ -144,19 +144,33 @@ export default function Header() {
             )}
             <div className="border-t border-white/10 my-2" />
             <Link
-              href="/disclaimer"
-              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium text-white/60 hover:bg-white/10 transition-colors"
-            >
-              <FileText className="w-5 h-5" />
-              Terms & Rules
-            </Link>
-            <Link
-              href="https://michaelwilliamsscholarship.com"
+              href="https://michaelwilliamsscholarship.com/about-us/"
               target="_blank"
               className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium text-white/60 hover:bg-white/10 transition-colors"
             >
-              <ExternalLink className="w-5 h-5" />
-              Main Website
+              <Heart className="w-5 h-5" />
+              About the Scholarship
+            </Link>
+            <Link
+              href="/terms"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium text-white/60 hover:bg-white/10 transition-colors"
+            >
+              <FileText className="w-5 h-5" />
+              Terms of Service
+            </Link>
+            <Link
+              href="/privacy"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium text-white/60 hover:bg-white/10 transition-colors"
+            >
+              <Shield className="w-5 h-5" />
+              Privacy Policy
+            </Link>
+            <Link
+              href="/rules"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium text-white/60 hover:bg-white/10 transition-colors"
+            >
+              <Trophy className="w-5 h-5" />
+              Contest Rules
             </Link>
             <div className="border-t border-white/10 my-2" />
             {!loading && (

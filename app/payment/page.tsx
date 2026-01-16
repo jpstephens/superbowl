@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import type { GridSquare } from '@/lib/supabase/types';
-import { ArrowLeft, Loader2, Heart, Check } from 'lucide-react';
+import { ArrowLeft, Loader2, Heart, Check, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
@@ -16,6 +16,7 @@ export default function PaymentPage() {
   const [squarePrice, setSquarePrice] = useState(50);
   const [coversFee, setCoversFee] = useState(true); // Default checked
   const [displayName, setDisplayName] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem('selectedSquares');
@@ -232,17 +233,57 @@ export default function PaymentPage() {
               </p>
             </div>
 
+            {/* Terms Agreement */}
+            <label className={`block rounded-xl border-2 p-4 cursor-pointer transition-all ${agreedToTerms ? 'bg-blue-50 border-blue-500' : 'bg-gray-50 border-gray-200 hover:border-gray-300'}`}>
+              <div className="flex items-start gap-3">
+                <div className="relative mt-0.5">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="sr-only peer"
+                  />
+                  <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${agreedToTerms ? 'border-blue-500 bg-blue-500' : 'border-gray-300 bg-white'}`}>
+                    {agreedToTerms && <Check className="w-4 h-4 text-white" />}
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <FileText className="w-4 h-4 text-gray-600" />
+                    <span className="text-[15px] font-semibold text-[#232842]">I agree to the terms</span>
+                  </div>
+                  <p className="text-[13px] text-gray-600 leading-relaxed">
+                    I have read and agree to the{' '}
+                    <Link href="/terms" target="_blank" className="text-blue-600 hover:underline font-medium">
+                      Terms of Service
+                    </Link>
+                    ,{' '}
+                    <Link href="/privacy" target="_blank" className="text-blue-600 hover:underline font-medium">
+                      Privacy Policy
+                    </Link>
+                    , and{' '}
+                    <Link href="/rules" target="_blank" className="text-blue-600 hover:underline font-medium">
+                      Official Contest Rules
+                    </Link>
+                    . I confirm I am 18 years or older.
+                  </p>
+                </div>
+              </div>
+            </label>
+
             {/* Checkout Button */}
             <button
               onClick={redirectToStripe}
-              disabled={redirecting}
-              className="w-full bg-[#cda33b] text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#c39931] transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
+              disabled={redirecting || !agreedToTerms}
+              className="w-full bg-[#cda33b] text-white py-4 px-6 rounded-xl font-bold text-lg hover:bg-[#c39931] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md"
             >
               {redirecting ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Redirecting...
                 </>
+              ) : !agreedToTerms ? (
+                <>Please agree to terms above</>
               ) : (
                 <>Pay ${totalAmount.toFixed(2)}</>
               )}

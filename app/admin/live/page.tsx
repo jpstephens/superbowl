@@ -189,7 +189,45 @@ export default function AdminLivePage() {
         .not('id', 'is', null);
 
       await loadData();
-      alert(`Q${quarter} score saved!`);
+
+      // Send winner email if there's a winner
+      if (winningSquare?.user_id) {
+        try {
+          // Get the square ID for the winning square
+          const { data: winningSquareData } = await supabase
+            .from('grid_squares')
+            .select('id')
+            .eq('row_score', afcLast)
+            .eq('col_score', nfcLast)
+            .eq('status', 'paid')
+            .single();
+
+          if (winningSquareData) {
+            const emailResponse = await fetch('/api/email/quarter-winner', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                quarter,
+                userId: winningSquare.user_id,
+                squareId: winningSquareData.id,
+              }),
+            });
+
+            if (emailResponse.ok) {
+              alert(`Q${quarter} score saved! Winner email sent.`);
+            } else {
+              alert(`Q${quarter} score saved! (Winner email failed to send)`);
+            }
+          } else {
+            alert(`Q${quarter} score saved!`);
+          }
+        } catch (emailError) {
+          console.error('Error sending winner email:', emailError);
+          alert(`Q${quarter} score saved! (Winner email failed)`);
+        }
+      } else {
+        alert(`Q${quarter} score saved! No winner for these numbers.`);
+      }
     } catch (error) {
       console.error('Error saving quarter score:', error);
       alert('Error saving score');
