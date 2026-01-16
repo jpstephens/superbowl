@@ -348,20 +348,21 @@ export function prizeBreakdown(prizes: { q1: number; q2: number; q3: number; q4:
 }
 
 /**
- * Premium squares list
+ * Premium squares list with square numbers
  */
 export function squaresList(squares: Array<{ row: number; col: number; rowScore?: number | null; colScore?: number | null }>): string {
   const items = squares.map((sq, idx) => {
-    const coords = `Row ${sq.row}, Col ${sq.col}`;
-    const numbers = sq.rowScore !== null && sq.rowScore !== undefined
-      ? ` (${sq.rowScore}-${sq.colScore})`
-      : '';
+    // Calculate square number: (row * 10) + col + 1
+    const squareNumber = (sq.row * 10) + sq.col + 1;
+    const gridPosition = `Row ${sq.row + 1}, Col ${sq.col + 1}`;
+    const hasNumbers = sq.rowScore !== null && sq.rowScore !== undefined;
     const isLast = idx === squares.length - 1;
     return `
 <tr>
   <td style="padding: 14px 16px; ${!isLast ? `border-bottom: 1px solid ${colors.border};` : ''} background-color: rgba(255,255,255,0.02);">
-    <span style="color: ${colors.textPrimary}; font-size: 15px; font-weight: 600;">${coords}</span>
-    ${numbers ? `<span style="color: ${colors.gold}; font-size: 15px; font-weight: 700; margin-left: 8px;">${numbers}</span>` : ''}
+    <span style="color: ${colors.gold}; font-size: 18px; font-weight: 700;">#${squareNumber}</span>
+    <span style="color: ${colors.textSecondary}; font-size: 13px; margin-left: 10px;">${gridPosition}</span>
+    ${hasNumbers ? `<span style="color: ${colors.textPrimary}; font-size: 14px; font-weight: 600; margin-left: 12px;">Numbers: ${sq.rowScore}-${sq.colScore}</span>` : ''}
   </td>
 </tr>
     `;
