@@ -51,7 +51,7 @@ export default function Footer() {
               <span>Rules</span>
             </Link>
             <Link
-              href="/admin"
+              href="/admin/login"
               className="text-sm sm:text-base font-medium text-gray-600 hover:text-[#cda33b] transition-colors"
             >
               Admin

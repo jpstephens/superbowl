@@ -594,7 +594,7 @@ export default function Home() {
               <Link href="https://michaelwilliamsscholarship.com" target="_blank" className="text-gray-600 hover:text-[#232842] transition-colors">
                 Main Website
               </Link>
-              <Link href="/admin" className="text-gray-600 hover:text-[#232842] transition-colors">
+              <Link href="/admin/login" className="text-gray-600 hover:text-[#232842] transition-colors">
                 Admin
               </Link>
             </div>
