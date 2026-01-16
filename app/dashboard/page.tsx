@@ -54,14 +54,23 @@ export default function DashboardPage() {
   const loadData = async () => {
     try {
       const supabase = createClient();
-      
-      // Get user profile (bypass auth for now)
-      const { data: profiles } = await supabase
+
+      // Get the logged-in user
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        // Not logged in - show empty state
+        setLoading(false);
+        return;
+      }
+
+      // Get the user's profile by their email
+      const { data: profile } = await supabase
         .from('profiles')
         .select('id')
-        .limit(1);
-      
-      const profile = profiles?.[0];
+        .eq('email', user.email)
+        .single();
+
       if (profile) {
         setUserId(profile.id);
         
@@ -74,31 +83,14 @@ export default function DashboardPage() {
         
         if (squares) setUserSquares(squares);
 
-        // Load purchase history with squares
+        // Load purchase history (simple - no junction table)
         const { data: purchases } = await supabase
           .from('payments')
-          .select(`
-            id,
-            amount,
-            base_amount,
-            fee_donation,
-            method,
-            status,
-            created_at,
-            purchase_squares (
-              square:grid_squares (
-                id,
-                row_number,
-                col_number,
-                row_score,
-                col_score
-              )
-            )
-          `)
+          .select('id, amount, method, status, created_at')
           .eq('user_id', profile.id)
           .order('created_at', { ascending: false });
 
-        if (purchases) setPurchaseHistory(purchases as PurchaseWithSquares[]);
+        if (purchases) setPurchaseHistory(purchases as any[]);
       }
 
       // Load game state
@@ -250,12 +242,12 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {purchaseHistory.map((purchase) => (
+                  {purchaseHistory.map((purchase: any) => (
                     <div
                       key={purchase.id}
                       className="border border-gray-200 rounded-lg p-4 hover:border-[#cda33b]/50 transition-colors"
                     >
-                      <div className="flex justify-between items-start mb-3">
+                      <div className="flex justify-between items-start">
                         <div>
                           <div className="font-semibold text-[#232842]">
                             {new Date(purchase.created_at).toLocaleDateString('en-US', {
@@ -285,42 +277,8 @@ export default function DashboardPage() {
                           <div className="font-bold text-lg text-[#232842]">
                             ${Number(purchase.amount).toFixed(2)}
                           </div>
-                          {purchase.fee_donation && Number(purchase.fee_donation) > 0 && (
-                            <div className="text-xs text-green-600">
-                              +${Number(purchase.fee_donation).toFixed(2)} fee covered
-                            </div>
-                          )}
                         </div>
                       </div>
-
-                      {/* Squares in this purchase */}
-                      {purchase.purchase_squares && purchase.purchase_squares.length > 0 && (
-                        <div className="pt-3 border-t border-gray-100">
-                          <div className="text-xs text-gray-500 mb-2">
-                            {purchase.purchase_squares.length} square{purchase.purchase_squares.length !== 1 ? 's' : ''} purchased
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {purchase.purchase_squares.map(({ square }, idx) => {
-                              // Handle both array and single object from Supabase
-                              const sq = Array.isArray(square) ? square[0] : square;
-                              if (!sq) return null;
-                              return (
-                                <div
-                                  key={sq.id || idx}
-                                  className="px-2 py-1 bg-[#cda33b]/10 text-[#cda33b] rounded text-xs font-medium"
-                                >
-                                  [{sq.row_number},{sq.col_number}]
-                                  {sq.row_score !== null && (
-                                    <span className="text-gray-500 ml-1">
-                                      ({sq.row_score}-{sq.col_score})
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
