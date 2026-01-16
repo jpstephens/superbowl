@@ -56,7 +56,8 @@ export default function AdminDashboardPage() {
       const supabase = createClient();
 
       const [profilesResult, squaresResult, paymentsResult] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact' }),
+        // Only count non-admin users (people who purchased squares)
+        supabase.from('profiles').select('id', { count: 'exact' }).eq('is_admin', false),
         supabase.from('grid_squares').select('status'),
         supabase.from('payments').select('amount, status'),
       ]);
@@ -169,7 +170,7 @@ export default function AdminDashboardPage() {
             </div>
             <div>
               <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
-              <p className="text-sm text-white/60">Users</p>
+              <p className="text-sm text-white/60">Participants</p>
             </div>
           </div>
         </Card>
