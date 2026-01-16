@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import ReactPDF, { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
 
+// Force Node.js runtime for PDF generation
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 const styles = StyleSheet.create({
   page: {
     padding: 40,
@@ -331,8 +335,11 @@ export async function GET() {
         'Cache-Control': 'public, max-age=300, stale-while-revalidate=60', // Cache for 5 minutes
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating PDF:', error);
-    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 });
+    return NextResponse.json({
+      error: 'Failed to generate PDF',
+      details: error?.message || 'Unknown error'
+    }, { status: 500 });
   }
 }
