@@ -24,26 +24,30 @@ export default function GridPage() {
   const [prizes, setPrizes] = useState({ q1: 350, q2: 600, q3: 350, q4: 1200 });
   const [dataLoaded, setDataLoaded] = useState(false);
   const [quarterWinners, setQuarterWinners] = useState<QuarterWinnerWithProfile[]>([]);
-  const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
-
   const GAME_DATE = new Date('2026-02-08T18:30:00-05:00');
+
+  // Calculate initial countdown immediately to prevent layout flash
+  const getCountdown = () => {
+    const now = new Date();
+    const diff = GAME_DATE.getTime() - now.getTime();
+    if (diff > 0) {
+      return {
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+      };
+    }
+    return null;
+  };
+
+  const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(getCountdown);
 
   useEffect(() => {
     loadData();
     setupRealtime();
 
     const timer = setInterval(() => {
-      const now = new Date();
-      const diff = GAME_DATE.getTime() - now.getTime();
-      if (diff > 0) {
-        setCountdown({
-          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          mins: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-        });
-      } else {
-        setCountdown(null);
-      }
+      setCountdown(getCountdown());
     }, 1000);
 
     return () => clearInterval(timer);
@@ -194,7 +198,7 @@ export default function GridPage() {
               {/* Stats - Inline on mobile */}
               <div className="flex items-center gap-3 sm:gap-8">
                 <div className="text-center">
-                  <span className="text-lg sm:text-2xl font-bold text-emerald-400">{stats.available}</span>
+                  <span className="text-lg sm:text-2xl font-bold text-emerald-400">{dataLoaded ? stats.available : '--'}</span>
                   <span className="text-[10px] sm:text-xs text-white/60 font-medium uppercase ml-1">left</span>
                 </div>
                 <div className="text-center">
@@ -310,7 +314,7 @@ export default function GridPage() {
 
               {/* Prize Pool / Winners */}
               <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
-                <div className="px-4 pt-4 pb-3 border-b border-white/10 text-center">
+                <div className="px-4 pt-4 pb-2 border-b border-white/10 text-center">
                   <p className="text-sm font-medium text-white/60 uppercase tracking-wide mb-1">
                     {isLive || isFinal ? 'Quarter Winners' : 'Prize Pool'}
                   </p>
@@ -398,7 +402,7 @@ export default function GridPage() {
               {/* How to Play - hide when game is live */}
               {!isLive && !isFinal && (
                 <div className="bg-gradient-to-br from-[#232842] to-[#1a1f35] rounded-2xl shadow-lg overflow-hidden">
-                  <div className="px-4 py-4 border-b border-white/10 text-center">
+                  <div className="px-4 py-3 border-b border-white/10 text-center">
                     <p className="text-sm font-semibold text-white uppercase tracking-wide">How to Play</p>
                   </div>
                   <div className="px-4 py-4 space-y-4">
