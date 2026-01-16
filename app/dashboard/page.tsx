@@ -201,29 +201,28 @@ export default function DashboardPage() {
                   </Link>
                 </div>
               ) : (
-                <div className="grid grid-cols-5 gap-3">
-                  {userSquares.slice(0, 10).map(square => (
-                    <div
-                      key={square.id}
-                      className="aspect-square bg-[#cda33b]/10 rounded-lg flex flex-col items-center justify-center border-2 border-[#cda33b]/30"
-                    >
-                      <div className="text-base font-bold text-[#cda33b]">
-                        {square.row_number},{square.col_number}
-                      </div>
-                      {square.row_score !== null && (
-                        <div className="text-sm text-gray-500 mt-1">
-                          {square.row_score}-{square.col_score}
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                  {userSquares.map(square => {
+                    const squareNumber = (square.row_number * 10) + square.col_number + 1;
+                    return (
+                      <div
+                        key={square.id}
+                        className="bg-[#cda33b]/10 rounded-lg p-4 border-2 border-[#cda33b]/30 text-center"
+                      >
+                        <div className="text-2xl font-bold text-[#cda33b]">
+                          #{squareNumber}
                         </div>
-                      )}
-                    </div>
-                  ))}
-                  {userSquares.length > 10 && (
-                    <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                      <span className="text-base font-bold text-gray-500">
-                        +{userSquares.length - 10}
-                      </span>
-                    </div>
-                  )}
+                        <div className="text-xs text-gray-500 mt-1">
+                          Row {square.row_number + 1}, Col {square.col_number + 1}
+                        </div>
+                        {square.row_score !== null && (
+                          <div className="text-sm font-semibold text-[#232842] mt-2 pt-2 border-t border-[#cda33b]/20">
+                            {square.row_score} - {square.col_score}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
