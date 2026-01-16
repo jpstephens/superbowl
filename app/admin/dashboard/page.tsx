@@ -55,26 +55,29 @@ export default function AdminDashboardPage() {
     try {
       const supabase = createClient();
 
-      const [profilesResult, squaresResult, paymentsResult] = await Promise.all([
-        // Only count non-admin users (people who purchased squares)
-        supabase.from('profiles').select('id', { count: 'exact' }).eq('is_admin', false),
-        supabase.from('grid_squares').select('status'),
-        supabase.from('payments').select('amount, status'),
+      const [squaresResult, settingsResult] = await Promise.all([
+        // Get all squares with user_id to count unique participants
+        supabase.from('grid_squares').select('status, user_id'),
+        supabase.from('settings').select('value').eq('key', 'square_price').single(),
       ]);
 
-      const { data: profiles } = profilesResult;
       const { data: squares } = squaresResult;
-      const { data: payments } = paymentsResult;
+      const { data: priceSetting } = settingsResult;
 
-      const soldSquares = squares?.filter(s =>
-        s.status === 'paid'
-      ).length || 0;
+      const squarePrice = priceSetting?.value ? parseFloat(priceSetting.value) : 50;
 
-      const completedPayments = payments?.filter(p => p.status === 'completed') || [];
-      const totalRevenue = completedPayments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+      const paidSquares = squares?.filter(s => s.status === 'paid') || [];
+      const soldSquares = paidSquares.length;
+
+      // Count unique participants (unique user_ids from paid squares)
+      const uniqueUserIds = new Set(paidSquares.map(s => s.user_id).filter(Boolean));
+      const totalUsers = uniqueUserIds.size;
+
+      // Calculate revenue from sold squares × price
+      const totalRevenue = soldSquares * squarePrice;
 
       setStats({
-        totalUsers: profiles?.length || 0,
+        totalUsers,
         totalRevenue,
         soldSquares,
         availableSquares: 100 - soldSquares,
