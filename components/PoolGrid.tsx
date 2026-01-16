@@ -308,7 +308,7 @@ export default function PoolGrid({
                 return (
                   <td
                     key={`cell-${row}-${col}`}
-                    className={`${cellSize} p-0 border-r border-b border-[#232842]/20 ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`}
+                    className={`${cellSize} p-0 border-r border-b border-[#232842]/20 overflow-hidden ${row === 9 ? 'border-b-0' : ''} ${col === 9 ? 'border-r-0' : ''}`}
                   >
                     <motion.button
                       onClick={() => handleSquareClick(square)}
@@ -321,7 +321,7 @@ export default function PoolGrid({
                       }${isSelected ? '. Currently selected' : ''}`}
                       aria-pressed={isSelected}
                       className={`
-                        w-full h-full flex items-center justify-center transition-all duration-150 relative
+                        w-full h-full flex items-center justify-center transition-all duration-150 relative overflow-hidden
                         ${isSelected ? 'bg-gradient-to-br from-[#cda33b] to-[#b8960c] text-white font-bold cursor-pointer z-10 shadow-lg ring-2 ring-[#cda33b]/50' : ''}
                         ${isAvailable && !isSelected ? 'bg-[#cda33b]/10 text-[#232842] hover:bg-[#cda33b]/25 hover:shadow-md cursor-pointer font-semibold' : ''}
                         ${isClaimed && !isSelected ? 'bg-[#232842]/90 text-white' : ''}
@@ -335,8 +335,8 @@ export default function PoolGrid({
                           <span className="sm:hidden text-[10px] font-bold">
                             {getInitials(square.user_name ?? null)}
                           </span>
-                          {/* Desktop: Show full name */}
-                          <span className="hidden sm:inline text-xs md:text-sm font-medium leading-tight text-center truncate px-0.5">
+                          {/* Desktop: Show full name - wrap text within fixed cell */}
+                          <span className="hidden sm:flex items-center justify-center text-[10px] md:text-xs font-medium leading-tight text-center break-words overflow-hidden w-full h-full px-0.5">
                             {getDisplayName(square.user_name ?? null)}
                           </span>
                         </>
