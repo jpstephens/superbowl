@@ -4,6 +4,16 @@ import { quarterWinnerEmail } from '@/lib/email/templates/quarter-winner';
 import { adminPurchaseAlertEmail } from '@/lib/email/templates/admin-purchase-alert';
 import { adminDailySummaryEmail } from '@/lib/email/templates/admin-daily-summary';
 import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
+import {
+  emailWrapper,
+  contentCard,
+  sectionTitle,
+  paragraph,
+  highlight,
+  goldButton,
+  prizeBreakdown,
+  squaresList,
+} from '@/lib/email/templates';
 
 /**
  * Email Preview Route
@@ -11,6 +21,7 @@ import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
  *
  * Available templates:
  * - purchase-confirmation
+ * - numbers-assigned
  * - quarter-winner
  * - admin-purchase-alert
  * - admin-daily-summary
@@ -39,6 +50,37 @@ export async function GET(request: Request) {
         ],
         baseUrl,
       });
+      break;
+
+    case 'numbers-assigned':
+      const sampleSquares = [
+        { row: 2, col: 5, rowScore: 7, colScore: 3 },
+        { row: 4, col: 8, rowScore: 1, colScore: 9 },
+        { row: 7, col: 1, rowScore: 4, colScore: 6 },
+      ];
+      const samplePrizes = { q1: 350, q2: 600, q3: 350, q4: 1200 };
+      html = emailWrapper(`
+        ${sectionTitle('The Numbers Are In!', '🏈')}
+
+        ${contentCard(`
+          ${paragraph(`Hey ${highlight('John')}! 👋`)}
+
+          ${paragraph(`Great news – the random numbers have been assigned to the Super Bowl Pool grid! Your squares now have their official numbers for the game.`)}
+
+          <p style="color: rgba(255, 255, 255, 0.6); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 20px 0 12px 0;">
+            Your Squares
+          </p>
+          ${squaresList(sampleSquares)}
+
+          ${paragraph(`<strong>Two ways to follow along:</strong>`)}
+          ${paragraph(`📱 <strong>Online:</strong> Follow live at the website during the game`, { muted: true })}
+          ${paragraph(`🖨️ <strong>Print:</strong> Download the attached PDF to mark your winners!`, { muted: true })}
+        `)}
+
+        ${prizeBreakdown(samplePrizes)}
+
+        ${goldButton('View Your Squares Online', baseUrl)}
+      `);
       break;
 
     case 'quarter-winner':
@@ -116,6 +158,7 @@ export async function GET(request: Request) {
         error: 'Unknown template',
         available: [
           'purchase-confirmation',
+          'numbers-assigned',
           'quarter-winner',
           'admin-purchase-alert',
           'admin-daily-summary',
