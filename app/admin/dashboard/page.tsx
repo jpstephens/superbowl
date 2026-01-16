@@ -55,16 +55,15 @@ export default function AdminDashboardPage() {
     try {
       const supabase = createClient();
 
-      const [squaresResult, settingsResult] = await Promise.all([
+      const [squaresResult, paymentsResult] = await Promise.all([
         // Get all squares with user_id to count unique participants
         supabase.from('grid_squares').select('status, user_id'),
-        supabase.from('settings').select('value').eq('key', 'square_price').single(),
+        // Get all completed payments to sum actual revenue
+        supabase.from('payments').select('amount').eq('status', 'completed'),
       ]);
 
       const { data: squares } = squaresResult;
-      const { data: priceSetting } = settingsResult;
-
-      const squarePrice = priceSetting?.value ? parseFloat(priceSetting.value) : 50;
+      const { data: payments } = paymentsResult;
 
       const paidSquares = squares?.filter(s => s.status === 'paid') || [];
       const soldSquares = paidSquares.length;
@@ -73,8 +72,8 @@ export default function AdminDashboardPage() {
       const uniqueUserIds = new Set(paidSquares.map(s => s.user_id).filter(Boolean));
       const totalUsers = uniqueUserIds.size;
 
-      // Calculate revenue from sold squares × price
-      const totalRevenue = soldSquares * squarePrice;
+      // Calculate revenue from actual payments (includes fee donations)
+      const totalRevenue = payments?.reduce((sum, p) => sum + Number(p.amount || 0), 0) || 0;
 
       setStats({
         totalUsers,
