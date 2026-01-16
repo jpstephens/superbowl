@@ -456,32 +456,28 @@ export default function GridPage() {
                 <span className="font-medium">Tap squares to select</span>
               </div>
             ) : (
-              <div className="flex items-center gap-3">
-                {/* Selected squares - scrollable */}
-                <div className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                  <div className="flex gap-1.5 flex-shrink-0">
-                    {selectedSquares.slice(0, 4).map((square) => {
+              <div className="flex items-center gap-2">
+                {/* Selected squares - horizontally scrollable */}
+                <div className="flex-1 min-w-0 overflow-x-auto scrollbar-hide">
+                  <div className="flex gap-1.5">
+                    {selectedSquares.map((square) => {
                       const boxNum = square.row_number * 10 + square.col_number + 1;
                       return (
-                        <span key={square.id} className="w-8 h-8 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-xs flex items-center justify-center shadow-sm flex-shrink-0">
+                        <span key={square.id} className="w-9 h-9 bg-gradient-to-br from-[#cda33b] to-[#b8960c] rounded-lg text-white font-bold text-sm flex items-center justify-center shadow-sm flex-shrink-0">
                           {boxNum}
                         </span>
                       );
                     })}
-                    {selectedSquares.length > 4 && (
-                      <span className="w-8 h-8 bg-gray-100 rounded-lg text-gray-600 font-bold text-xs flex items-center justify-center flex-shrink-0">
-                        +{selectedSquares.length - 4}
-                      </span>
-                    )}
-                  </div>
-                  {/* Price summary */}
-                  <div className="flex-shrink-0 pl-2 border-l border-gray-200">
-                    <div className="text-[10px] text-gray-500 font-medium">{selectedSquares.length} × ${squarePrice}</div>
-                    <div className="text-lg font-bold text-[#232842]">${selectionTotal}</div>
                   </div>
                 </div>
 
-                {/* Checkout Button - fixed width */}
+                {/* Price summary - fixed */}
+                <div className="flex-shrink-0 text-right border-l border-gray-200 pl-3">
+                  <div className="text-[11px] text-gray-500 font-medium">{selectedSquares.length} × ${squarePrice}</div>
+                  <div className="text-xl font-bold text-[#232842]">${selectionTotal}</div>
+                </div>
+
+                {/* Checkout Button - fixed */}
                 <Link
                   href="/payment"
                   onClick={() => sessionStorage.setItem('selectedSquares', JSON.stringify(selectedSquares))}
