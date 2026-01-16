@@ -27,7 +27,7 @@
     {
       "name": "View Grid",
       "short_name": "Grid",
-      "url": "/",
+      "url": "/pool",
       "description": "View the squares grid"
     },
     {
@@ -37,10 +37,10 @@
       "description": "Make your prop bet picks"
     },
     {
-      "name": "Watch Mode",
-      "short_name": "Watch",
-      "url": "/watch",
-      "description": "Game day live view"
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "url": "/dashboard",
+      "description": "View your dashboard"
     }
   ]
 }

@@ -131,7 +131,7 @@ export default function MySquaresPage() {
               <p className="text-muted-foreground mb-6">
                 You haven't purchased any squares yet. Get started now!
               </p>
-              <Link href="/grid">
+              <Link href="/pool">
                 <Button size="lg">
                   Pick Your Squares
                 </Button>
@@ -218,7 +218,7 @@ export default function MySquaresPage() {
                 <p className="text-muted-foreground mb-6">
                   Purchase additional squares to increase your odds!
                 </p>
-                <Link href="/grid">
+                <Link href="/pool">
                   <Button size="lg">
                     Buy More Squares
                   </Button>

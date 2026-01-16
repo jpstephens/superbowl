@@ -210,7 +210,7 @@ export default function Home() {
                   </div>
 
                   <Link
-                    href="/grid"
+                    href="/pool"
                     className="group inline-flex items-center gap-3 px-8 py-4 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg w-full justify-center"
                   >
                     Check Your Squares
@@ -256,7 +256,7 @@ export default function Home() {
                   {/* CTA */}
                   <div className="flex flex-wrap gap-4 mb-8">
                     <Link
-                      href="/grid"
+                      href="/pool"
                       className="group inline-flex items-center gap-3 px-8 py-4 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
                     >
                       {tournamentLaunched ? 'View Grid' : 'Pick Your Squares'}
@@ -340,7 +340,7 @@ export default function Home() {
                       <span className="text-gray-600 font-medium">Taken</span>
                     </div>
                   </div>
-                  <Link href="/grid" className="text-[#cda33b] font-bold hover:underline">
+                  <Link href="/pool" className="text-[#cda33b] font-bold hover:underline">
                     View Full Grid →
                   </Link>
                 </div>
@@ -508,7 +508,7 @@ export default function Home() {
               {isLive ? (
                 <>
                   <Link
-                    href="/grid"
+                    href="/pool"
                     className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     Check Winners
@@ -526,7 +526,7 @@ export default function Home() {
               ) : tournamentLaunched ? (
                 <>
                   <Link
-                    href="/grid"
+                    href="/pool"
                     className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     View Your Numbers
@@ -544,7 +544,7 @@ export default function Home() {
               ) : (
                 <>
                   <Link
-                    href="/grid"
+                    href="/pool"
                     className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 px-10 py-5 bg-[#cda33b] text-white font-bold text-lg rounded-xl hover:bg-[#c49b2f] transition-all shadow-lg"
                   >
                     Pick Your Squares

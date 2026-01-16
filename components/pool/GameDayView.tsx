@@ -273,7 +273,7 @@ export default function GameDayView({
 
       {/* View Grid Button */}
       <div className="flex justify-center">
-        <Link href="/grid">
+        <Link href="/pool">
           <Button variant="outline" size="lg">
             <Grid3x3 className="w-5 h-5 mr-2" />
             View Full Grid

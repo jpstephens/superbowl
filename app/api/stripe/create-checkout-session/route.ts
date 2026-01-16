@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@/lib/supabase/server';
+import { rateLimitResponse } from '@/lib/rateLimit';
 
 // Initialize Stripe lazily to avoid build-time errors
 function getStripe() {
@@ -8,6 +9,10 @@ function getStripe() {
 }
 
 export async function POST(request: Request) {
+  // Rate limit: 10 requests per minute per IP
+  const rateLimited = rateLimitResponse(request, 10, 60000);
+  if (rateLimited) return rateLimited;
+
   try {
     const stripe = getStripe();
     const body = await request.json();

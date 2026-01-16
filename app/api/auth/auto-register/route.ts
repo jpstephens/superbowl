@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
 import { sendEmailSafe } from '@/lib/email/send';
+import { rateLimitResponse } from '@/lib/rateLimit';
 import {
   emailWrapper,
   contentCard,
@@ -16,6 +17,10 @@ import {
  * Creates Supabase Auth account, profile, and sends login email
  */
 export async function POST(request: Request) {
+  // Rate limit: 5 requests per minute per IP
+  const rateLimited = rateLimitResponse(request, 5, 60000);
+  if (rateLimited) return rateLimited;
+
   try {
     const { email, name, phone, selectedSquareIds } = await request.json();
 

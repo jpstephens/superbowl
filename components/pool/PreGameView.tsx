@@ -115,7 +115,7 @@ export default function PreGameView({
         </div>
 
         <div className="flex items-center justify-center">
-          <Link href="/grid">
+          <Link href="/pool">
             <Button size="lg" className="min-h-[48px] px-8">
               <Grid3x3 className="w-5 h-5 mr-2" />
               Pick Your Squares
