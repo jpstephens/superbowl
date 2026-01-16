@@ -76,33 +76,57 @@ export async function POST(request: Request) {
         );
       }
 
-      // Auto-register user after payment
+      // Register user directly (no HTTP call to avoid rate limiting/timeout issues)
+      let profileId: string | null = null;
+
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-        const registerResponse = await fetch(
-          `${baseUrl}/api/auth/auto-register`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+        // Check if profile already exists
+        const { data: existingProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', registrationData.email)
+          .single();
+
+        if (existingProfile) {
+          profileId = existingProfile.id;
+          console.log(`Found existing profile for ${registrationData.email}: ${profileId}`);
+        } else {
+          // Create new profile
+          const { data: newProfile, error: profileError } = await supabase
+            .from('profiles')
+            .insert({
               email: registrationData.email,
               name: registrationData.name,
               phone: registrationData.phone,
-              selectedSquareIds,
-            }),
+            })
+            .select()
+            .single();
+
+          if (profileError) {
+            console.error('Error creating profile:', profileError);
+          } else {
+            profileId = newProfile.id;
+            console.log(`Created new profile for ${registrationData.email}: ${profileId}`);
           }
-        );
-
-        const registerData = await registerResponse.json();
-
-        if (!registerResponse.ok) {
-          console.error('Auto-register error:', registerData);
-          // Continue anyway - payment is complete
         }
 
-        const profileId = registerData.profileId;
+        // Update squares to link to user
+        if (profileId && selectedSquareIds.length > 0) {
+          const { error: squaresError } = await supabase
+            .from('grid_squares')
+            .update({
+              user_id: profileId,
+              status: 'paid',
+              paid_at: new Date().toISOString(),
+            })
+            .in('id', selectedSquareIds);
+
+          if (squaresError) {
+            console.error('Error updating squares:', squaresError);
+          } else {
+            console.log(`Updated ${selectedSquareIds.length} squares for ${registrationData.email}`);
+          }
+        }
 
         // Create payment record
         if (profileId) {
