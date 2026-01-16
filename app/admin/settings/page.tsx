@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Save, Power, DollarSign, Trophy, Users, Loader2 } from 'lucide-react';
+import { Save, Power, DollarSign, Trophy, Users, Loader2, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({
@@ -18,6 +18,7 @@ export default function AdminSettingsPage() {
     payout_q4: '2000',
     afc_team: '',
     nfc_team: '',
+    show_team_names: 'false',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -70,12 +71,8 @@ export default function AdminSettingsPage() {
     try {
       const supabase = createClient();
 
-      // Save settings (excluding team names which go to game_state)
-      const settingsToSave = { ...settings };
-      delete settingsToSave.afc_team;
-      delete settingsToSave.nfc_team;
-
-      const promises = Object.entries(settingsToSave).map(async ([key, value]) => {
+      // Save all settings (including team names)
+      const promises = Object.entries(settings).map(async ([key, value]) => {
         const { error } = await supabase
           .from('settings')
           .upsert(
@@ -87,18 +84,6 @@ export default function AdminSettingsPage() {
       });
 
       await Promise.all(promises);
-
-      // Save team names to game_state
-      const { error: gameStateError } = await supabase
-        .from('game_state')
-        .update({
-          afc_team: settings.afc_team || null,
-          nfc_team: settings.nfc_team || null,
-          updated_at: new Date().toISOString(),
-        })
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // Update all rows
-
-      if (gameStateError) throw gameStateError;
 
       alert('Settings saved successfully!');
     } catch (error) {
@@ -163,14 +148,31 @@ export default function AdminSettingsPage() {
 
       {/* Team Names */}
       <Card className="p-6 mb-6 bg-white/5 border-white/10">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 rounded-lg bg-blue-500/20">
-            <Users className="w-5 h-5 text-blue-400" />
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-500/20">
+              <Users className="w-5 h-5 text-blue-400" />
+            </div>
+            <h2 className="text-lg font-bold text-white">Team Names</h2>
           </div>
-          <h2 className="text-lg font-bold text-white">Team Names</h2>
+
+          {/* Toggle */}
+          <button
+            onClick={() => setSettings({ ...settings, show_team_names: settings.show_team_names === 'true' ? 'false' : 'true' })}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:bg-white/10"
+          >
+            <span className={`text-sm font-medium ${settings.show_team_names === 'true' ? 'text-green-400' : 'text-white/60'}`}>
+              {settings.show_team_names === 'true' ? 'Showing Team Names' : 'Showing AFC/NFC'}
+            </span>
+            {settings.show_team_names === 'true' ? (
+              <ToggleRight className="w-8 h-8 text-green-400" />
+            ) : (
+              <ToggleLeft className="w-8 h-8 text-white/40" />
+            )}
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className={`grid grid-cols-2 gap-4 ${settings.show_team_names === 'false' ? 'opacity-50' : ''}`}>
           <div className="space-y-2">
             <Label className="text-white/80">AFC Team (Rows)</Label>
             <Input
@@ -178,7 +180,8 @@ export default function AdminSettingsPage() {
               placeholder="e.g. Chiefs"
               value={settings.afc_team}
               onChange={(e) => setSettings({ ...settings, afc_team: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              disabled={settings.show_team_names === 'false'}
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 disabled:cursor-not-allowed"
             />
           </div>
           <div className="space-y-2">
@@ -188,12 +191,15 @@ export default function AdminSettingsPage() {
               placeholder="e.g. Eagles"
               value={settings.nfc_team}
               onChange={(e) => setSettings({ ...settings, nfc_team: e.target.value })}
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/30"
+              disabled={settings.show_team_names === 'false'}
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/30 disabled:cursor-not-allowed"
             />
           </div>
         </div>
         <p className="text-xs text-white/50 mt-3">
-          Team names appear on the grid headers
+          {settings.show_team_names === 'true'
+            ? 'Team names will appear on the grid instead of AFC/NFC'
+            : 'Toggle on to display custom team names on the grid'}
         </p>
       </Card>
 

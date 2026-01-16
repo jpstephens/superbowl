@@ -31,6 +31,11 @@ export default function PoolGrid({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tournamentLaunched, setTournamentLaunched] = useState(false);
+  const [teamSettings, setTeamSettings] = useState({
+    showTeamNames: false,
+    afcTeam: 'AFC',
+    nfcTeam: 'NFC',
+  });
 
   useEffect(() => {
     loadGrid();
@@ -59,13 +64,26 @@ export default function PoolGrid({
     try {
       const supabase = createClient();
 
-      const { data: settingsData } = await supabase
+      // Fetch all relevant settings
+      const { data: allSettings } = await supabase
         .from('settings')
-        .select('value')
-        .eq('key', 'tournament_launched')
-        .single();
+        .select('key, value')
+        .in('key', ['tournament_launched', 'show_team_names', 'afc_team', 'nfc_team']);
 
-      setTournamentLaunched(settingsData?.value === 'true');
+      const settingsMap = new Map(allSettings?.map(s => [s.key, s.value]) || []);
+
+      setTournamentLaunched(settingsMap.get('tournament_launched') === 'true');
+
+      // Set team settings
+      const showTeamNames = settingsMap.get('show_team_names') === 'true';
+      const afcTeam = settingsMap.get('afc_team') || 'AFC';
+      const nfcTeam = settingsMap.get('nfc_team') || 'NFC';
+
+      setTeamSettings({
+        showTeamNames,
+        afcTeam: showTeamNames && afcTeam ? afcTeam : 'AFC',
+        nfcTeam: showTeamNames && nfcTeam ? nfcTeam : 'NFC',
+      });
 
       // Fetch grid squares without the join first (more reliable)
       const { data, error } = await supabase
@@ -148,8 +166,9 @@ export default function PoolGrid({
   };
 
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const afcTeam = gameScore?.isLive ? (gameScore?.afcTeam || 'AFC') : 'AFC';
-  const nfcTeam = gameScore?.isLive ? (gameScore?.nfcTeam || 'NFC') : 'NFC';
+  // Use game score teams if live, otherwise use settings
+  const afcTeam = gameScore?.isLive ? (gameScore?.afcTeam || 'AFC') : teamSettings.afcTeam;
+  const nfcTeam = gameScore?.isLive ? (gameScore?.nfcTeam || 'NFC') : teamSettings.nfcTeam;
 
   if (loading) {
     return (
