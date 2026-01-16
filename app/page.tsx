@@ -220,8 +220,8 @@ export default function GridPage() {
 
       {/* Main Content - Two Column Layout */}
       <main className="flex-1 pb-28 lg:pb-4">
-        <div className="max-w-[1400px] mx-auto px-2 sm:px-4 py-4">
-          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+        <div className="max-w-[1400px] mx-auto px-0 sm:px-4 py-2 sm:py-4">
+          <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
             {/* Left Column - Grid */}
             <div className="flex-1 flex justify-center lg:justify-end">
               <PoolGrid

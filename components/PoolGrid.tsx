@@ -195,24 +195,24 @@ export default function PoolGrid({
   };
 
   // Cell size - responsive grid optimized for touch
-  // Mobile: ~8.5vw per cell = 93.5vw for 11 cells (leaves room for AFC label)
-  // Ensures large touch targets on mobile
-  const cellSize = 'w-[8.2vw] h-[8.2vw] min-w-[32px] min-h-[32px] sm:w-[60px] sm:h-[60px] md:w-[72px] md:h-[72px] lg:w-[90px] lg:h-[90px]';
+  // Mobile: calc((100vw - 28px) / 11) for full width grid (28px = AFC label w-6 + 4px margin)
+  // Ensures maximum cell size on mobile with no horizontal scroll
+  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[60px] sm:h-[60px] md:w-[72px] md:h-[72px] lg:w-[90px] lg:h-[90px]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
   return (
-    <div className="w-full flex flex-col items-center px-1 sm:px-0">
+    <div className="w-full flex flex-col items-center overflow-hidden">
       {/* Team Label - Top */}
       <div className="text-center mb-2">
-        <span className="text-xl sm:text-2xl md:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
+        <span className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
       </div>
 
-      <div className="flex w-full sm:w-auto justify-center">
+      <div className="flex w-full sm:w-auto sm:justify-center">
         {/* Team Label - Left (rotated) */}
-        <div className="flex items-center justify-center mr-1 sm:mr-2">
+        <div className="flex items-center justify-center w-6 sm:w-8 flex-shrink-0">
           <span
-            className="text-xl sm:text-2xl md:text-3xl font-bold text-[#232842]"
+            className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
@@ -220,7 +220,7 @@ export default function PoolGrid({
         </div>
 
         {/* Grid Table */}
-        <table className="border-2 border-[#232842]/30 border-collapse rounded-lg overflow-hidden shadow-lg flex-1 sm:flex-none">
+        <table className="border-2 border-[#232842]/30 border-collapse rounded-lg overflow-hidden shadow-lg flex-1 sm:flex-none max-w-full">
           {/* Header Row */}
           <thead>
             <tr>
