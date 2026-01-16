@@ -240,7 +240,7 @@ export default function PoolGrid({
 
       <div className="flex w-full sm:w-auto sm:justify-center">
         {/* Team Label - Left (rotated) */}
-        <div className="flex items-center justify-center w-6 sm:w-8 flex-shrink-0">
+        <div className="flex items-center justify-center w-8 sm:w-10 md:w-12 flex-shrink-0">
           <span
             className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
