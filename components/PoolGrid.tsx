@@ -223,6 +223,16 @@ export default function PoolGrid({
     return name.trim();
   };
 
+  // Get initials for mobile display
+  const getInitials = (name: string | null) => {
+    if (!name) return '??';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) {
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
   // Cell size - fully dynamic based on viewport
   // Mobile: (100vw - 28px) / 11 - full width grid
   // Tablet: (100vw - 48px) / 11 - with some padding
@@ -320,9 +330,16 @@ export default function PoolGrid({
                       {isSelected && <span className="text-[11px] sm:text-base md:text-lg font-bold drop-shadow-sm">{boxNum}</span>}
                       {isAvailable && !isSelected && <span className="text-[11px] sm:text-base md:text-lg">{boxNum}</span>}
                       {isClaimed && !isSelected && (
-                        <span className="text-[9px] sm:text-xs md:text-sm font-medium leading-tight text-center truncate px-0.5">
-                          {getDisplayName(square.user_name ?? null)}
-                        </span>
+                        <>
+                          {/* Mobile: Show initials only */}
+                          <span className="sm:hidden text-[10px] font-bold">
+                            {getInitials(square.user_name ?? null)}
+                          </span>
+                          {/* Desktop: Show full name */}
+                          <span className="hidden sm:inline text-xs md:text-sm font-medium leading-tight text-center truncate px-0.5">
+                            {getDisplayName(square.user_name ?? null)}
+                          </span>
+                        </>
                       )}
                     </motion.button>
                   </td>
