@@ -26,7 +26,7 @@ export async function POST(request: Request) {
     const results = [];
 
     for (const admin of adminUsers) {
-      // Check if user exists
+      // Check if user exists in auth.users
       const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
       const existingUser = existingUsers?.users?.find(u => u.email === admin.email);
 
@@ -36,9 +36,20 @@ export async function POST(request: Request) {
           existingUser.id,
           { password: 'SuperBowl2026!' }
         );
+
+        // Also update profile to link correctly
+        await supabaseAdmin
+          .from('profiles')
+          .upsert({
+            id: existingUser.id,
+            email: admin.email,
+            name: admin.name,
+            is_admin: true,
+          }, { onConflict: 'id' });
+
         results.push({ email: admin.email, action: 'updated', success: !error, error: error?.message });
       } else {
-        // Create new user
+        // Create new auth user
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
           email: admin.email,
           password: 'SuperBowl2026!',
@@ -46,19 +57,36 @@ export async function POST(request: Request) {
           user_metadata: { name: admin.name },
         });
 
-        if (!error && data.user) {
-          // Also ensure profile exists with is_admin
+        if (error) {
+          results.push({ email: admin.email, action: 'create_failed', success: false, error: error?.message });
+          continue;
+        }
+
+        if (data.user) {
+          // Delete any existing profile with this email (wrong ID)
           await supabaseAdmin
             .from('profiles')
-            .upsert({
+            .delete()
+            .eq('email', admin.email);
+
+          // Create new profile with correct ID
+          const { error: profileError } = await supabaseAdmin
+            .from('profiles')
+            .insert({
               id: data.user.id,
               email: admin.email,
               name: admin.name,
               is_admin: true,
-            }, { onConflict: 'email' });
-        }
+            });
 
-        results.push({ email: admin.email, action: 'created', success: !error, error: error?.message });
+          results.push({
+            email: admin.email,
+            action: 'created',
+            success: true,
+            userId: data.user.id,
+            profileError: profileError?.message
+          });
+        }
       }
     }
 

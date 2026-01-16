@@ -45,13 +45,13 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verify user is an admin
-    const { data: admin } = await supabase
-      .from('admin_users')
-      .select('role')
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin')
       .eq('email', session.user.email)
       .single();
 
-    if (!admin) {
+    if (!profile?.is_admin) {
       // Not an admin - sign them out and redirect
       await supabase.auth.signOut();
       return NextResponse.redirect(new URL('/admin/login', request.url));
