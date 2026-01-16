@@ -18,6 +18,7 @@ export default function MySquaresPage() {
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
   const [tournamentLaunched, setTournamentLaunched] = useState(false);
+  const [totalInvested, setTotalInvested] = useState(0);
 
   useEffect(() => {
     loadData();
@@ -26,9 +27,9 @@ export default function MySquaresPage() {
   const loadData = async () => {
     try {
       const supabase = createClient();
-      
+
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         router.push('/auth/login');
         return;
@@ -52,6 +53,18 @@ export default function MySquaresPage() {
 
         if (userSquares) {
           setSquares(userSquares);
+        }
+
+        // Get total from actual payments
+        const { data: payments } = await supabase
+          .from('payments')
+          .select('amount')
+          .eq('user_id', profile.id)
+          .eq('status', 'completed');
+
+        if (payments) {
+          const total = payments.reduce((sum, p) => sum + Number(p.amount || 0), 0);
+          setTotalInvested(total);
         }
       }
 
@@ -150,7 +163,7 @@ export default function MySquaresPage() {
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-primary mb-1">
-                      ${(squares.length * 50).toFixed(2)}
+                      ${totalInvested.toFixed(2)}
                     </div>
                     <div className="text-sm text-muted-foreground">Total Invested</div>
                   </div>

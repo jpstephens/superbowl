@@ -191,24 +191,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Live Score (when game is live) */}
-        {gameState?.is_live && (
-          <div className="bg-gradient-to-r from-[#232842] to-[#3a4063] rounded-xl p-6 mb-6 text-white">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-              <span className="text-red-400 font-bold text-sm uppercase tracking-wide">Live</span>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-black mb-2">
-                {gameState.afc_score} - {gameState.nfc_score}
-              </div>
-              <div className="text-white/70">
-                Q{gameState.quarter} · {gameState.time_remaining || '0:00'}
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Quarter Winners */}
         {quarterWinners.length > 0 && (
           <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-6">
