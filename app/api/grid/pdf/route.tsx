@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import ReactPDF, { Document, Page, View, Text, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, View, Text, StyleSheet, renderToBuffer } from '@react-pdf/renderer';
 
 // Force Node.js runtime for PDF generation
 export const runtime = 'nodejs';
@@ -326,7 +326,7 @@ export async function GET() {
 
     // Generate PDF
     const pdfDoc = createGridPDF(processedSquares, rowScores, colScores, tournamentLaunched);
-    const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
+    const pdfBuffer = await renderToBuffer(pdfDoc);
 
     return new Response(new Uint8Array(pdfBuffer), {
       headers: {
