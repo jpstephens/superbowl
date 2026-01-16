@@ -232,7 +232,7 @@ export default function PoolGrid({
   const rowHeaderSize = cellSize;
 
   return (
-    <div className="w-full flex flex-col items-center overflow-hidden pr-2 lg:pr-4">
+    <div className="w-full flex flex-col items-center pr-2 lg:pr-4">
       {/* Team Label - Top */}
       <div className="text-center mb-2">
         <span className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
@@ -240,9 +240,9 @@ export default function PoolGrid({
 
       <div className="flex w-full sm:w-auto sm:justify-center">
         {/* Team Label - Left (rotated) */}
-        <div className="flex items-center justify-center w-8 sm:w-10 md:w-12 flex-shrink-0">
+        <div className="flex items-center justify-center w-10 sm:w-12 md:w-14 flex-shrink-0 py-4">
           <span
-            className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]"
+            className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842] whitespace-nowrap"
             style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
           >
             {afcTeam}
