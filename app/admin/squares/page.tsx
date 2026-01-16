@@ -177,9 +177,9 @@ export default function AdminSquaresPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 lg:p-6">
       {/* Page Title */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Squares</h1>
           <p className="text-white/60">Click any square to edit</p>
@@ -191,25 +191,25 @@ export default function AdminSquaresPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-4 mb-6 max-w-md">
-        <Card className="p-4 bg-white/5 border-white/10">
+      <div className="grid grid-cols-2 gap-3 mb-4 max-w-xs">
+        <Card className="p-3 bg-white/5 border-white/10">
           <p className="text-2xl font-bold text-green-400">{stats.available}</p>
           <p className="text-sm text-white/60">Available</p>
         </Card>
-        <Card className="p-4 bg-white/5 border-white/10">
+        <Card className="p-3 bg-white/5 border-white/10">
           <p className="text-2xl font-bold text-[#cda33b]">{stats.sold}</p>
           <p className="text-sm text-white/60">Sold</p>
         </Card>
       </div>
 
       {/* Grid */}
-      <Card className="p-6 bg-white/5 border-white/10 overflow-x-auto">
-        <table className="border-collapse mx-auto">
+      <Card className="p-2 lg:p-4 bg-white/5 border-white/10 overflow-x-auto">
+        <table className="border-collapse w-full table-fixed">
           <thead>
             <tr>
-              <th className="w-16 h-12" />
+              <th className="w-[60px] min-w-[60px] h-10" />
               {numbers.map(col => (
-                <th key={col} className="w-28 h-12 text-center text-white/60 text-base font-medium">
+                <th key={col} className="h-10 text-center text-white/60 text-sm font-medium">
                   Col {col}
                 </th>
               ))}
@@ -218,23 +218,23 @@ export default function AdminSquaresPage() {
           <tbody>
             {numbers.map(row => (
               <tr key={row}>
-                <td className="w-16 h-28 text-center text-white/60 text-base font-medium">
+                <td className="w-[60px] min-w-[60px] text-center text-white/60 text-sm font-medium py-1">
                   Row {row}
                 </td>
                 {numbers.map(col => {
                   const square = squareMap.get(`${row}-${col}`);
-                  if (!square) return <td key={col} className="w-28 h-28" />;
+                  if (!square) return <td key={col} />;
 
                   const isAvailable = square.status === 'available';
                   const boxNum = row * 10 + col + 1;
 
                   return (
-                    <td key={col} className="p-1">
+                    <td key={col} className="p-0.5">
                       <button
                         onClick={() => handleEditClick(square)}
                         className={`
-                          w-28 h-28 rounded-xl border-2 transition-all
-                          flex flex-col items-center justify-center gap-1
+                          w-full aspect-square rounded-lg border-2 transition-all
+                          flex flex-col items-center justify-center gap-0.5
                           hover:scale-105 hover:z-10 cursor-pointer
                           ${isAvailable
                             ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
@@ -242,18 +242,18 @@ export default function AdminSquaresPage() {
                           }
                         `}
                       >
-                        <span className={`text-lg font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
+                        <span className={`text-base font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
                           #{boxNum}
                         </span>
                         {square.profiles?.name ? (
-                          <span className="text-sm text-white/70 truncate max-w-24 px-1">
+                          <span className="text-xs text-white/70 truncate max-w-full px-1">
                             {getFirstName(square.profiles.name)}
                           </span>
                         ) : (
-                          <span className="text-sm text-white/40">Available</span>
+                          <span className="text-xs text-white/40">Available</span>
                         )}
                         {square.row_score !== null && (
-                          <span className="text-xs text-white/50">
+                          <span className="text-[10px] text-white/50">
                             {square.row_score}-{square.col_score}
                           </span>
                         )}
