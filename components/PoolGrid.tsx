@@ -197,14 +197,14 @@ export default function PoolGrid({
   // Cell size - fully dynamic based on viewport
   // Mobile: (100vw - 28px) / 11 - full width grid
   // Tablet: (100vw - 48px) / 11 - with some padding
-  // Desktop lg+: (100vw - 420px) / 11 - accounts for sidebar (320px) + padding + AFC label
-  // Capped at 80px max for very large screens
-  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[calc((100vw-48px)/11)] sm:h-[calc((100vw-48px)/11)] lg:w-[calc(min((100vw-420px)/11,80px))] lg:h-[calc(min((100vw-420px)/11,80px))]';
+  // Desktop lg+: (100vw - 480px) / 11 - accounts for sidebar (320px) + padding + gaps + AFC label
+  // Capped at 75px max for very large screens
+  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[calc((100vw-48px)/11)] sm:h-[calc((100vw-48px)/11)] lg:w-[calc(min((100vw-480px)/11,75px))] lg:h-[calc(min((100vw-480px)/11,75px))]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
   return (
-    <div className="w-full flex flex-col items-center overflow-hidden">
+    <div className="w-full flex flex-col items-center overflow-hidden pr-2 lg:pr-4">
       {/* Team Label - Top */}
       <div className="text-center mb-2">
         <span className="text-lg sm:text-2xl md:text-3xl font-bold text-[#232842]">{nfcTeam}</span>
