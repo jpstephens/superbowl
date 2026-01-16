@@ -7,8 +7,20 @@ import { adminPurchaseAlertEmail } from '@/lib/email/templates/admin-purchase-al
 import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
 
 // Initialize Stripe lazily to avoid build-time errors
+// Uses test keys if STRIPE_TEST_MODE is 'true'
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+  const isTestMode = process.env.STRIPE_TEST_MODE === 'true';
+  const secretKey = isTestMode
+    ? process.env.STRIPE_SECRET_KEY_TEST!
+    : process.env.STRIPE_SECRET_KEY!;
+  return new Stripe(secretKey);
+}
+
+function getWebhookSecret() {
+  const isTestMode = process.env.STRIPE_TEST_MODE === 'true';
+  return isTestMode
+    ? process.env.STRIPE_WEBHOOK_SECRET_TEST!
+    : process.env.STRIPE_WEBHOOK_SECRET!;
 }
 
 export async function POST(request: Request) {
@@ -20,7 +32,7 @@ export async function POST(request: Request) {
     const event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      getWebhookSecret()
     );
 
     const supabase = createAdminClient();
