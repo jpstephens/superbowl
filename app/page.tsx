@@ -21,7 +21,8 @@ export default function GridPage() {
   const [poolActive, setPoolActive] = useState<boolean>(true);
   const [squarePrice, setSquarePrice] = useState<number>(50);
   const [tournamentLaunched, setTournamentLaunched] = useState<boolean>(false);
-  const [prizes, setPrizes] = useState({ q1: 1000, q2: 1000, q3: 1000, q4: 2000 });
+  const [prizes, setPrizes] = useState({ q1: 350, q2: 600, q3: 350, q4: 1200 });
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [quarterWinners, setQuarterWinners] = useState<QuarterWinnerWithProfile[]>([]);
   const [countdown, setCountdown] = useState<{ days: number; hours: number; mins: number } | null>(null);
 
@@ -104,8 +105,11 @@ export default function GridPage() {
         .order('quarter', { ascending: true });
 
       if (winners) setQuarterWinners(winners);
+
+      setDataLoaded(true);
     } catch (error) {
       console.error('Error loading data:', error);
+      setDataLoaded(true);
     }
   };
 
