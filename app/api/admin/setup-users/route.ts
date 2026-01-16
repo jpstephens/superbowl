@@ -26,9 +26,11 @@ export async function POST(request: Request) {
     const results = [];
 
     for (const admin of adminUsers) {
-      // Check if user exists in auth.users
-      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+      // Check if user exists in auth.users by trying to get by email
+      const { data: existingUsers, error: listError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 });
       const existingUser = existingUsers?.users?.find(u => u.email === admin.email);
+
+      console.log(`Checking ${admin.email}: found=${!!existingUser}, totalUsers=${existingUsers?.users?.length}, listError=${listError?.message}`);
 
       if (existingUser) {
         // Update existing user's password
@@ -47,8 +49,9 @@ export async function POST(request: Request) {
             is_admin: true,
           }, { onConflict: 'id' });
 
-        results.push({ email: admin.email, action: 'updated', success: !error, error: error?.message });
+        results.push({ email: admin.email, action: 'updated', success: !error, error: error?.message, existingUserId: existingUser.id });
       } else {
+        console.log(`Creating new user for ${admin.email}`);
         // Create new auth user
         const { data, error } = await supabaseAdmin.auth.admin.createUser({
           email: admin.email,
