@@ -194,10 +194,12 @@ export default function PoolGrid({
     return name.trim().split(' ')[0];
   };
 
-  // Cell size - responsive grid optimized for touch
-  // Mobile: calc((100vw - 28px) / 11) for full width grid (28px = AFC label w-6 + 4px margin)
-  // Ensures maximum cell size on mobile with no horizontal scroll
-  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[60px] sm:h-[60px] md:w-[72px] md:h-[72px] lg:w-[90px] lg:h-[90px]';
+  // Cell size - fully dynamic based on viewport
+  // Mobile: (100vw - 28px) / 11 - full width grid
+  // Tablet: (100vw - 48px) / 11 - with some padding
+  // Desktop lg+: (100vw - 420px) / 11 - accounts for sidebar (320px) + padding + AFC label
+  // Capped at 80px max for very large screens
+  const cellSize = 'w-[calc((100vw-28px)/11)] h-[calc((100vw-28px)/11)] sm:w-[calc((100vw-48px)/11)] sm:h-[calc((100vw-48px)/11)] lg:w-[calc(min((100vw-420px)/11,80px))] lg:h-[calc(min((100vw-420px)/11,80px))]';
   const headerSize = cellSize;
   const rowHeaderSize = cellSize;
 
