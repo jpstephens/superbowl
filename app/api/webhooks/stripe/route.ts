@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import Stripe from 'stripe';
-import { sendEmailSafe, sendToAdmins } from '@/lib/email/send';
+import { sendEmail, sendEmailSafe, sendToAdmins } from '@/lib/email/send';
 import { purchaseConfirmationEmail } from '@/lib/email/templates/purchase-confirmation';
 import { adminPurchaseAlertEmail } from '@/lib/email/templates/admin-purchase-alert';
 import { adminMilestoneEmail } from '@/lib/email/templates/admin-milestone';
@@ -208,6 +208,8 @@ export async function POST(request: Request) {
 
           // Send purchase confirmation email to user
           if (registrationData.email) {
+            console.log(`Sending confirmation email to: ${registrationData.email}`);
+
             const confirmationHtml = purchaseConfirmationEmail({
               name: registrationData.name,
               squareCount: selectedSquareIds.length,
@@ -216,11 +218,19 @@ export async function POST(request: Request) {
               baseUrl: siteUrl,
             });
 
-            await sendEmailSafe({
+            const emailResult = await sendEmail({
               to: registrationData.email,
               subject: '🏈 Thanks for joining the Super Bowl Pool!',
               html: confirmationHtml,
             });
+
+            if (emailResult.success) {
+              console.log(`Confirmation email sent successfully: ${emailResult.id}`);
+            } else {
+              console.error(`Failed to send confirmation email: ${emailResult.error}`);
+            }
+          } else {
+            console.warn('No email address found for confirmation email');
           }
 
           // Get current pool stats for admin email
