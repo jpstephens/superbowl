@@ -203,69 +203,71 @@ export default function AdminSquaresPage() {
       </div>
 
       {/* Grid */}
-      <Card className="p-1 sm:p-2 lg:p-4 bg-white/5 border-white/10 overflow-x-auto">
-        <table className="border-collapse w-full table-fixed text-xs sm:text-sm">
-          <thead>
-            <tr>
-              <th className="w-10 sm:w-12 lg:w-16 min-w-10 sm:min-w-12 lg:min-w-16 h-8 sm:h-10" />
-              {numbers.map(col => (
-                <th key={col} className="h-8 sm:h-10 text-center text-white/60 text-xs sm:text-sm font-medium px-0.5">
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {numbers.map(row => (
-              <tr key={row}>
-                <td className="w-10 sm:w-12 lg:w-16 min-w-10 sm:min-w-12 lg:min-w-16 text-center text-white/60 text-xs sm:text-sm font-medium py-0.5">
-                  {row}
-                </td>
-                {numbers.map(col => {
-                  const square = squareMap.get(`${row}-${col}`);
-                  if (!square) return <td key={col} />;
-
-                  const isAvailable = square.status === 'available';
-                  const boxNum = row * 10 + col + 1;
-
-                  return (
-                    <td key={col} className="p-0.5 sm:p-1">
-                      <button
-                        onClick={() => handleEditClick(square)}
-                        className={`
-                          w-full aspect-square rounded-lg border border-2 sm:border-2 transition-all
-                          flex flex-col items-center justify-center gap-0.5
-                          hover:scale-105 hover:z-10 cursor-pointer
-                          text-xs sm:text-sm
-                          ${isAvailable
-                            ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
-                            : 'bg-[#cda33b]/20 border-[#cda33b]/40 hover:border-[#cda33b]'
-                          }
-                        `}
-                      >
-                        <span className={`font-bold text-xs sm:text-sm ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
-                          #{boxNum}
-                        </span>
-                        {square.profiles?.name ? (
-                          <span className="text-xs sm:text-xs text-white/70 truncate max-w-full px-0.5 leading-tight">
-                            {getFirstName(square.profiles.name)}
-                          </span>
-                        ) : (
-                          <span className="text-xs text-white/40 leading-tight">Avail</span>
-                        )}
-                        {square.row_score !== null && (
-                          <span className="text-xs sm:text-xs text-white/50 leading-tight">
-                            {square.row_score}-{square.col_score}
-                          </span>
-                        )}
-                      </button>
-                    </td>
-                  );
-                })}
+      <Card className="p-0 sm:p-2 lg:p-4 bg-white/5 border-white/10 overflow-x-auto">
+        <div className="inline-block min-w-full">
+          <table className="border-collapse text-xs sm:text-sm" style={{ minWidth: 'max-content' }}>
+            <thead>
+              <tr>
+                <th className="w-11 sm:w-14 lg:w-16 min-w-11 sm:min-w-14 lg:min-w-16 h-9 sm:h-12" />
+                {numbers.map(col => (
+                  <th key={col} className="w-12 sm:w-16 lg:w-20 h-9 sm:h-12 text-center text-white/60 text-xs sm:text-sm font-medium px-0 py-1">
+                    {col}
+                  </th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {numbers.map(row => (
+                <tr key={row}>
+                  <td className="w-11 sm:w-14 lg:w-16 min-w-11 sm:min-w-14 lg:min-w-16 text-center text-white/60 text-xs sm:text-sm font-medium py-0 h-12 sm:h-16 lg:h-20 flex items-center justify-center">
+                    {row}
+                  </td>
+                  {numbers.map(col => {
+                    const square = squareMap.get(`${row}-${col}`);
+                    if (!square) return <td key={col} className="w-12 sm:w-16 lg:w-20" />;
+
+                    const isAvailable = square.status === 'available';
+                    const boxNum = row * 10 + col + 1;
+
+                    return (
+                      <td key={col} className="p-1 sm:p-1.5 w-12 sm:w-16 lg:w-20 h-12 sm:h-16 lg:h-20">
+                        <button
+                          onClick={() => handleEditClick(square)}
+                          className={`
+                            w-full h-full rounded-lg border-2 transition-all
+                            flex flex-col items-center justify-center gap-0
+                            hover:scale-105 hover:z-10 cursor-pointer
+                            text-xs sm:text-base
+                            ${isAvailable
+                              ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
+                              : 'bg-[#cda33b]/20 border-[#cda33b]/40 hover:border-[#cda33b]'
+                            }
+                          `}
+                        >
+                          <span className={`font-bold text-sm sm:text-lg ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
+                            #{boxNum}
+                          </span>
+                          {square.profiles?.name ? (
+                            <span className="text-xs sm:text-sm text-white/70 truncate max-w-full px-0.5 leading-none">
+                              {getFirstName(square.profiles.name)}
+                            </span>
+                          ) : (
+                            <span className="text-xs sm:text-sm text-white/40 leading-none">Avail</span>
+                          )}
+                          {square.row_score !== null && (
+                            <span className="text-xs text-white/50 leading-none">
+                              {square.row_score}-{square.col_score}
+                            </span>
+                          )}
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Card>
 
       {/* Legend */}
