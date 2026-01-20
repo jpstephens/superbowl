@@ -156,94 +156,94 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-6xl">
+    <div className="p-3 sm:p-6 lg:p-8 max-w-6xl">
       {/* Page Title */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-white/60">Overview of your Super Bowl pool</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl font-bold text-white">Dashboard</h1>
+        <p className="text-xs sm:text-base text-white/60">Overview of your Super Bowl pool</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-blue-500/20">
-              <Users className="w-6 h-6 text-blue-400" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
+        <Card className="p-3 sm:p-5 bg-white/5 border-white/10">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+            <div className="p-2 sm:p-3 rounded-xl bg-blue-500/20 flex-shrink-0">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.totalUsers}</p>
-              <p className="text-sm text-white/60">Participants</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-green-500/20">
-              <DollarSign className="w-6 h-6 text-green-400" />
-            </div>
-            <div>
-              <p className="text-3xl font-bold text-white">${stats.totalRevenue.toLocaleString()}</p>
-              <p className="text-sm text-white/60">Revenue</p>
+            <div className="min-w-0">
+              <p className="text-xl sm:text-3xl font-bold text-white">{stats.totalUsers}</p>
+              <p className="text-xs sm:text-sm text-white/60">Participants</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-[#cda33b]/20">
-              <Grid3x3 className="w-6 h-6 text-[#cda33b]" />
+        <Card className="p-3 sm:p-5 bg-white/5 border-white/10">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+            <div className="p-2 sm:p-3 rounded-xl bg-green-500/20 flex-shrink-0">
+              <DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.soldSquares}</p>
-              <p className="text-sm text-white/60">Sold</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-3xl font-bold text-white truncate">${stats.totalRevenue.toLocaleString()}</p>
+              <p className="text-xs sm:text-sm text-white/60">Revenue</p>
             </div>
           </div>
         </Card>
 
-        <Card className="p-5 bg-white/5 border-white/10">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-purple-500/20">
-              <Trophy className="w-6 h-6 text-purple-400" />
+        <Card className="p-3 sm:p-5 bg-white/5 border-white/10">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+            <div className="p-2 sm:p-3 rounded-xl bg-[#cda33b]/20 flex-shrink-0">
+              <Grid3x3 className="w-5 h-5 sm:w-6 sm:h-6 text-[#cda33b]" />
             </div>
-            <div>
-              <p className="text-3xl font-bold text-white">{stats.availableSquares}</p>
-              <p className="text-sm text-white/60">Available</p>
+            <div className="min-w-0">
+              <p className="text-xl sm:text-3xl font-bold text-white">{stats.soldSquares}</p>
+              <p className="text-xs sm:text-sm text-white/60">Sold</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-3 sm:p-5 bg-white/5 border-white/10">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-4">
+            <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20 flex-shrink-0">
+              <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xl sm:text-3xl font-bold text-white">{stats.availableSquares}</p>
+              <p className="text-xs sm:text-sm text-white/60">Available</p>
             </div>
           </div>
         </Card>
       </div>
 
       {/* Progress Bar */}
-      <Card className="p-5 bg-white/5 border-white/10 mb-8">
+      <Card className="p-3 sm:p-5 bg-white/5 border-white/10 mb-6 sm:mb-8">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-white font-medium">Sales Progress</span>
-          <span className="text-[#cda33b] font-bold">{stats.soldSquares}%</span>
+          <span className="text-xs sm:text-base text-white font-medium">Sales Progress</span>
+          <span className="text-sm sm:text-base text-[#cda33b] font-bold">{stats.soldSquares}%</span>
         </div>
-        <div className="w-full bg-white/10 rounded-full h-3">
+        <div className="w-full bg-white/10 rounded-full h-2 sm:h-3">
           <div
-            className="bg-gradient-to-r from-[#cda33b] to-[#e8c547] h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-[#cda33b] to-[#e8c547] h-2 sm:h-3 rounded-full transition-all duration-500"
             style={{ width: `${stats.soldSquares}%` }}
           />
         </div>
       </Card>
 
       {/* Tournament Launch Section */}
-      <Card className="p-6 bg-white/5 border-white/10 mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${tournamentLaunched ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-              <Rocket className={`w-6 h-6 ${tournamentLaunched ? 'text-green-400' : 'text-red-400'}`} />
+      <Card className="p-3 sm:p-6 bg-white/5 border-white/10 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-4 min-w-0">
+            <div className={`p-2 sm:p-3 rounded-xl flex-shrink-0 ${tournamentLaunched ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+              <Rocket className={`w-5 h-5 sm:w-6 sm:h-6 ${tournamentLaunched ? 'text-green-400' : 'text-red-400'}`} />
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-white">Tournament Status</h2>
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-lg font-bold text-white">Tournament Status</h2>
               {tournamentLaunched ? (
-                <div className="flex items-center gap-2 text-green-400">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>Launched - Numbers Assigned</span>
+                <div className="flex items-center gap-2 text-green-400 text-xs sm:text-base">
+                  <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                  <span className="truncate">Launched - Numbers Assigned</span>
                 </div>
               ) : (
-                <p className="text-white/60">
+                <p className="text-xs sm:text-base text-white/60">
                   {canLaunch ? 'Ready to launch!' : `${stats.availableSquares} squares remaining`}
                 </p>
               )}
@@ -254,32 +254,32 @@ export default function AdminDashboardPage() {
             <Button
               onClick={() => setShowLaunchDialog(true)}
               disabled={!canLaunch}
-              className="bg-red-600 hover:bg-red-700 disabled:bg-white/10 disabled:text-white/40"
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 disabled:bg-white/10 disabled:text-white/40 text-sm sm:text-base"
               size="lg"
             >
               <Rocket className="w-4 h-4 mr-2" />
-              Launch Tournament
+              Launch
             </Button>
           )}
         </div>
 
         {/* Post-Launch Actions */}
         {tournamentLaunched && (
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <p className="text-sm font-medium text-white/60 mb-4">GRID DISTRIBUTION</p>
-            <div className="flex flex-wrap gap-3">
+          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-white/10">
+            <p className="text-xs sm:text-sm font-medium text-white/60 mb-3 sm:mb-4 uppercase">Grid Distribution</p>
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
               <Button
                 onClick={handleDownloadPDF}
                 variant="outline"
-                className="border-white/20 text-white hover:bg-white/10"
+                className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10 text-sm"
               >
                 <Download className="w-4 h-4 mr-2" />
-                Download PDF
+                PDF
               </Button>
               <Button
                 onClick={handleSendEmails}
                 disabled={sendingEmails}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-sm"
               >
                 {sendingEmails ? (
                   <>
@@ -289,7 +289,7 @@ export default function AdminDashboardPage() {
                 ) : (
                   <>
                     <Mail className="w-4 h-4 mr-2" />
-                    Email Participants
+                    Email
                   </>
                 )}
               </Button>
@@ -298,12 +298,11 @@ export default function AdminDashboardPage() {
         )}
 
         {!canLaunch && !tournamentLaunched && (
-          <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-            <div className="flex items-start gap-3">
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+            <div className="flex items-start gap-2 sm:gap-3">
               <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-amber-200">
-                Tournament can only be launched when all 100 squares are sold.
-                Numbers will be randomly assigned at launch time.
+              <p className="text-xs sm:text-sm text-amber-200">
+                All 100 squares must be sold before launch. Numbers are randomly assigned.
               </p>
             </div>
           </div>

@@ -177,14 +177,14 @@ export default function AdminSquaresPage() {
   }
 
   return (
-    <div className="p-4 lg:p-6">
+    <div className="p-3 sm:p-4 lg:p-6">
       {/* Page Title */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Squares</h1>
-          <p className="text-white/60">Click any square to edit</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Squares</h1>
+          <p className="text-sm text-white/60">Click any square to edit</p>
         </div>
-        <Button onClick={exportToCSV} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={exportToCSV} className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-sm sm:text-base">
           <Download className="w-4 h-4 mr-2" />
           Export CSV
         </Button>
@@ -203,14 +203,14 @@ export default function AdminSquaresPage() {
       </div>
 
       {/* Grid */}
-      <Card className="p-2 lg:p-4 bg-white/5 border-white/10 overflow-x-auto">
-        <table className="border-collapse w-full table-fixed">
+      <Card className="p-1 sm:p-2 lg:p-4 bg-white/5 border-white/10 overflow-x-auto">
+        <table className="border-collapse w-full table-fixed text-xs sm:text-sm">
           <thead>
             <tr>
-              <th className="w-[60px] min-w-[60px] h-10" />
+              <th className="w-10 sm:w-12 lg:w-16 min-w-10 sm:min-w-12 lg:min-w-16 h-8 sm:h-10" />
               {numbers.map(col => (
-                <th key={col} className="h-10 text-center text-white/60 text-sm font-medium">
-                  Col {col}
+                <th key={col} className="h-8 sm:h-10 text-center text-white/60 text-xs sm:text-sm font-medium px-0.5">
+                  {col}
                 </th>
               ))}
             </tr>
@@ -218,8 +218,8 @@ export default function AdminSquaresPage() {
           <tbody>
             {numbers.map(row => (
               <tr key={row}>
-                <td className="w-[60px] min-w-[60px] text-center text-white/60 text-sm font-medium py-1">
-                  Row {row}
+                <td className="w-10 sm:w-12 lg:w-16 min-w-10 sm:min-w-12 lg:min-w-16 text-center text-white/60 text-xs sm:text-sm font-medium py-0.5">
+                  {row}
                 </td>
                 {numbers.map(col => {
                   const square = squareMap.get(`${row}-${col}`);
@@ -229,31 +229,32 @@ export default function AdminSquaresPage() {
                   const boxNum = row * 10 + col + 1;
 
                   return (
-                    <td key={col} className="p-0.5">
+                    <td key={col} className="p-0.5 sm:p-1">
                       <button
                         onClick={() => handleEditClick(square)}
                         className={`
-                          w-full aspect-square rounded-lg border-2 transition-all
+                          w-full aspect-square rounded-lg border border-2 sm:border-2 transition-all
                           flex flex-col items-center justify-center gap-0.5
                           hover:scale-105 hover:z-10 cursor-pointer
+                          text-xs sm:text-sm
                           ${isAvailable
                             ? 'bg-green-500/20 border-green-500/40 hover:border-green-400'
                             : 'bg-[#cda33b]/20 border-[#cda33b]/40 hover:border-[#cda33b]'
                           }
                         `}
                       >
-                        <span className={`text-base font-bold ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
+                        <span className={`font-bold text-xs sm:text-sm ${isAvailable ? 'text-green-400' : 'text-[#cda33b]'}`}>
                           #{boxNum}
                         </span>
                         {square.profiles?.name ? (
-                          <span className="text-xs text-white/70 truncate max-w-full px-1">
+                          <span className="text-xs sm:text-xs text-white/70 truncate max-w-full px-0.5 leading-tight">
                             {getFirstName(square.profiles.name)}
                           </span>
                         ) : (
-                          <span className="text-xs text-white/40">Available</span>
+                          <span className="text-xs text-white/40 leading-tight">Avail</span>
                         )}
                         {square.row_score !== null && (
-                          <span className="text-[10px] text-white/50">
+                          <span className="text-xs sm:text-xs text-white/50 leading-tight">
                             {square.row_score}-{square.col_score}
                           </span>
                         )}
@@ -268,13 +269,13 @@ export default function AdminSquaresPage() {
       </Card>
 
       {/* Legend */}
-      <div className="flex items-center gap-8 mt-6 text-base">
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5 rounded bg-green-500/20 border-2 border-green-500/40" />
+      <div className="flex flex-wrap items-center gap-4 sm:gap-8 mt-4 sm:mt-6 text-xs sm:text-base">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded bg-green-500/20 border-2 border-green-500/40" />
           <span className="text-white/60">Available</span>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5 rounded bg-[#cda33b]/20 border-2 border-[#cda33b]/40" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded bg-[#cda33b]/20 border-2 border-[#cda33b]/40" />
           <span className="text-white/60">Sold</span>
         </div>
       </div>
