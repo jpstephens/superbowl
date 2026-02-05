@@ -168,6 +168,21 @@ export default function AdminSquaresPage() {
 
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
+  // Build maps for the actual assigned scores (after tournament launch)
+  const rowScoreMap = new Map<number, number>();
+  const colScoreMap = new Map<number, number>();
+
+  squares.forEach(sq => {
+    if (sq.row_score !== null && !rowScoreMap.has(sq.row_number)) {
+      rowScoreMap.set(sq.row_number, sq.row_score);
+    }
+    if (sq.col_score !== null && !colScoreMap.has(sq.col_number)) {
+      colScoreMap.set(sq.col_number, sq.col_score);
+    }
+  });
+
+  const tournamentLaunched = rowScoreMap.size === 10 && colScoreMap.size === 10;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -209,8 +224,10 @@ export default function AdminSquaresPage() {
             <tr>
               <th className="w-8 sm:w-12 lg:w-16 h-8 sm:h-10 lg:h-12 flex-shrink-0" />
               {numbers.map(col => (
-                <th key={col} className="w-8 sm:w-12 lg:w-16 h-8 sm:h-10 lg:h-12 text-center text-white/60 text-xs sm:text-xs lg:text-sm font-medium px-0 py-0 flex-shrink-0">
-                  {col}
+                <th key={col} className="w-8 sm:w-12 lg:w-16 h-8 sm:h-10 lg:h-12 text-center text-xs sm:text-xs lg:text-sm font-medium px-0 py-0 flex-shrink-0">
+                  <span className={tournamentLaunched ? 'text-[#cda33b] font-bold' : 'text-white/60'}>
+                    {tournamentLaunched ? colScoreMap.get(col) : col}
+                  </span>
                 </th>
               ))}
             </tr>
@@ -218,8 +235,8 @@ export default function AdminSquaresPage() {
           <tbody>
             {numbers.map(row => (
               <tr key={row}>
-                <td className="w-8 sm:w-12 lg:w-16 h-8 sm:h-10 lg:h-12 text-center text-white/60 text-xs sm:text-xs lg:text-sm font-medium flex items-center justify-center flex-shrink-0">
-                  {row}
+                <td className={`w-8 sm:w-12 lg:w-16 h-8 sm:h-10 lg:h-12 text-center text-xs sm:text-xs lg:text-sm font-medium flex items-center justify-center flex-shrink-0 ${tournamentLaunched ? 'text-[#cda33b] font-bold' : 'text-white/60'}`}>
+                  {tournamentLaunched ? rowScoreMap.get(row) : row}
                 </td>
                 {numbers.map(col => {
                   const square = squareMap.get(`${row}-${col}`);
