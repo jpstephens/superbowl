@@ -6,8 +6,8 @@ import { Document, Page, View, Text, StyleSheet, renderToBuffer } from '@react-p
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CELL_SIZE = 45;
-const HEADER_SIZE = 25;
+const CELL_SIZE = 52;
+const HEADER_SIZE = 22;
 
 const styles = StyleSheet.create({
   page: {
@@ -109,10 +109,12 @@ const styles = StyleSheet.create({
     fontSize: 7,
     color: '#9ca3af',
   },
-  cellInitials: {
-    fontSize: 8,
+  cellName: {
+    fontSize: 6,
     fontWeight: 'bold',
     color: '#232842',
+    textAlign: 'center',
+    paddingHorizontal: 1,
   },
   prizeSection: {
     marginTop: 10,
@@ -190,11 +192,14 @@ function GridPDF({
   const getSquare = (row: number, col: number) =>
     squares.find(s => s.row_number === row && s.col_number === col);
 
-  const getInitials = (name: string | null) => {
+  const formatName = (name: string | null) => {
     if (!name) return '';
     const parts = name.trim().split(' ');
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    if (parts.length === 1) return parts[0];
+    // Return "First L." format to fit in cell
+    const firstName = parts[0];
+    const lastInitial = parts[parts.length - 1][0];
+    return `${firstName} ${lastInitial}.`;
   };
 
   return (
@@ -252,7 +257,7 @@ function GridPDF({
                         style={[styles.cell, isTaken ? styles.cellTaken : styles.cellAvailable]}
                       >
                         {isTaken ? (
-                          <Text style={styles.cellInitials}>{getInitials(square?.user_name || null)}</Text>
+                          <Text style={styles.cellName}>{formatName(square?.user_name || null)}</Text>
                         ) : (
                           <Text style={styles.cellNumber}>{boxNum}</Text>
                         )}
