@@ -6,24 +6,24 @@ import { Document, Page, View, Text, StyleSheet, renderToBuffer } from '@react-p
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CELL_SIZE = 50;
-const HEADER_SIZE = 24;
+const CELL_SIZE = 42;
+const HEADER_SIZE = 20;
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 25,
     backgroundColor: '#ffffff',
     fontFamily: 'Helvetica',
   },
   header: {
-    marginBottom: 15,
+    marginBottom: 10,
     textAlign: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#232842',
-    marginBottom: 4,
+    marginBottom: 3,
   },
   subtitle: {
     fontSize: 10,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   gridSection: {
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 10,
   },
   teamLabelTop: {
     fontSize: 12,
@@ -123,45 +123,45 @@ const styles = StyleSheet.create({
     lineHeight: 1.2,
   },
   prizeSection: {
-    marginTop: 10,
-    padding: 12,
+    marginTop: 8,
+    padding: 10,
     backgroundColor: '#f9fafb',
     borderRadius: 4,
   },
   prizeTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#232842',
-    marginBottom: 8,
+    marginBottom: 6,
     textAlign: 'center',
   },
   prizeRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 3,
-    paddingHorizontal: 15,
+    marginBottom: 2,
+    paddingHorizontal: 12,
   },
   prizeLabel: {
-    fontSize: 9,
+    fontSize: 8,
     color: '#4b5563',
   },
   prizeAmount: {
-    fontSize: 9,
+    fontSize: 8,
     fontWeight: 'bold',
     color: '#d97706',
   },
   prizeDivider: {
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
-    marginVertical: 6,
-    marginHorizontal: 15,
+    marginVertical: 4,
+    marginHorizontal: 12,
   },
   footer: {
-    marginTop: 12,
+    marginTop: 8,
     textAlign: 'center',
   },
   footerText: {
-    fontSize: 8,
+    fontSize: 7,
     color: '#9ca3af',
   },
 });
