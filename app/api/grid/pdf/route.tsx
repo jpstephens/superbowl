@@ -34,9 +34,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   teamLabelTop: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#1d4ed8',
+    color: '#004C54',
     marginBottom: 5,
     textAlign: 'center',
   },
@@ -49,9 +49,9 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   teamLabelLeftText: {
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: 'bold',
-    color: '#dc2626',
+    color: '#E31837',
     transform: 'rotate(-90deg)',
   },
   table: {
@@ -204,12 +204,12 @@ function GridPDF({
 
         {/* Grid Section */}
         <View style={styles.gridSection}>
-          <Text style={styles.teamLabelTop}>← NFC →</Text>
+          <Text style={styles.teamLabelTop}>EAGLES</Text>
 
           <View style={styles.gridWithLabel}>
             {/* AFC Label */}
             <View style={styles.teamLabelLeft}>
-              <Text style={styles.teamLabelLeftText}>AFC</Text>
+              <Text style={styles.teamLabelLeftText}>CHIEFS</Text>
             </View>
 
             {/* Grid Table */}
