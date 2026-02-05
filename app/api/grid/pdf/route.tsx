@@ -173,12 +173,16 @@ function GridPDF({
   colScores,
   tournamentLaunched,
   prizes,
+  afcTeam,
+  nfcTeam,
 }: {
   squares: SquareData[];
   rowScores: Map<number, number>;
   colScores: Map<number, number>;
   tournamentLaunched: boolean;
   prizes: { q1: number; q2: number; q3: number; q4: number };
+  afcTeam: string;
+  nfcTeam: string;
 }) {
   const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   const total = prizes.q1 + prizes.q2 + prizes.q3 + prizes.q4;
@@ -204,12 +208,12 @@ function GridPDF({
 
         {/* Grid Section */}
         <View style={styles.gridSection}>
-          <Text style={styles.teamLabelTop}>EAGLES</Text>
+          <Text style={styles.teamLabelTop}>{nfcTeam || 'NFC'}</Text>
 
           <View style={styles.gridWithLabel}>
             {/* AFC Label */}
             <View style={styles.teamLabelLeft}>
-              <Text style={styles.teamLabelLeftText}>CHIEFS</Text>
+              <Text style={styles.teamLabelLeftText}>{afcTeam || 'AFC'}</Text>
             </View>
 
             {/* Grid Table */}
@@ -319,14 +323,16 @@ export async function GET() {
 
     if (squaresError) throw squaresError;
 
-    // Check tournament status and get prizes
+    // Check tournament status, get prizes, and team names
     const { data: settings } = await supabase
       .from('settings')
       .select('key, value')
-      .in('key', ['tournament_launched', 'payout_q1', 'payout_q2', 'payout_q3', 'payout_q4']);
+      .in('key', ['tournament_launched', 'payout_q1', 'payout_q2', 'payout_q3', 'payout_q4', 'afc_team', 'nfc_team']);
 
     const settingsMap = new Map(settings?.map(s => [s.key, s.value]) || []);
     const tournamentLaunched = settingsMap.get('tournament_launched') === 'true';
+    const afcTeam = settingsMap.get('afc_team') || 'AFC';
+    const nfcTeam = settingsMap.get('nfc_team') || 'NFC';
 
     const prizes = {
       q1: parseInt(settingsMap.get('payout_q1') || '1000'),
@@ -364,6 +370,8 @@ export async function GET() {
         colScores={colScores}
         tournamentLaunched={tournamentLaunched}
         prizes={prizes}
+        afcTeam={afcTeam}
+        nfcTeam={nfcTeam}
       />
     );
     const pdfBuffer = await renderToBuffer(pdfDoc);
