@@ -6,8 +6,8 @@ import { Document, Page, View, Text, StyleSheet, renderToBuffer } from '@react-p
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const CELL_SIZE = 52;
-const HEADER_SIZE = 22;
+const CELL_SIZE = 50;
+const HEADER_SIZE = 24;
 
 const styles = StyleSheet.create({
   page: {
@@ -45,14 +45,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   teamLabelLeft: {
-    width: 20,
-    marginRight: 5,
+    width: 18,
+    height: CELL_SIZE * 10 + HEADER_SIZE,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4,
   },
   teamLabelLeftText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
     color: '#E31837',
     transform: 'rotate(-90deg)',
+    width: CELL_SIZE * 10,
+    textAlign: 'center',
   },
   table: {
     borderWidth: 1,
@@ -110,11 +115,12 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   cellName: {
-    fontSize: 6,
+    fontSize: 7,
     fontWeight: 'bold',
     color: '#232842',
     textAlign: 'center',
-    paddingHorizontal: 1,
+    paddingHorizontal: 2,
+    lineHeight: 1.2,
   },
   prizeSection: {
     marginTop: 10,
@@ -298,7 +304,7 @@ function GridPDF({
 
         {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Follow along live at superbowlpool.com</Text>
+          <Text style={styles.footerText}>Follow along live at superbowl.michaelwilliamsscholarship.com</Text>
           <Text style={[styles.footerText, { marginTop: 2 }]}>
             100% of proceeds support the Michael Williams Memorial Scholarship
           </Text>
